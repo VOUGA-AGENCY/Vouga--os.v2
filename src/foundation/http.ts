@@ -1,5 +1,11 @@
+import { ProviderError, providerFailure } from "@/services/runtime";
 import { AppError } from "@/domain/validation";
 export function errorResponse(error: unknown) {
+  if(error instanceof ProviderError) {
+    console.error(JSON.stringify({provider:error.provider,status:error.status,retryAfter:error.retryAfter}));
+    const mapped=providerFailure(error);
+    return Response.json({error:mapped.message},{status:mapped.status,headers:error.retryAfter?{"Retry-After":String(error.retryAfter)}:undefined});
+  }
   if (error instanceof AppError)
     return Response.json({ error: error.message }, { status: error.status });
   console.error(

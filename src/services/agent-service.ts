@@ -4,7 +4,7 @@ import { AppError, record, text } from "@/domain/validation";
 import type { Member, Snapshot } from "@/domain/model";
 import { workspaceFor } from "@/projections/workspace";
 import { dateKey } from "@/domain/time";
-import { api, required, type ServiceContext } from "./runtime";
+import { api, required, ProviderError, providerFailure, type ServiceContext } from "./runtime";
 export type AgentContext = {
   projectId?: string;
   companyId?: string;
@@ -570,7 +570,7 @@ export async function runAgent(
   } catch (error) {
     const partial = [
       ...completed,
-      "A ligação ao Agent falhou. Consulta Activity antes de repetir ações.",
+      error instanceof ProviderError ? providerFailure(error).message : "A ligação ao Agent falhou. Consulta Activity antes de repetir ações.",
     ].join("\n");
     await ctx.repo.transact((data) => {
       const receipt = data.agentReceipts.find(
