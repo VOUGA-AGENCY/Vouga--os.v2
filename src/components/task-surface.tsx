@@ -6,6 +6,7 @@ import { dateKey, relativeDate, shortDate } from "@/domain/time";
 import { useWorkspace } from "./context";
 import { ActivityFeed } from "./activity";
 import { Popover } from "./popover";
+import { PersonAvatar } from "./person-avatar";
 
 const boardStatuses: TaskStatus[] = ["backlog", "todo", "doing", "review", "done"];
 const boardLabels = taskStatuses;
@@ -26,7 +27,7 @@ export function TaskLine({ task }: { task: Task }) {
     {task.priority && task.priority !== "none" && <span className="task-line-priority">{priorities[task.priority]}</span>}
     {comments > 0 && <span className="task-line-count"><MessageSquare size={12}/>{comments}</span>}
     {files > 0 && <span className="task-line-count"><Paperclip size={12}/>{files}</span>}
-    <span className="task-line-owner">{owner?.name ?? "—"}</span>
+    <span className="task-line-owner"><PersonAvatar member={owner}/></span>
     <span className={`task-line-date ${task.dueOn && task.dueOn < dateKey(data.now) && task.status !== "done" ? "is-overdue" : ""}`}>{relativeDate(task.dueOn, dateKey(data.now))}</span>
   </button>;
 }
@@ -82,7 +83,7 @@ export function TaskSurface({ projectId, mode, onModeChange }: { projectId?: str
         <header><span className={`task-state task-state-${status}`}/>{boardLabels[status]} <span>{column.length}</span></header>
         {column.map((task) => { const comments = data.taskComments.filter((item) => item.taskId === task.id).length; const files = data.taskAttachments.filter((item) => item.taskId === task.id).length; return <button key={task.id} className="task-board-card" draggable onDragStart={(event) => { event.dataTransfer.setData("text/task-id", task.id); event.dataTransfer.effectAllowed = "move"; }} onClick={() => edit({ type: "task", id: task.id })}>
           <span className="task-board-card-title"><GripVertical size={13}/>{task.title}</span>{task.pullRequestId && <small>{(() => { const pr = data.pullRequests.find((item) => item.id === task.pullRequestId); return pr ? `PR #${pr.number} · ${pr.state}` : ""; })()}</small>}
-          <span className="task-board-card-meta"><span>{data.members.find((item) => item.id === task.ownerId)?.name ?? "—"}</span>{task.dueOn && <span><CalendarDays size={12}/>{shortDate(task.dueOn)}</span>}{task.priority && task.priority !== "none" && <span>{priorities[task.priority]}</span>}{comments > 0 && <span><MessageSquare size={12}/>{comments}</span>}{files > 0 && <span><Paperclip size={12}/>{files}</span>}</span>
+          <span className="task-board-card-meta"><span><PersonAvatar member={data.members.find((item) => item.id === task.ownerId)}/></span>{task.dueOn && <span><CalendarDays size={12}/>{shortDate(task.dueOn)}</span>}{task.priority && task.priority !== "none" && <span>{priorities[task.priority]}</span>}{comments > 0 && <span><MessageSquare size={12}/>{comments}</span>}{files > 0 && <span><Paperclip size={12}/>{files}</span>}</span>
         </button>; })}
         <button className="task-board-add" onClick={() => edit({ type: "task", projectId })}><Plus size={13}/> Add task</button>
       </section>;

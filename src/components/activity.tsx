@@ -1,6 +1,7 @@
 "use client";
 import { GitBranch, CircleDot } from "lucide-react";
 import { useWorkspace } from "./context";
+import { PersonAvatar } from "./person-avatar";
 export function ActivityFeed({
   projectId,
   companyId,
@@ -34,12 +35,7 @@ export function ActivityFeed({
           ) : (
             <CircleDot size={13} />
           )}
-          <span>
-            {event.actorName ||
-              data.members.find((member) => member.id === event.actorId)
-                ?.name ||
-              event.source}
-          </span>
+          <PersonAvatar member={data.members.find((member) => member.id === event.actorId)} />
           <p>{event.summary}</p>
         </div>
       ))}

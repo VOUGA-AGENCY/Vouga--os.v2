@@ -6,7 +6,6 @@ import {
   CalendarDays,
   Check,
   ChevronRight,
-  CircleHelp,
   Settings,
   House,
   ListTodo,
@@ -29,6 +28,7 @@ import { IntegrationSettings } from "./settings";
 import { RecordEditor } from "./editors";
 import { CompactPanel } from "./compact-panel";
 import { Dialog } from "./dialog";
+import { PersonAvatar } from "./person-avatar";
 
 const navigation = [
   { path: "", label: "Home", icon: House },
@@ -338,17 +338,10 @@ export function Workspace({
                 <Settings size={15} />
                 Settings
               </Link>
-              <button className="sidebar-about" onClick={() => setHelp(true)}>
-                <CircleHelp size={15} />
-                Sobre esta versão
-              </button>
               <div className="member-row">
-                <span className="avatar">{data.me.name.slice(0, 1)}</span>
+                <PersonAvatar member={data.me} />
                 <span>
                   <strong>{data.me.name}</strong>
-                  <small>
-                    {data.me.role === "admin" ? "Administrador" : "Engineer"}
-                  </small>
                 </span>
                 <button
                   className="icon-button logout-button"
@@ -385,10 +378,6 @@ export function Workspace({
                 </span>
               </span>
               <div className="header-actions">
-                <span className="local-label">
-                  <span className="status-dot" />
-                  Local
-                </span>
                 <button
                   className="icon-button"
                   aria-label="Pesquisar no workspace"
@@ -398,13 +387,6 @@ export function Workspace({
                   }}
                 >
                   <Search size={18} />
-                </button>
-                <button
-                  className="mobile-profile avatar"
-                  aria-label="Conta e versão local"
-                  onClick={() => setHelp(true)}
-                >
-                  {data.me.name.slice(0, 1)}
                 </button>
               </div>
             </header>

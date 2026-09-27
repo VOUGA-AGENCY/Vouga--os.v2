@@ -13,6 +13,7 @@ import { useWorkspace } from "./context";
 import { ActivityFeed } from "./activity";
 import { RepositorySettings } from "./settings";
 import { TaskSurface } from "./task-surface";
+import { PersonAvatar } from "./person-avatar";
 
 export function Work() {
   const { data, edit, openProject } = useWorkspace();
@@ -104,9 +105,7 @@ export function ProjectDetail({
         <span className={`task-state task-state-${project.status}`} />
         <h1>{project.name}</h1>
         <span>{projectStatuses[project.status]}</span>
-        <span>
-          {data.members.find((member) => member.id === project.ownerId)?.name}
-        </span>
+        <PersonAvatar member={data.members.find((member) => member.id === project.ownerId)} />
         <button
           className="project-edit"
           onClick={() => edit({ type: "project", id })}
