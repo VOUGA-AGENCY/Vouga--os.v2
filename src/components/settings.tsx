@@ -79,7 +79,14 @@ export function IntegrationSettings() {
       if (!response.ok) throw new Error(result.error);
       if (result.url) {
         if (path.includes("google")) window.location.assign(result.url);
-        else setLink(result.url);
+        else {
+          setLink(result.url);
+          if (values.action === "telegram.link") {
+            // Same-tab navigation avoids popup blockers after an async request.
+            window.location.assign(result.url);
+            return;
+          }
+        }
       }
       await load();
     } catch (error) {
@@ -88,6 +95,15 @@ export function IntegrationSettings() {
       setBusy(false);
     }
   }
+  useEffect(() => {
+    const refresh = () => { void load().catch(() => undefined); };
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+    };
+  }, [load]);
   const state = (id: string, configured: boolean) =>
     status?.connections.find((item) => item.id === id)?.status ||
     (configured ? "Configured · not verified" : "Not configured");
@@ -189,6 +205,12 @@ export function IntegrationSettings() {
                 </button>
               )}
             </div>
+            {link && (
+              <p role="status">
+                <a className="button-secondary" href={link} target="_blank" rel="noreferrer">Abrir Telegram</a>{" "}
+                Carrega em Start no bot para concluir. Link válido durante 10 minutos.
+              </p>
+            )}
             {status.members.map((member) => (
               <div className="integration-row" key={member.id}>
                 <strong>{member.name}</strong>
@@ -211,11 +233,6 @@ export function IntegrationSettings() {
                 )}
               </div>
             ))}
-            {link && (
-              <a href={link} target="_blank" rel="noreferrer">
-                Abrir bot e confirmar ligação (válido 10 min)
-              </a>
-            )}
             <p className="muted">
               08:00 · resumo do dia. Uma hora antes · lembrete individual.
             </p>

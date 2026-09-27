@@ -141,6 +141,7 @@ export async function linkRepository(
     });
     if (prs.length < 100) break;
   }
+  await importRecentCommits(ctx, projectId, repo, token);
 }
 function upsertPR(
   prs: PullRequest[],
@@ -268,4 +269,68 @@ export async function applyGithubEvent(
       }
     }
   });
+}
+
+interface GithubCommit {
+  sha: string;
+  html_url: string;
+  author?: { login: string } | null;
+  commit: { message: string; author: { name: string; date: string } };
+}
+async function importRecentCommits(
+  ctx: ServiceContext,
+  projectId: string,
+  repo: Repo,
+  token: string,
+) {
+  const commits = await github<GithubCommit[]>(
+    ctx,
+    `/repos/${repo.full_name}/commits?per_page=30`,
+    token,
+  );
+  await ctx.repo.transact((data) => {
+    if (
+      !data.projects.some(
+        (p) =>
+          p.id === projectId && p.repositories?.some((r) => r.id === repo.id),
+      )
+    )
+      throw new AppError("Repositório já não está associado ao projeto.", 409);
+    for (const commit of commits)
+      recordActivity(data, {
+        type: "github.commit_pushed",
+        actorId: "github",
+        actorName: commit.author?.login || commit.commit.author.name,
+        timestamp: commit.commit.author.date,
+        source: "github",
+        entityType: "project",
+        entityId: projectId,
+        projectId,
+        summary: `${commit.sha.slice(0, 7)} · ${commit.commit.message.split("\n")[0]}`,
+        metadata: {
+          sha: commit.sha,
+          url: commit.html_url,
+          repositoryId: repo.id,
+          imported: true,
+        },
+        externalKey: `github:commit:${repo.id}:${commit.sha}:${projectId}`,
+      });
+  });
+}
+export async function syncProjectGithub(
+  ctx: ServiceContext,
+  me: Member,
+  projectId: string,
+) {
+  if (me.role !== "admin")
+    throw new AppError(
+      "Só administradores podem sincronizar repositórios.",
+      403,
+    );
+  const project = (await ctx.repo.read()).projects.find(
+    (p) => p.id === projectId,
+  );
+  if (!project) throw new AppError("Projeto não encontrado.", 404);
+  for (const repo of project.repositories ?? [])
+    await linkRepository(ctx, me, projectId, repo.id);
 }

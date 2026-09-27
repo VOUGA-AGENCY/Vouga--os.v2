@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { LoginForm } from "./login-form";
 export default async function LoginPage({
   searchParams,
@@ -10,16 +11,17 @@ export default async function LoginPage({
       <section className="login-main">
         <div className="login-form-wrap">
           <div className="login-brand">
-            <span className="login-brand-mark">V</span>
-            <strong>Vouga OS</strong>
+            <Image
+              src="/vouga-mark-white.png"
+              alt="Vouga"
+              width={40}
+              height={40}
+              priority
+              className="login-logo"
+            />
           </div>
-          <h1>Sign in</h1>
-          <p className="muted">Entra com a tua conta Vouga.</p>
           <LoginForm destination={compact ? "/painel" : "/"} />
         </div>
-        <span className="local-label">
-          <span className="status-dot" /> Acesso reservado à equipa
-        </span>
       </section>
     </main>
   );

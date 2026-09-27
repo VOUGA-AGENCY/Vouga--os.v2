@@ -88,7 +88,18 @@ it("reads the previous local format without losing records and migrates on the n
   expect(migrated.organizations[0].stage).toBe("client");
   expect(migrated.contacts[0].name).toBe(organizations[0].person);
   const contactId = migrated.contacts[0].id;
-  await repo.transact((data) => { data.inbox.push({id:"test-inbox", version:1, createdAt:"2026-09-24T08:00:00.000Z", updatedAt:"2026-09-24T08:00:00.000Z", createdBy:data.members[0].id, ownerId:data.members[0].id, body:"texto", resolved:false}); });
+  await repo.transact((data) => {
+    data.inbox.push({
+      id: "test-inbox",
+      version: 1,
+      createdAt: "2026-09-24T08:00:00.000Z",
+      updatedAt: "2026-09-24T08:00:00.000Z",
+      createdBy: data.members[0].id,
+      ownerId: data.members[0].id,
+      body: "texto",
+      resolved: false,
+    });
+  });
   const saved = await repo.read();
   expect(saved.schemaVersion).toBe(5);
   expect(saved.contacts[0].id).toBe(contactId);
@@ -106,10 +117,21 @@ it("adds named profiles without replacing accounts, private notes or appointment
   try {
     await repo.transact(() => {});
     const saved = await repo.read();
-    expect(saved.members.map((member) => member.id)).toEqual(["miguel", "afonso", "engineer", "vasco", "patrick", "ana", "pedro"]);
+    expect(saved.members.map((member) => member.id)).toEqual([
+      "miguel",
+      "afonso",
+      "vasco",
+      "patrick",
+      "ana",
+      "pedro",
+    ]);
     expect(saved.accounts.slice(0, 3)).toEqual(old.accounts);
     expect(saved.meetings[0].participantIds).toEqual(["miguel", "afonso"]);
-    expect(saved.notes.map((note) => note.visibility)).toEqual(old.notes.map((note) => note.visibility));
+    expect(saved.notes.map((note) => note.visibility)).toEqual(
+      old.notes.map((note) => note.visibility),
+    );
     expect(saved.tasks).toEqual(old.tasks);
-  } finally { vi.unstubAllEnvs(); }
+  } finally {
+    vi.unstubAllEnvs();
+  }
 });

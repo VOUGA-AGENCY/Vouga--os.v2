@@ -5,7 +5,7 @@ import {
   type CalendarKey,
 } from "@/domain/integration-model";
 import { AppError } from "@/domain/validation";
-import { toInstant } from "@/domain/time";
+import { toInstant, dateKey } from "@/domain/time";
 import {
   api,
   hash,
@@ -231,7 +231,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
   const meeting = (await ctx.repo.read()).meetings.find(
     (item) => item.id === id,
   );
-  if (!meeting) return;
+  if (!meeting || meeting.calendarKey === "personal") return;
   if (meeting.syncStatus === "conflict")
     throw new AppError("Conflito de calendário por resolver.", 409);
   const key = meeting.calendarKey ?? "office",
@@ -292,8 +292,12 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
       const payload = {
         summary: meeting.title,
         description: meeting.body,
-        start: { dateTime: meeting.startsAt, timeZone: "Europe/Lisbon" },
-        end: { dateTime: meeting.endsAt, timeZone: "Europe/Lisbon" },
+        start: meeting.allDay
+          ? { date: dateKey(meeting.startsAt) }
+          : { dateTime: meeting.startsAt, timeZone: "Europe/Lisbon" },
+        end: meeting.allDay
+          ? { date: dateKey(meeting.endsAt) }
+          : { dateTime: meeting.endsAt, timeZone: "Europe/Lisbon" },
         attendees: (meeting.externalParticipants ?? []).map((email) => ({
           email,
         })),
@@ -526,6 +530,49 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
         data.meetings.push(updated);
         event = updated;
       }
+      // Keep linked destinations coherent without echo loops. A local pending edit wins
+      // until explicitly resolved; never overwrite it with a webhook notification.
+      if (updated.groupId) {
+        const shared = {
+          title: updated.title,
+          body: updated.body,
+          startsAt: updated.startsAt,
+          endsAt: updated.endsAt,
+          cancelled: updated.cancelled,
+          allDay: updated.allDay,
+          externalParticipants: updated.externalParticipants,
+        };
+        for (const sibling of data.meetings.filter(
+          (m) => m.id !== updated.id && m.groupId === updated.groupId,
+        )) {
+          if (
+            Object.entries(shared).every(
+              ([key, value]) =>
+                JSON.stringify(sibling[key as keyof Meeting]) ===
+                JSON.stringify(value),
+            )
+          )
+            continue;
+          if (
+            ["pending", "error", "conflict"].includes(sibling.syncStatus ?? "")
+          )
+            continue;
+          Object.assign(sibling, shared);
+          sibling.version++;
+          sibling.updatedAt = now;
+          if (sibling.calendarKey === "personal") sibling.syncStatus = "local";
+          else {
+            sibling.syncStatus = "pending";
+            enqueue(
+              data,
+              `calendar:${sibling.id}:${sibling.version}`,
+              "calendar.push",
+              { meetingId: sibling.id },
+              now,
+            );
+          }
+        }
+      }
       recordActivity(data, {
         type: previous
           ? updated.cancelled
@@ -543,21 +590,6 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
         metadata: { calendar: key },
         externalKey: `google:${key}:${external.id}:${external.etag}`,
       });
-      if (
-        !participants.length &&
-        !updated.cancelled &&
-        !data.inbox.some((item) => item.body.includes(id))
-      )
-        data.inbox.push({
-          id: randomUUID(),
-          version: 1,
-          createdAt: now,
-          updatedAt: now,
-          createdBy: actor,
-          ownerId: actor,
-          resolved: false,
-          body: `Associar participantes internos: ${updated.title} (${id}). Importado de ${operationalCalendars[key].label}.`,
-        });
     }
     // Full resync only cancels missing events within the exact fetched window; never unsynced local edits.
     if (full)
@@ -668,6 +700,8 @@ export async function resolveGoogleConflict(
     event.calendarOwnerId !== me.id
   )
     throw new AppError("Sem autorização.", 403);
+  if (event.calendarKey === "personal")
+    throw new AppError("Este calendário não usa Google.");
   const key = event.calendarKey ?? "office",
     token = await accessToken(ctx, key);
   const remote = await api<GoogleEvent>(

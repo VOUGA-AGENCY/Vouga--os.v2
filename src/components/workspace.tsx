@@ -38,12 +38,13 @@ const navigation = [
 ];
 export function Workspace({
   initial,
-  view,
+  view: initialView,
 }: {
   initial: Snapshot;
   view: string;
 }) {
   const [data, setData] = useState(initial);
+  const [view, setView] = useState(initialView);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const [captureKind, setCaptureKind] = useState<
@@ -51,6 +52,15 @@ export function Workspace({
   >(undefined);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [project, setProject] = useState<string | null>(null);
+  useEffect(() => {
+    const navigate = () => {
+      setView(window.location.pathname.slice(1));
+      setProject(null);
+      setEditor(null);
+    };
+    window.addEventListener("popstate", navigate);
+    return () => window.removeEventListener("popstate", navigate);
+  }, []);
   const [help, setHelp] = useState(false);
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
@@ -133,7 +143,7 @@ export function Workspace({
       } catch {
         if (!cancelled)
           setConnection(
-            "Sem ligação ao servidor local. Os registos já guardados estão seguros. A tentar novamente…",
+            "Sem ligação ao servidor. Os registos já guardados estão seguros. A tentar novamente…",
           );
       }
     }
@@ -173,12 +183,12 @@ export function Workspace({
     <Link
       key={path}
       href={`/${path}`}
-      className={`navigation-item ${view === path ? "active" : ""}`}
-      aria-current={view === path ? "page" : undefined}
+      className={`navigation-item ${!project && view === path ? "active" : ""}`}
+      aria-current={!project && view === path ? "page" : undefined}
     >
       <Icon size={18} strokeWidth={1.6} />
       <span>{label}</span>
-      {view === path && <span className="nav-active-dot" />}
+      {!project && view === path && <span className="nav-active-dot" />}
     </Link>
   ));
   const matching = (s: string) =>
@@ -243,31 +253,91 @@ export function Workspace({
           <CompactPanel standalone />
         </main>
       ) : (
-        <div className="app-shell">
+        <div
+          className="app-shell"
+          onClickCapture={(event) => {
+            const link = (
+              event.target as HTMLElement
+            ).closest<HTMLAnchorElement>("a[href]");
+            if (
+              !link ||
+              link.target ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey ||
+              event.button !== 0
+            )
+              return;
+            const url = new URL(link.href, window.location.href);
+            const next = url.pathname.slice(1);
+            if (
+              url.origin !== window.location.origin ||
+              url.hash ||
+              url.search ||
+              ![
+                "",
+                "tasks",
+                "agenda",
+                "contactos",
+                "trabalho",
+                "settings",
+              ].includes(next)
+            )
+              return;
+            event.preventDefault();
+            event.stopPropagation();
+            window.history.pushState(null, "", url.pathname);
+            setView(next);
+            setProject(null);
+            setEditor(null);
+            setCaptureKind(undefined);
+          }}
+        >
           <a className="skip-link" href="#main">
             Saltar para o conteúdo
           </a>
           <aside className="sidebar">
             <Link href="/" aria-label="Vouga OS — Hoje" className="brand">
-              <Image src="/vouga-mark-white.png" alt="Vouga" width={26} height={26} className="workspace-mark" priority/>
+              <Image
+                src="/vouga-mark-white.png"
+                alt="Vouga"
+                width={26}
+                height={26}
+                className="workspace-mark"
+                priority
+              />
             </Link>
             <nav aria-label="Navegação principal" className="sidebar-nav">
               {links}
             </nav>
             <div className="sidebar-projects">
-              <Link className="sidebar-group-label" href="/trabalho">Projects <Plus size={13}/></Link>
-              {data.projects.filter((p) => p.status === "active" || p.status === "waiting").slice(0, 8).map((p) => (
-                <button key={p.id} className="sidebar-project" onClick={() => openProject(p.id)}>
-                  <span className={`status-dot status-${p.status}`} />
-                  <span>{p.name}</span>
-                </button>
-              ))}
+              <Link className="sidebar-group-label" href="/trabalho">
+                Projects <Plus size={13} />
+              </Link>
+              {data.projects
+                .filter((p) => p.status === "active" || p.status === "waiting")
+                .slice(0, 8)
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    className={`sidebar-project ${project === p.id ? "active" : ""}`}
+                    onClick={() => openProject(p.id)}
+                  >
+                    <span className={`status-dot status-${p.status}`} />
+                    <span>{p.name}</span>
+                  </button>
+                ))}
             </div>
             <button className="sidebar-capture" onClick={() => capture()}>
               <Plus size={17} />
               Ask or capture…<kbd>⌘ K</kbd>
             </button>
-            <div className="sidebar-bottom"><Link href="/settings" className="sidebar-utility"><Settings size={15}/>Settings</Link>
+            <div className="sidebar-bottom">
+              <Link href="/settings" className="sidebar-utility">
+                <Settings size={15} />
+                Settings
+              </Link>
               <button className="sidebar-about" onClick={() => setHelp(true)}>
                 <CircleHelp size={15} />
                 Sobre esta versão
@@ -307,7 +377,12 @@ export function Workspace({
               <span className="breadcrumb">
                 Workspace
                 <ChevronRight size={12} />
-                <span>{navigation.find((n) => n.path === view)?.label ?? (view === "settings" ? "Settings" : "Workspace")}</span>
+                <span>
+                  {(project
+                    ? data.projects.find((p) => p.id === project)?.name
+                    : navigation.find((n) => n.path === view)?.label) ??
+                    (view === "settings" ? "Settings" : "Workspace")}
+                </span>
               </span>
               <div className="header-actions">
                 <span className="local-label">
@@ -344,9 +419,17 @@ export function Workspace({
               ) : view === "" ? (
                 <Today />
               ) : view === "settings" ? (
-                <IntegrationSettings/>
+                <IntegrationSettings />
               ) : view === "tasks" ? (
-                <div className="compact-page"><header className="compact-heading"><div><h1>Tasks</h1><span>One place for all work</span></div></header><TaskSurface /></div>
+                <div className="compact-page">
+                  <header className="compact-heading">
+                    <div>
+                      <h1>Tasks</h1>
+                      <span>One place for all work</span>
+                    </div>
+                  </header>
+                  <TaskSurface />
+                </div>
               ) : view === "agenda" ? (
                 <Agenda />
               ) : view === "trabalho" ? (
@@ -365,22 +448,54 @@ export function Workspace({
           <nav className="bottom-navigation" aria-label="Navegação móvel">
             {links}
           </nav>
-
         </div>
       )}
-      {captureKind !== undefined && <AgentPanel context={{projectId:project ?? editor?.projectId,companyId:editor?.type === "organization" ? editor.id : editor?.organizationId,taskId:editor?.type === "task" ? editor.id : undefined}} onClose={() => setCaptureKind(undefined)}/>}
-      {editor?.type === "task" && (
-        <TaskPanel key={editor.id ?? "new"} id={editor.id} projectId={editor.projectId} onClose={() => setEditor(null)} />
+      {captureKind !== undefined && (
+        <AgentPanel
+          context={{
+            projectId: project ?? editor?.projectId,
+            companyId:
+              editor?.type === "organization"
+                ? editor.id
+                : editor?.organizationId,
+            taskId: editor?.type === "task" ? editor.id : undefined,
+          }}
+          onClose={() => setCaptureKind(undefined)}
+        />
       )}
-      {editor?.type === "organization" && editor.id && data.organizations.some((item) => item.id === editor.id) && <CompanyPanel company={data.organizations.find((item) => item.id === editor.id)!} onClose={() => setEditor(null)}/>}
-      {editor?.type === "note" && <NoteComposer key={editor.id ?? "new"} editor={editor} onClose={() => setEditor(null)}/>}
-      {editor && editor.type !== "note" && editor.type !== "task" && !(editor.type === "organization" && editor.id) && (
-        <RecordEditor
-          key={`${editor.type}:${editor.id ?? "new"}`}
+      {editor?.type === "task" && (
+        <TaskPanel
+          key={editor.id ?? "new"}
+          id={editor.id}
+          projectId={editor.projectId}
+          onClose={() => setEditor(null)}
+        />
+      )}
+      {editor?.type === "organization" &&
+        editor.id &&
+        data.organizations.some((item) => item.id === editor.id) && (
+          <CompanyPanel
+            company={data.organizations.find((item) => item.id === editor.id)!}
+            onClose={() => setEditor(null)}
+          />
+        )}
+      {editor?.type === "note" && (
+        <NoteComposer
+          key={editor.id ?? "new"}
           editor={editor}
           onClose={() => setEditor(null)}
         />
       )}
+      {editor &&
+        editor.type !== "note" &&
+        editor.type !== "task" &&
+        !(editor.type === "organization" && editor.id) && (
+          <RecordEditor
+            key={`${editor.type}:${editor.id ?? "new"}`}
+            editor={editor}
+            onClose={() => setEditor(null)}
+          />
+        )}
       {toast && (
         <div className="toast" role="status">
           <Check size={16} />
@@ -434,21 +549,29 @@ export function Workspace({
         <Dialog title="Vouga OS · versão local" onClose={() => setHelp(false)}>
           <div className="dialog-body form-stack">
             <p>
-              Tarefas, projetos, relações e calendário da Vouga num só workspace.
+              Tarefas, projetos, relações e calendário da Vouga num só
+              workspace.
             </p>
             <dl className="about-list">
               <div>
                 <dt>Dados do workspace</dt>
-                <dd>Guardados na base configurada no servidor. A aplicação está a correr neste computador.</dd>
+                <dd>
+                  Guardados na base configurada no servidor. A aplicação está a
+                  correr neste computador.
+                </dd>
               </div>
               <div>
                 <dt>Texto e voz</dt>
-                <dd>Texto e áudio usam o mesmo Agent. A ligação pode ser verificada em Settings.</dd>
+                <dd>
+                  Texto e áudio usam o mesmo Agent. A ligação pode ser
+                  verificada em Settings.
+                </dd>
               </div>
               <div>
                 <dt>Integrações</dt>
                 <dd>
-                  Consulta o estado de Google Calendar, GitHub, Telegram e AI em Settings.
+                  Consulta o estado de Google Calendar, GitHub, Telegram e AI em
+                  Settings.
                 </dd>
               </div>
               <div>

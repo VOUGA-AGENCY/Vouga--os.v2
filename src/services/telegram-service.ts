@@ -1,3 +1,6 @@
+import { creationNotice, type CreationNotice } from "./creation-notifications";
+import { canSeeMeeting } from "@/domain/permissions";
+import { uniqueEvents, calendarLabel } from "@/domain/calendars";
 import { randomBytes } from "node:crypto";
 import type { Member, Store } from "@/domain/model";
 import { AppError } from "@/domain/validation";
@@ -287,31 +290,34 @@ export function meetingReminders(data: Store, now: string) {
     text: string;
   }[] = [];
   for (const member of data.members) {
-    if (!member.telegramChatId) continue;
-    const events = data.meetings
-      .filter(
-        (event) =>
-          !event.cancelled &&
-          !event.allDay &&
-          event.participantIds.includes(member.id) &&
-          dateKey(event.startsAt) === today,
-      )
-      .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
-    if (hour === 8 && minute < 15 && events.length)
+    if (!member.telegramChatId || member.archived) continue;
+    const events = uniqueEvents(
+      data.meetings
+        .filter(
+          (event) =>
+            !event.cancelled &&
+            canSeeMeeting(member, event) &&
+            !event.allDay &&
+            event.participantIds.includes(member.id),
+        )
+        .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+    );
+    const todayEvents = events.filter((event) => dateKey(event.startsAt) === today);
+    if (hour === 8 && minute < 15 && todayEvents.length)
       jobs.push({
         key: `daily:${member.id}:${today}`,
         memberId: member.id,
         chatId: member.telegramChatId,
-        text: `Hoje\n${events.map((event) => `${timeLabel(event.startsAt)} · ${event.title}`).join("\n")}`,
+        text: `Hoje\n${todayEvents.map((event) => `${timeLabel(event.startsAt)} · ${event.title}`).join("\n")}`,
       });
     for (const event of events) {
       const minutes = (Date.parse(event.startsAt) - Date.parse(now)) / 60000;
       if (minutes > 55 && minutes <= 60)
         jobs.push({
-          key: `hour:${member.id}:${event.id}:${event.startsAt}`,
+          key: `hour:${member.id}:${event.groupId ?? event.id}:${event.startsAt}`,
           memberId: member.id,
           chatId: member.telegramChatId,
-          text: `${event.title} começa dentro de 1 hora\n${timeLabel(event.startsAt)} · ${event.calendarKey === "contacto" ? "Contacto" : "Office"}`,
+          text: `${event.title} começa dentro de 1 hora\n${timeLabel(event.startsAt)} · ${calendarLabel(event, data.members)}`,
         });
     }
   }
@@ -321,4 +327,10 @@ export async function deliverReminders(ctx: ServiceContext) {
   if (!ctx.env.TELEGRAM_BOT_TOKEN) return;
   for (const job of meetingReminders(await ctx.repo.read(), ctx.now()))
     await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId);
+}
+
+export async function deliverCreationNotice(ctx: ServiceContext, key: string, notice: CreationNotice) {
+  const message = creationNotice(await ctx.repo.read(), notice);
+  if (!message) return;
+  await sendOnce(ctx, key, message.chatId, message.text, undefined, message.memberId);
 }

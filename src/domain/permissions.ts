@@ -12,28 +12,32 @@ export const canSeeProject = (me: Member, project: Project) =>
   project.ownerId === me.id ||
   project.memberIds.includes(me.id);
 export const canSeeTask = (me: Member, task: Task, data: WorkspaceData) =>
-  me.role === "admin" ||
-  task.ownerId === me.id ||
-  !!data.projects.find((p) => p.id === task.projectId && canSeeProject(me, p));
+  task.visibility === "private"
+    ? task.ownerId === me.id
+    : me.role === "admin" ||
+      task.ownerId === me.id ||
+      !!data.projects.find(
+        (p) => p.id === task.projectId && canSeeProject(me, p),
+      );
 export const canSeeMeeting = (me: Member, meeting: Meeting) =>
   me.role === "admin" ||
-  meeting.visibility === "team" ||
-  meeting.calendarOwnerId === me.id ||
-  meeting.createdBy === me.id ||
-  meeting.participantIds.includes(me.id);
+  meeting.calendarKey === "contacto" ||
+  (meeting.calendarKey === "personal" && meeting.calendarOwnerId === me.id);
 export const canEditMeeting = (me: Member, meeting: Meeting) =>
-  me.role === "admin" ||
-  meeting.calendarOwnerId === me.id ||
-  meeting.createdBy === me.id;
+  canSeeMeeting(me, meeting);
 export const canSeeNote = (me: Member, note: Note, data: WorkspaceData) =>
-  note.visibility === "private"
+  (!note.meetingId ||
+    data.meetings.some(
+      (m) => m.id === note.meetingId && canSeeMeeting(me, m),
+    )) &&
+  (note.visibility === "private"
     ? note.createdBy === me.id
     : note.visibility === "shared"
       ? note.createdBy === me.id || !!note.recipientIds?.includes(me.id)
-    : !note.projectId ||
-      !!data.projects.find(
-        (p) => p.id === note.projectId && canSeeProject(me, p),
-      );
+      : !note.projectId ||
+        !!data.projects.find(
+          (p) => p.id === note.projectId && canSeeProject(me, p),
+        ));
 export function allow(condition: boolean) {
   if (!condition) throw new AppError("Não tens acesso a este registo.", 403);
 }

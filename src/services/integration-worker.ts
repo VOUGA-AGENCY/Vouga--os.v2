@@ -1,3 +1,4 @@
+import type { CreationNotice } from "./creation-notifications";
 import { randomUUID } from "node:crypto";
 import {
   pushCalendarEvent,
@@ -5,7 +6,7 @@ import {
   renewGoogleWatch,
 } from "./calendar-service";
 import { applyGithubEvent, type GithubPayload } from "./github-service";
-import { applyTelegramUpdate, deliverReminders } from "./telegram-service";
+import { applyTelegramUpdate, deliverReminders, deliverCreationNotice } from "./telegram-service";
 import { connectionError, type ServiceContext } from "./runtime";
 import type { CalendarKey } from "@/domain/integration-model";
 export async function processJobs(ctx: ServiceContext, limit = 10) {
@@ -46,6 +47,8 @@ export async function processJobs(ctx: ServiceContext, limit = 10) {
           String(job.payload.event),
           job.payload.body as unknown as GithubPayload,
         );
+      if (job.kind === "telegram.created")
+        await deliverCreationNotice(ctx, job.key, job.payload as CreationNotice);
       if (job.kind === "telegram.update")
         await applyTelegramUpdate(
           ctx,

@@ -7,7 +7,12 @@ export function addTeamProfiles(data: Store, password: string) {
   for (const name of engineers) {
     const id = name.toLowerCase();
     if (data.members.some((member) => member.id === id)) continue;
-    data.members.push({ id, name, email: `${id}@vouga.local`, role: "engineer" });
+    data.members.push({
+      id,
+      name,
+      email: `${id}@vouga.local`,
+      role: "engineer",
+    });
     data.accounts.push({ memberId: id, passwordHash: hashPassword(password) });
   }
 }
@@ -27,7 +32,14 @@ export function createSeed(
   const at = (day: string, time: string) => toInstant(`${day}T${time}`)!;
   return {
     schemaVersion: 5,
-    activity: [], externalConnections: [], integrationJobs: [], pendingActions: [], notificationDeliveries: [], oauthStates: [], telegramLinks: [], agentReceipts: [],
+    activity: [],
+    externalConnections: [],
+    integrationJobs: [],
+    pendingActions: [],
+    notificationDeliveries: [],
+    oauthStates: [],
+    telegramLinks: [],
+    agentReceipts: [],
     taskComments: [],
     taskAttachments: [],
     taskActivity: [],
@@ -47,15 +59,18 @@ export function createSeed(
         email: "roque@vouga.local",
         role: "admin",
       },
-      {
-        id: "engineer",
-        name: "Engineer",
-        email: "engineer@vouga.local",
-        role: "engineer",
-      },
-      ...engineers.map((name) => ({ id: name.toLowerCase(), name, email: `${name.toLowerCase()}@vouga.local`, role: "engineer" as const })),
+      ...engineers.map((name) => ({
+        id: name.toLowerCase(),
+        name,
+        email: `${name.toLowerCase()}@vouga.local`,
+        role: "engineer" as const,
+      })),
     ],
-    accounts: ["miguel", "afonso", "engineer", ...engineers.map((name) => name.toLowerCase())].map((memberId) => ({
+    accounts: [
+      "miguel",
+      "afonso",
+      ...engineers.map((name) => name.toLowerCase()),
+    ].map((memberId) => ({
       memberId,
       passwordHash: hashPassword(password),
     })),
@@ -82,7 +97,7 @@ export function createSeed(
         email: "pedro@example.com",
         phone: "",
         stage: "proposal",
-        ownerId: "engineer",
+        ownerId: "vasco",
         nextStep: "Retomar a proposta de diagnóstico",
         followUpOn: today,
         archived: false,
@@ -93,7 +108,7 @@ export function createSeed(
         person: "Sofia Rocha",
         email: "sofia@example.com",
         phone: "",
-        stage: "talking",
+        stage: "contacted",
         ownerId: "afonso",
         nextStep: "Marcar visita à fábrica",
         followUpOn: addDays(today, 2),
@@ -108,7 +123,7 @@ export function createSeed(
         nextStep: "Validar o fluxo de entrada de pedidos com a Joana.",
         status: "active",
         ownerId: "miguel",
-        memberIds: ["miguel", "engineer"],
+        memberIds: ["miguel", "vasco"],
         organizationId: "vale",
         dueOn: addDays(today, 7),
         repositoryUrl: "",
@@ -142,7 +157,7 @@ export function createSeed(
         title: "Validar o fluxo de entrada de pedidos",
         body: "Levar o percurso completo para a conversa com a Joana.",
         status: "doing",
-        ownerId: "engineer",
+        ownerId: "vasco",
         dueOn: today,
         projectId: "operations",
         organizationId: "vale",
@@ -152,7 +167,7 @@ export function createSeed(
         title: "Obter acesso aos dados de produção",
         body: "A aguardar o ficheiro de exemplo do cliente.",
         status: "blocked",
-        ownerId: "engineer",
+        ownerId: "vasco",
         dueOn: addDays(today, -1),
         projectId: "operations",
         organizationId: "vale",
@@ -177,7 +192,7 @@ export function createSeed(
         startsAt: at(today, "10:00"),
         endsAt: at(today, "10:30"),
         calendarOwnerId: "miguel",
-        participantIds: ["miguel", "afonso", "engineer"],
+        participantIds: ["miguel", "afonso", "vasco"],
         organizationId: null,
         projectId: null,
         cancelled: false,
@@ -191,7 +206,7 @@ export function createSeed(
         startsAt: at(today, "15:00"),
         endsAt: at(today, "15:45"),
         calendarOwnerId: "miguel",
-        participantIds: ["miguel", "engineer"],
+        participantIds: ["miguel", "vasco"],
         organizationId: "vale",
         projectId: "operations",
         cancelled: false,
@@ -222,7 +237,7 @@ export function createSeed(
     ],
     updates: [
       {
-        ...base("initial-update", "engineer"),
+        ...base("initial-update", "vasco"),
         projectId: "operations",
         body: "Primeiro fluxo preparado. Falta validar os campos com o cliente.",
       },

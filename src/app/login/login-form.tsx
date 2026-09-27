@@ -40,12 +40,15 @@ export function LoginForm({
       }}
     >
       <label>
-        Utilizador ou email
+        Email
         <input
           name="email"
           type="text"
           autoComplete="username"
-          placeholder="miguel"
+          placeholder="nome@vouga-agency.pt"
+          inputMode="email"
+          autoCapitalize="none"
+          spellCheck={false}
           required
         />
       </label>

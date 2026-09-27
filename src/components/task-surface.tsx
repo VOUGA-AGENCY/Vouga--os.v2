@@ -8,7 +8,7 @@ import { ActivityFeed } from "./activity";
 import { Popover } from "./popover";
 
 const boardStatuses: TaskStatus[] = ["backlog", "todo", "doing", "review", "done"];
-const boardLabels: Record<string, string> = { backlog: "Backlog", todo: "To do", doing: "In progress", review: "Review", done: "Done" };
+const boardLabels = taskStatuses;
 const priorities: Record<TaskPriority, string> = { none: "None", low: "Low", medium: "Medium", high: "High", urgent: "Urgent" };
 const priorityRank: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
 const boardStatus = (status: TaskStatus): TaskStatus => status === "blocked" ? "backlog" : status;
@@ -121,6 +121,7 @@ export function TaskPanel({ id, projectId, onClose }: { id?: string; projectId?:
         <label>Assignee<select name="ownerId" defaultValue={task?.ownerId ?? data.me.id}>{data.members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label>
         <label>Project<select name="projectId" defaultValue={task?.projectId ?? projectId ?? ""}><option value="">No project</option>{data.projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
         <label>Deadline<input name="dueOn" type="date" defaultValue={task?.dueOn ?? ""}/></label>
+        <label>Visibilidade<select name="visibility" defaultValue={task?.visibility ?? "team"}><option value="team">Equipa</option><option value="private">Privada · só eu</option></select></label>
         <label>Priority<select name="priority" defaultValue={task?.priority ?? "none"}>{Object.entries(priorities).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
       </div><button className="task-detail-save">{task ? "Save changes" : "Create task"}</button>
     </form>

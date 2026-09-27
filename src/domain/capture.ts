@@ -83,7 +83,8 @@ function single(line: string, data: WorkspaceData, me: Member, now: string): Cap
   if (draft.kind === "task") draft.title = draft.title.charAt(0).toLocaleUpperCase("pt") + draft.title.slice(1);
   if (draft.kind === "crm") {
     const requested = /\bestado\s+para\s+([\p{L}]+)/iu.exec(line)?.[1];
-    draft.stage = requested?.toLowerCase() ?? "";
+    const stage = requested?.toLowerCase() ?? "";
+    draft.stage = stage === "talking" ? "contacted" : stage === "opportunity" ? "meeting" : stage;
     draft.title = organization.name;
     draft.body = /\bnota\s+(?:a\s+)?dizer\s+que\s+(.+)$/iu.exec(line)?.[1] ?? line;
   }

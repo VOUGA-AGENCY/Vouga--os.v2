@@ -1,10 +1,14 @@
 "use client";
+import { useState } from "react";
+import { calendarLabel, uniqueEvents } from "@/domain/calendars";
 import { CalendarDays, Check, Inbox, Plus } from "lucide-react";
 import { dateKey, timeLabel } from "@/domain/time";
 import { useWorkspace } from "./context";
 import { TaskLine } from "./task-surface";
 export function Today() {
   const { data, edit, capture, command, notify } = useWorkspace();
+  const [summary, setSummary] = useState("");
+  const [summarizing, setSummarizing] = useState(false);
   const today = dateKey(data.now);
   const tasks = data.tasks
     .filter(
@@ -15,7 +19,7 @@ export function Today() {
         task.dueOn <= today,
     )
     .sort((a, b) => (a.dueOn ?? "").localeCompare(b.dueOn ?? ""));
-  const events = data.meetings
+  const events = uniqueEvents(data.meetings)
     .filter(
       (event) =>
         !event.cancelled &&
@@ -37,11 +41,47 @@ export function Today() {
             }).format(new Date(data.now))}
           </span>
         </div>
+        <button
+          disabled={summarizing}
+          onClick={async () => {
+            setSummarizing(true);
+            try {
+              const response = await fetch("/api/agent", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ summary: true }),
+              });
+              const result = await response.json();
+              if (!response.ok)
+                throw new Error(
+                  result.error || "Não foi possível obter o resumo.",
+                );
+              setSummary(result.text);
+            } catch (error) {
+              notify(
+                error instanceof Error ? error.message : "Resumo indisponível.",
+              );
+            } finally {
+              setSummarizing(false);
+            }
+          }}
+        >
+          {summarizing ? "A preparar…" : "Pedir resumo"}
+        </button>
         <button onClick={() => capture()}>
           <Plus size={15} />
           Ask or capture <kbd>⌘ K</kbd>
         </button>
       </header>
+      {summary && (
+        <section
+          className="home-summary"
+          aria-label="Resumo do Vouga Agent"
+          role="status"
+        >
+          {summary}
+        </section>
+      )}
       <div className="home-focus-grid">
         <section className="focus-section">
           <header>
@@ -61,7 +101,7 @@ export function Today() {
                 <CalendarDays size={15} />
                 <span className="focus-line-title">{event.title}</span>
                 <span className="focus-line-context">
-                  {event.calendarKey === "contacto" ? "Contacto" : "Office"}
+                  {calendarLabel(event, data.members)}
                 </span>
                 <span className="focus-line-time">
                   {event.allDay ? "All day" : timeLabel(event.startsAt)}

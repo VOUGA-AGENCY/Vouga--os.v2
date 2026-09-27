@@ -38,7 +38,7 @@ export interface ExternalConnection {
 export interface IntegrationJob {
   id: string;
   key: string;
-  kind: "calendar.push" | "calendar.pull" | "github.event" | "telegram.update";
+  kind: "calendar.push" | "calendar.pull" | "github.event" | "telegram.update" | "telegram.created";
   payload: Record<string, unknown>;
   state: "pending" | "processing" | "done" | "failed";
   attempts: number;

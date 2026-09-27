@@ -21,7 +21,7 @@ export interface ImportReport {
   review: { table: string; id: string; reason: string }[];
 }
 const stages: Record<string, Stage> = {
-  to_contact: "new", contacted: "contacted", replied: "talking",
+  to_contact: "new", contacted: "contacted", replied: "contacted",
   meeting_scheduled: "meeting", budgeting: "proposal", agreed: "client", not_interested: "dormant",
 };
 const str = (v: unknown) => typeof v === "string" ? v : "";

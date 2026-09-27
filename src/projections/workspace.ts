@@ -17,22 +17,46 @@ export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
   const projects = data.projects.filter((p) => canSeeProject(me, p));
   const visible: WorkspaceData = {
     activity: data.activity.filter((event) => canSeeActivity(data, me, event)),
-    members: data.members.map(({ id, name, role, email }) => ({
-      id,
-      name,
-      role,
-      email,
-    })),
+    members: data.members
+      .filter((m) => !m.archived && m.name !== "Engineer")
+      .sort((a, b) => a.name.localeCompare(b.name, "pt"))
+      .map(({ id, name, role, email }) => ({
+        id,
+        name,
+        role,
+        email,
+      })),
     projects,
     tasks: data.tasks.filter((t) => canSeeTask(me, t, data)),
-    taskComments: data.taskComments.filter((comment) => data.tasks.some((task) => task.id === comment.taskId && canSeeTask(me, task, data))),
-    taskAttachments: data.taskAttachments.filter((attachment) => data.tasks.some((task) => task.id === attachment.taskId && canSeeTask(me, task, data))),
-    taskActivity: data.taskActivity.filter((activity) => data.tasks.some((task) => task.id === activity.taskId && canSeeTask(me, task, data))),
+    taskComments: data.taskComments.filter((comment) =>
+      data.tasks.some(
+        (task) => task.id === comment.taskId && canSeeTask(me, task, data),
+      ),
+    ),
+    taskAttachments: data.taskAttachments.filter((attachment) =>
+      data.tasks.some(
+        (task) => task.id === attachment.taskId && canSeeTask(me, task, data),
+      ),
+    ),
+    taskActivity: data.taskActivity.filter((activity) =>
+      data.tasks.some(
+        (task) => task.id === activity.taskId && canSeeTask(me, task, data),
+      ),
+    ),
     meetings: data.meetings.filter((m) => canSeeMeeting(me, m)),
     organizations: data.organizations,
     contacts: data.contacts,
-    inbox: data.inbox.filter((item) => item.ownerId === me.id && !item.resolved),
-    interactions: data.interactions,
+    inbox: data.inbox.filter(
+      (item) =>
+        item.ownerId === me.id &&
+        !item.resolved &&
+        !item.body.startsWith("Associar participantes internos:"),
+    ),
+    interactions: data.interactions.filter(
+      (i) =>
+        !i.meetingId ||
+        data.meetings.some((m) => m.id === i.meetingId && canSeeMeeting(me, m)),
+    ),
     updates: data.updates.filter((u) =>
       projects.some((p) => p.id === u.projectId),
     ),
@@ -49,7 +73,21 @@ export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
     now,
     revision: data.revision,
     alerts: [],
-    pendingActions: data.pendingActions.filter((action) => action.memberId === me.id && action.state === "pending" && action.expiresAt > now).map(({ id, memberId, summary, state, expiresAt, createdAt }) => ({ id, memberId, summary, state, expiresAt, createdAt })),
+    pendingActions: data.pendingActions
+      .filter(
+        (action) =>
+          action.memberId === me.id &&
+          action.state === "pending" &&
+          action.expiresAt > now,
+      )
+      .map(({ id, memberId, summary, state, expiresAt, createdAt }) => ({
+        id,
+        memberId,
+        summary,
+        state,
+        expiresAt,
+        createdAt,
+      })),
   };
 }
 export function alertsFor(
@@ -57,6 +95,8 @@ export function alertsFor(
   me: Member,
   now: string,
 ): Alert[] {
-  void data; void me; void now;
+  void data;
+  void me;
+  void now;
   return [];
 }

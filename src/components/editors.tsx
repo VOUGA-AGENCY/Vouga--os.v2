@@ -7,18 +7,52 @@ import {
   taskStatuses,
   type Snapshot,
 } from "@/domain/model";
+import { calendarOptions, calendarTarget } from "@/domain/calendars";
 import { canEditMeeting } from "@/domain/permissions";
 import { addDays, dateKey, localDateTime, shortDate } from "@/domain/time";
 import { useWorkspace, type Editor } from "./context";
 import { Dialog } from "./dialog";
+import { RelationSelect } from "./relation-select";
 
-function SideEditor({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function SideEditor({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   useEffect(() => {
-    const close = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [onClose]);
-  return <div className="side-panel-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><aside className="side-panel" role="dialog" aria-modal="true" aria-label={title}><header className="side-panel-header"><span>{title}</span><button aria-label="Close event" onClick={onClose}><X size={17}/></button></header><div className="side-panel-scroll">{children}</div></aside></div>;
+  return (
+    <div
+      className="side-panel-backdrop"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <aside
+        className="side-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <header className="side-panel-header">
+          <span>{title}</span>
+          <button aria-label="Close event" onClick={onClose}>
+            <X size={17} />
+          </button>
+        </header>
+        <div className="side-panel-scroll">{children}</div>
+      </aside>
+    </div>
+  );
 }
 
 type FormProps = {
@@ -41,15 +75,16 @@ function SaveForm({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <form className="record-composer"
+    <form
+      className="record-composer"
       onSubmit={async (e) => {
         e.preventDefault();
         if (busy) return;
         const form = new FormData(e.currentTarget);
         const fields: Record<string, unknown> = Object.fromEntries(form);
-        for (const key of ["memberIds", "participantIds"])
+        for (const key of ["memberIds", "participantIds", "calendarTargets"])
           if (form.has(`${key}Present`)) fields[key] = form.getAll(key);
-        for (const key of ["pinned", "archived"])
+        for (const key of ["pinned", "archived", "allDay"])
           if (form.has(`${key}Present`)) fields[key] = form.has(key);
         setBusy(true);
         setError("");
@@ -129,29 +164,21 @@ function Relations({
   return (
     <div className="form-grid">
       {project && (
-        <label>
-          Projeto
-          <select name="projectId" defaultValue={projectId ?? ""}>
-            <option value="">Sem projeto</option>
-            {data.projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <RelationSelect
+          name="projectId"
+          label="Projeto"
+          emptyLabel="Sem projeto"
+          defaultValue={projectId ?? ""}
+          options={data.projects}
+        />
       )}
-      <label>
-        Organização
-        <select name="organizationId" defaultValue={organizationId ?? ""}>
-          <option value="">Sem organização</option>
-          {data.organizations.map((o) => (
-            <option key={o.id} value={o.id}>
-              {o.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <RelationSelect
+        name="organizationId"
+        label="Organização"
+        emptyLabel="Sem organização"
+        defaultValue={organizationId ?? ""}
+        options={data.organizations}
+      />
     </div>
   );
 }
@@ -210,7 +237,9 @@ export function RecordEditor({
           <label>
             O que precisa de ser feito?
             <input
-              name="title" className="composer-title" placeholder="Title"
+              name="title"
+              className="composer-title"
+              placeholder="Title"
               defaultValue={item?.title}
               maxLength={160}
               required
@@ -219,6 +248,16 @@ export function RecordEditor({
           </label>
           <div className="form-grid">
             <Person data={data} value={item?.ownerId} />
+            <label>
+              Visibilidade
+              <select
+                name="visibility"
+                defaultValue={item?.visibility ?? "team"}
+              >
+                <option value="team">Equipa</option>
+                <option value="private">Privada · só eu</option>
+              </select>
+            </label>
             <label>
               Prazo
               <input
@@ -259,7 +298,7 @@ export function RecordEditor({
   }
   if (type === "meeting") {
     const item = data.meetings.find((m) => m.id === id);
-    if (item && (!canEditMeeting(data.me, item) || item.allDay || item.recurringEventId))
+    if (item && !canEditMeeting(data.me, item))
       return (
         <SideEditor title={item.title} onClose={onClose}>
           <div className="dialog-body form-stack">
@@ -268,12 +307,35 @@ export function RecordEditor({
               {localDateTime(item.endsAt).slice(11)} · Lisboa
             </p>
             <p>{item.body || "Sem notas adicionais."}</p>
-            {canEditMeeting(data.me,item) && <SaveForm action="meeting.participants" values={{id:item.id,version:item.version}} onClose={onClose} label="Save participants"><Members data={data} name="participantIds" selected={item.participantIds}/></SaveForm>}
+            {canEditMeeting(data.me, item) && (
+              <SaveForm
+                action="meeting.participants"
+                values={{ id: item.id, version: item.version }}
+                onClose={onClose}
+                label="Save participants"
+              >
+                <Members
+                  data={data}
+                  name="participantIds"
+                  selected={item.participantIds}
+                />
+              </SaveForm>
+            )}
             <p className="muted">
-              Calendário {item.calendarKey === "contacto" ? "Contacto" : "Office"}.
-              Participantes: {item.participantIds.map((id) => data.members.find((member) => member.id === id)?.name).join(", ") || "Por associar"}.
-              Externos: {item.externalParticipants?.join(", ") || "—"}
-              {item.googleEventUrl && <a href={item.googleEventUrl} target="_blank" rel="noreferrer">Open Google Calendar</a>}
+              Calendário{" "}
+              {item.calendarKey === "contacto" ? "Contacto" : "Office"}.
+              Participantes:{" "}
+              {item.participantIds
+                .map(
+                  (id) => data.members.find((member) => member.id === id)?.name,
+                )
+                .join(", ") || "Por associar"}
+              . Externos: {item.externalParticipants?.join(", ") || "—"}
+              {item.googleEventUrl && (
+                <a href={item.googleEventUrl} target="_blank" rel="noreferrer">
+                  Open Google Calendar
+                </a>
+              )}
             </p>
           </div>
         </SideEditor>
@@ -283,27 +345,271 @@ export function RecordEditor({
     const [hours, minutes] = (editor.time ?? "10:00").split(":").map(Number);
     const endMinutes = hours * 60 + minutes + (editor.duration ?? 30);
     const endTime = `${addDays(day, Math.floor(endMinutes / 1440))}T${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-    return <SideEditor title={item ? "Event" : "New event"} onClose={onClose}><SaveForm action="meeting.save" values={item ? { id, version: item.version } : {}} onClose={onClose} label={item ? "Save event" : "Create event"}>
-      <input className="composer-title" name="title" aria-label="Event title" placeholder="Event title" defaultValue={item?.title} required maxLength={160} autoFocus/>
-      <textarea className="composer-description" name="body" aria-label="Event description" placeholder="Add a description…" defaultValue={item?.body} rows={3}/>
-      <div className="composer-properties"><label>Starts<input name="startsAt" type="datetime-local" defaultValue={item ? localDateTime(item.startsAt) : startTime} required/></label><label>Ends<input name="endsAt" type="datetime-local" defaultValue={item ? localDateTime(item.endsAt) : endTime} required/></label><label>Calendar<select name="calendarKey" defaultValue={item?.calendarKey ?? ((editor.organizationId || item?.organizationId) && !(editor.projectId || item?.projectId) ? "contacto" : "office")}><option value="office">Office</option><option value="contacto">Contacto</option></select></label><label>Type<select name="kind" defaultValue={item?.kind ?? "meeting"}><option value="meeting">Meeting</option><option value="event">Event</option></select></label></div>
-      <Members data={data} name="participantIds" selected={item?.participantIds ?? [data.me.id]}/><p className="composer-hint">Os participantes internos recebem os lembretes por Telegram.</p><label>External participants<input name="externalParticipants" defaultValue={item?.externalParticipants?.join(", ")} placeholder="nome@empresa.pt, …"/></label>{item?.googleEventUrl && <a className="text-button" href={item.googleEventUrl} target="_blank" rel="noreferrer">Open Google Calendar</a>}{item && <p className="composer-hint">Google sync · {item.syncStatus ?? "local"}</p>}{item?.syncStatus === "conflict" && <div className="composer-properties"><span>Revê o evento no Google e escolhe a versão a manter.</span>{(["google","os"] as const).map((keep) => <button type="button" key={keep} onClick={async () => {try {const response=await fetch("/api/integrations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"calendar.resolve",id:item.id,version:item.version,keep})});const result=await response.json();if(!response.ok)throw new Error(result.error);await workspace.refresh();onClose();}catch(error){workspace.notify(error instanceof Error?error.message:"Falha ao resolver.");}}}>Manter versão {keep === "google" ? "Google" : "OS"}</button>)}</div>}
-      <div className="composer-properties"><Relations data={data} projectId={item?.projectId ?? editor.projectId} organizationId={item?.organizationId ?? editor.organizationId}/></div>
-      {item && <button type="button" className="text-button danger" onClick={() => void workspace.command("meeting.cancel", { id, version: item.version }).then(onClose).catch((error) => workspace.notify(error.message))}>{item.cancelled ? "Restore event" : "Cancel event"}</button>}
-    </SaveForm></SideEditor>;
+    const selectedCalendars = item
+      ? data.meetings
+          .filter(
+            (event) =>
+              !event.cancelled &&
+              (event.id === item.id ||
+                (item.groupId && event.groupId === item.groupId)),
+          )
+          .map(calendarTarget)
+      : [
+          editor.organizationId
+            ? "contacto"
+            : data.me.role === "admin"
+              ? "office"
+              : `personal:${data.me.id}`,
+        ];
+    return (
+      <SideEditor title={item ? "Evento" : "Novo evento"} onClose={onClose}>
+        <SaveForm
+          action="meeting.save"
+          values={item ? { id, version: item.version } : {}}
+          onClose={onClose}
+          label={item ? "Guardar evento" : "Criar evento"}
+        >
+          <input
+            className="composer-title"
+            name="title"
+            aria-label="Event title"
+            placeholder="Título do evento"
+            defaultValue={item?.title}
+            required
+            maxLength={160}
+            autoFocus
+          />
+          <textarea
+            className="composer-description"
+            name="body"
+            aria-label="Event description"
+            placeholder="Descrição…"
+            defaultValue={item?.body}
+            rows={3}
+          />
+          <div className="event-date-fields">
+            <label>
+              Começa
+              <input
+                name="startsAt"
+                type="datetime-local"
+                defaultValue={item ? localDateTime(item.startsAt) : startTime}
+                required
+              />
+            </label>
+            <label>
+              Termina
+              <input
+                name="endsAt"
+                type="datetime-local"
+                defaultValue={item ? localDateTime(item.endsAt) : endTime}
+                required
+              />
+            </label>
+          </div>
+          <input type="hidden" name="kind" value="event" />
+          <input type="hidden" name="allDayPresent" value="1" />
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              name="allDay"
+              defaultChecked={item?.allDay}
+            />
+            Todo o dia
+          </label>
+          <fieldset>
+            <legend>Calendários</legend>
+            <input type="hidden" name="calendarTargetsPresent" value="1" />
+            <div className="calendar-selection">
+              {calendarOptions(data.me, data.members).map((option) => (
+                <label key={option.id}>
+                  <input
+                    type="checkbox"
+                    name="calendarTargets"
+                    value={option.id}
+                    defaultChecked={selectedCalendars.includes(option.id)}
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <Members
+            data={data}
+            name="participantIds"
+            selected={item?.participantIds ?? [data.me.id]}
+          />
+          <label>
+            External participants
+            <input
+              name="externalParticipants"
+              defaultValue={item?.externalParticipants?.join(", ")}
+              placeholder="nome@empresa.pt, …"
+            />
+          </label>
+          {item?.googleEventUrl && (
+            <a
+              className="text-button"
+              href={item.googleEventUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open Google Calendar
+            </a>
+          )}
+          {item && (
+            <p className="composer-hint">
+              Google sync · {item.syncStatus ?? "local"}
+            </p>
+          )}
+          {item?.syncStatus === "conflict" && (
+            <div className="composer-properties">
+              <span>Revê o evento no Google e escolhe a versão a manter.</span>
+              {(["google", "os"] as const).map((keep) => (
+                <button
+                  type="button"
+                  key={keep}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("/api/integrations", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          action: "calendar.resolve",
+                          id: item.id,
+                          version: item.version,
+                          keep,
+                        }),
+                      });
+                      const result = await response.json();
+                      if (!response.ok) throw new Error(result.error);
+                      await workspace.refresh();
+                      onClose();
+                    } catch (error) {
+                      workspace.notify(
+                        error instanceof Error
+                          ? error.message
+                          : "Falha ao resolver.",
+                      );
+                    }
+                  }}
+                >
+                  Manter versão {keep === "google" ? "Google" : "OS"}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="composer-properties">
+            <Relations
+              data={data}
+              projectId={item?.projectId ?? editor.projectId}
+              organizationId={item?.organizationId ?? editor.organizationId}
+            />
+          </div>
+          {item && (
+            <button
+              type="button"
+              className="text-button danger"
+              onClick={() =>
+                void workspace
+                  .command("meeting.cancel", { id, version: item.version })
+                  .then(onClose)
+                  .catch((error) => workspace.notify(error.message))
+              }
+            >
+              {item.cancelled ? "Restaurar evento" : "Eliminar evento"}
+            </button>
+          )}
+        </SaveForm>
+      </SideEditor>
+    );
   }
   if (type === "organization")
     return <OrganizationEditor data={data} id={id} onClose={onClose} />;
   if (type === "project") {
     const item = data.projects.find((project) => project.id === id);
-    return <Dialog title={item ? "Edit project" : "New project"} onClose={onClose} wide><SaveForm action="project.save" values={item ? { id, version: item.version } : {}} onClose={onClose} label={item ? "Save project" : "Create project"}>
-      <input className="composer-title" name="name" aria-label="Project name" placeholder="Project name" defaultValue={item?.name} required maxLength={160} autoFocus/>
-      <textarea className="composer-description" name="objective" aria-label="Project summary" placeholder="Add a short summary…" defaultValue={item?.objective} rows={3}/>
-      <div className="composer-properties"><label>Status<select name="status" defaultValue={item?.status ?? "active"}>{Object.entries(projectStatuses).map(([key,label]) => <option key={key} value={key}>{label}</option>)}</select></label><Person data={data} value={item?.ownerId} label="Lead"/><label>Target<input type="date" name="dueOn" defaultValue={item?.dueOn ?? ""}/></label><Relations data={data} organizationId={item?.organizationId} project={false}/></div>
-      <Members data={data} name="memberIds" selected={item?.memberIds ?? [data.me.id]}/>
-      <input className="composer-line" name="nextStep" aria-label="Next action" placeholder="Next action…" defaultValue={item?.nextStep} maxLength={500}/>
-      <details className="composer-extra"><summary>Repository</summary><input name="repositoryUrl" type="url" aria-label="GitHub repository" placeholder="https://github.com/team/project" defaultValue={item?.repositoryUrl}/></details>
-    </SaveForm></Dialog>;
+    return (
+      <Dialog
+        title={item ? "Edit project" : "New project"}
+        onClose={onClose}
+        wide
+      >
+        <SaveForm
+          action="project.save"
+          values={item ? { id, version: item.version } : {}}
+          onClose={onClose}
+          label={item ? "Save project" : "Create project"}
+        >
+          <input
+            className="composer-title"
+            name="name"
+            aria-label="Project name"
+            placeholder="Project name"
+            defaultValue={item?.name}
+            required
+            maxLength={160}
+            autoFocus
+          />
+          <textarea
+            className="composer-description"
+            name="objective"
+            aria-label="Project summary"
+            placeholder="Add a short summary…"
+            defaultValue={item?.objective}
+            rows={3}
+          />
+          <div className="composer-properties">
+            <label>
+              Status
+              <select name="status" defaultValue={item?.status ?? "active"}>
+                {Object.entries(projectStatuses).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Person data={data} value={item?.ownerId} label="Lead" />
+            <label>
+              Target
+              <input
+                type="date"
+                name="dueOn"
+                defaultValue={item?.dueOn ?? ""}
+              />
+            </label>
+            <Relations
+              data={data}
+              organizationId={item?.organizationId}
+              project={false}
+            />
+          </div>
+          <Members
+            data={data}
+            name="memberIds"
+            selected={item?.memberIds ?? [data.me.id]}
+          />
+          <input
+            className="composer-line"
+            name="nextStep"
+            aria-label="Next action"
+            placeholder="Next action…"
+            defaultValue={item?.nextStep}
+            maxLength={500}
+          />
+          <details className="composer-extra">
+            <summary>Repository</summary>
+            <input
+              name="repositoryUrl"
+              type="url"
+              aria-label="GitHub repository"
+              placeholder="https://github.com/team/project"
+              defaultValue={item?.repositoryUrl}
+            />
+          </details>
+        </SaveForm>
+      </Dialog>
+    );
   }
   const pr = data.pullRequests.find((p) => p.id === id);
   return (
@@ -324,7 +630,9 @@ export function RecordEditor({
         <label>
           Título
           <input
-            name="title" className="composer-title" placeholder="Title"
+            name="title"
+            className="composer-title"
+            placeholder="Title"
             defaultValue={pr?.title}
             required
             maxLength={160}
@@ -375,18 +683,138 @@ function OrganizationEditor({
   const interactions = data.interactions
     .filter((i) => i.organizationId === id)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  if (!item) return <Dialog title="New company" onClose={onClose}><SaveForm action="organization.save" onClose={onClose} label="Create company"><input className="composer-title" name="name" aria-label="Company name" placeholder="Company name" maxLength={160} required autoFocus/><p className="muted">Add notes and meetings to its timeline after creating it.</p><div className="form-grid"><label>Status<select name="stage" defaultValue="new">{Object.entries(stages).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label><Person data={data}/></div></SaveForm></Dialog>;
+  if (!item)
+    return (
+      <Dialog title="New company" onClose={onClose}>
+        <SaveForm
+          action="organization.save"
+          onClose={onClose}
+          label="Create company"
+        >
+          <input
+            className="composer-title"
+            name="name"
+            aria-label="Company name"
+            placeholder="Company name"
+            maxLength={160}
+            required
+            autoFocus
+          />
+          <p className="muted">
+            Add notes and meetings to its timeline after creating it.
+          </p>
+          <div className="form-grid">
+            <label>
+              Status
+              <select name="stage" defaultValue="new">
+                {Object.entries(stages).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Person data={data} />
+          </div>
+        </SaveForm>
+      </Dialog>
+    );
   return (
     <Dialog title={item?.name ?? "Novo contacto"} onClose={onClose} wide>
-      {item && <div className="organization-summary">
-        <div><span className="row-meta">Pessoas</span><strong>{data.contacts.filter((person) => person.organizationId === id).map((person) => person.name).join(", ") || item.person || "—"}</strong><button className="text-button" onClick={() => setAddingContact(!addingContact)}>{addingContact ? "Cancelar" : "+ Pessoa"}</button></div>
-        {addingContact && <form className="inline-contact-form" onSubmit={(event) => {event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form).entries()); void command("contact.add", {...values, organizationId:id}).then(() => setAddingContact(false)).catch((error) => notify(error.message));}}><input name="name" aria-label="Nome da pessoa" placeholder="Nome" required/><input name="email" type="email" aria-label="Email da pessoa" placeholder="Email"/><input name="phone" aria-label="Telefone da pessoa" placeholder="Telefone"/><button className="button-secondary">Adicionar</button></form>}
-        <div><span className="row-meta">Última interação</span><strong>{interactions[0] ? shortDate(interactions[0].createdAt) : "—"}</strong></div>
-        <div><span className="row-meta">Próximo passo</span><strong>{item.nextStep || "—"}</strong><span className="row-meta">{item.followUpOn || ""}</span></div>
-        <div><span className="row-meta">Projetos</span><strong>{data.projects.filter((project) => project.organizationId === id).map((project) => project.name).join(", ") || "—"}</strong></div>
-        <div><span className="row-meta">Reuniões</span><strong>{data.meetings.filter((meeting) => meeting.organizationId === id && !meeting.cancelled).length}</strong></div>
-        <div><span className="row-meta">Notas</span><strong>{data.notes.filter((note) => note.organizationId === id && !note.archived).length}</strong></div>
-      </div>}
+      {item && (
+        <div className="organization-summary">
+          <div>
+            <span className="row-meta">Pessoas</span>
+            <strong>
+              {data.contacts
+                .filter((person) => person.organizationId === id)
+                .map((person) => person.name)
+                .join(", ") ||
+                item.person ||
+                "—"}
+            </strong>
+            <button
+              className="text-button"
+              onClick={() => setAddingContact(!addingContact)}
+            >
+              {addingContact ? "Cancelar" : "+ Pessoa"}
+            </button>
+          </div>
+          {addingContact && (
+            <form
+              className="inline-contact-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const form = event.currentTarget;
+                const values = Object.fromEntries(new FormData(form).entries());
+                void command("contact.add", { ...values, organizationId: id })
+                  .then(() => setAddingContact(false))
+                  .catch((error) => notify(error.message));
+              }}
+            >
+              <input
+                name="name"
+                aria-label="Nome da pessoa"
+                placeholder="Nome"
+                required
+              />
+              <input
+                name="email"
+                type="email"
+                aria-label="Email da pessoa"
+                placeholder="Email"
+              />
+              <input
+                name="phone"
+                aria-label="Telefone da pessoa"
+                placeholder="Telefone"
+              />
+              <button className="button-secondary">Adicionar</button>
+            </form>
+          )}
+          <div>
+            <span className="row-meta">Última interação</span>
+            <strong>
+              {interactions[0] ? shortDate(interactions[0].createdAt) : "—"}
+            </strong>
+          </div>
+          <div>
+            <span className="row-meta">Próximo passo</span>
+            <strong>{item.nextStep || "—"}</strong>
+            <span className="row-meta">{item.followUpOn || ""}</span>
+          </div>
+          <div>
+            <span className="row-meta">Projetos</span>
+            <strong>
+              {data.projects
+                .filter((project) => project.organizationId === id)
+                .map((project) => project.name)
+                .join(", ") || "—"}
+            </strong>
+          </div>
+          <div>
+            <span className="row-meta">Reuniões</span>
+            <strong>
+              {
+                data.meetings.filter(
+                  (meeting) =>
+                    meeting.organizationId === id && !meeting.cancelled,
+                ).length
+              }
+            </strong>
+          </div>
+          <div>
+            <span className="row-meta">Notas</span>
+            <strong>
+              {
+                data.notes.filter(
+                  (note) => note.organizationId === id && !note.archived,
+                ).length
+              }
+            </strong>
+          </div>
+        </div>
+      )}
       {item && (
         <div className="editor-tabs">
           <button

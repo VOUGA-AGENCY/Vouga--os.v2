@@ -171,7 +171,7 @@ describe("operational calendars and queue", () => {
       data.activity.filter((event) => event.source === "google"),
     ).toHaveLength(1);
     expect(data.externalConnections[0].syncToken).toBe("next");
-    expect(data.inbox).toHaveLength(1);
+    expect(data.inbox).toHaveLength(0);
   });
   it("resets expired Google sync tokens after 410 without dropping local data", async () => {
     googleConnection();
@@ -314,6 +314,20 @@ describe("Telegram timing, pairing and delivery", () => {
     data.meetings[0].cancelled = true;
     expect(meetingReminders(data, "2026-09-26T08:00:00.000Z")).toEqual([]);
   });
+  it("reminds across midnight while keeping the daily summary scoped to today", () => {
+    data.members[0].telegramChatId = "1";
+    data.meetings = data.meetings.slice(0, 1);
+    const event = data.meetings[0];
+    event.participantIds = ["miguel"];
+    event.startsAt = "2026-09-26T23:30:00.000Z"; // 00:30 next day in Lisbon
+    const jobs = meetingReminders(data, "2026-09-26T22:30:00.000Z");
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0].key).toMatch(/^hour:miguel:/);
+    expect(jobs[0].text).toContain("00:30");
+    expect(meetingReminders(data, "2026-09-26T07:00:00.000Z")).toEqual([]);
+    event.allDay = true;
+    expect(meetingReminders(data, "2026-09-26T22:30:00.000Z")).toEqual([]);
+  });
   it("never resends an ambiguous network delivery automatically", async () => {
     vi.mocked(ctx.fetch).mockRejectedValue(new Error("network"));
     await expect(sendOnce(ctx, "hour:one", "1", "Reminder")).rejects.toThrow();
@@ -451,4 +465,77 @@ describe("webhook ingress verification", () => {
   });
 });
 
-it("does not restore a cancelled event when the Agent receives cancel twice",async()=>{data.meetings[0].cancelled=true;await expect(executeAgentTool(ctx,data.members[0],"cancelCalendarEvent",{id:data.meetings[0].id})).rejects.toThrow("já está cancelado");expect(data.meetings[0].cancelled).toBe(true);});
+it("does not restore a cancelled event when the Agent receives cancel twice", async () => {
+  data.meetings[0].cancelled = true;
+  await expect(
+    executeAgentTool(ctx, data.members[0], "cancelCalendarEvent", {
+      id: data.meetings[0].id,
+    }),
+  ).rejects.toThrow("já está cancelado");
+  expect(data.meetings[0].cancelled).toBe(true);
+});
+
+describe("linked calendar updates", () => {
+  it("keeps OS-only personal copies coherent when Google changes an event", async () => {
+    googleConnection();
+    executeCommand(
+      data,
+      data.members[0],
+      {
+        action: "meeting.save",
+        values: {
+          title: "Before",
+          startsAt: "2026-09-27T10:00",
+          endsAt: "2026-09-27T10:30",
+          calendarTargets: ["office", "personal:miguel"],
+        },
+      },
+      now,
+    );
+    const original = data.meetings.at(-2)!;
+    original.googleCalendarId = "office@vouga-agency.pt";
+    original.googleEventId = "external";
+    original.syncStatus = "synced";
+    original.googleEtag = "old";
+    data.integrationJobs = [];
+    ctx.fetch = vi.fn(async (input) =>
+      String(input).includes("oauth2")
+        ? response({ access_token: "test", expires_in: 3600 })
+        : response({
+            items: [
+              {
+                id: "external",
+                etag: "new",
+                summary: "After",
+                start: { dateTime: "2026-09-27T11:00:00Z" },
+                end: { dateTime: "2026-09-27T11:30:00Z" },
+              },
+            ],
+            nextSyncToken: "next",
+          }),
+    ) as typeof fetch;
+    await pullCalendar(ctx, "office");
+    expect(data.meetings.at(-1)?.title).toBe("After");
+    expect(data.meetings.at(-1)?.syncStatus).toBe("local");
+    expect(data.inbox).toHaveLength(0);
+    expect(data.integrationJobs).toHaveLength(0);
+  });
+  it("never calls Google for a personal calendar", async () => {
+    executeCommand(
+      data,
+      data.members[0],
+      {
+        action: "meeting.save",
+        values: {
+          title: "Personal",
+          startsAt: "2026-09-27T10:00",
+          endsAt: "2026-09-27T10:30",
+          calendarTargets: ["personal:miguel"],
+        },
+      },
+      now,
+    );
+    await pushCalendarEvent(ctx, data.meetings.at(-1)!.id);
+    expect(ctx.fetch).not.toHaveBeenCalled();
+  });
+});

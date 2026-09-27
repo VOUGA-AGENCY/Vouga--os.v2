@@ -35,6 +35,26 @@ export function localDateTime(value: string) {
 // Wall-clock input is always Lisbon time, independent of the browser/server timezone.
 // Reject nonexistent DST times rather than silently moving a user's meeting.
 export function toInstant(value: string): string | null {
+  // Agent tools and stored events may supply an explicit UTC/offset instant.
+  const absolute =
+    /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/.exec(
+      value,
+    );
+  if (absolute) {
+    if (
+      !isDateKey(absolute[1]) ||
+      +absolute[2] > 23 ||
+      +absolute[3] > 59 ||
+      +(absolute[4] ?? 0) > 59
+    )
+      return null;
+    const timestamp = Date.parse(value);
+    return Number.isFinite(timestamp)
+      ? new Date(timestamp).toISOString()
+      : null;
+  }
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00$/.test(value))
+    value = value.slice(0, 16);
   const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/.exec(value);
   if (!match || !isDateKey(match[1]) || +match[2] > 23 || +match[3] > 59)
     return null;

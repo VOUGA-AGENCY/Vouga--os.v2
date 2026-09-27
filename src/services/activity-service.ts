@@ -8,6 +8,13 @@ import {
   canSeeTask,
 } from "@/domain/permissions";
 export function canSeeActivity(data: Store, me: Member, event: ActivityEvent) {
+  if (
+    event.metadata?.meetingId &&
+    !data.meetings.some(
+      (m) => m.id === event.metadata.meetingId && canSeeMeeting(me, m),
+    )
+  )
+    return false;
   if (event.entityType === "task")
     return data.tasks.some(
       (task) => task.id === event.entityId && canSeeTask(me, task, data),
@@ -128,11 +135,10 @@ export function captureChanges(
       summary: `${meeting.title} · ${meeting.cancelled ? "cancelled" : old ? "updated" : "scheduled"}`,
       metadata: { startsAt: meeting.startsAt, calendar: meeting.calendarKey },
     });
-    if (
-      (meeting.allDay || meeting.recurringEventId) &&
-      old?.cancelled === meeting.cancelled
-    )
+    if (meeting.calendarKey === "personal") {
+      meeting.syncStatus = "local";
       continue;
+    }
     meeting.syncStatus = "pending";
     enqueue(
       data,

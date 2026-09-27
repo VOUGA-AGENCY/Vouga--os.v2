@@ -65,6 +65,10 @@ Texto web e Telegram passam por runAgent. Áudio web/Telegram passa pelo mesmo t
 
 ### Telegram
 
+Novos registos criados no OS (web, Capture ou tools do Agent) enfileiram `telegram.created` na mesma transação do registo: task → responsável; evento → participantes internos com acesso; projeto → responsável e membros; nota → autor e destinatários explícitos; organização/lembrete → responsável. Inclui criações para o próprio utilizador. Mensagens são templates fixos, sem LLM nem tokens. Só se enfileiram para contas com Telegram já ligado; não há envio retroativo de importações ou de dados existentes. Edições não repetem o aviso de criação. Os eventos de dia inteiro recebem este aviso de criação, mas não os lembretes temporizados abaixo.
+
+O worker/cron existente entrega os avisos, normalmente no próximo ciclo, sem bloquear o pedido de gravação. Revalida acesso, participação e conta ativa no envio. Chave única por entidade/grupo e destinatário; `sendOnce` evita duplicados mesmo com repetição do job. Falhas ambíguas ficam em `notificationDeliveries` como `uncertain`, sem reenvio automático. Isto exige a versão atual também no backend público que executa o cron; não requer nova migração SQL.
+
 Criar bot no BotFather, configurar token e webhook secret no servidor. Connect webhook em Settings requer HTTPS público. Cada pessoa autenticada gera um deep link de uso único com expiração de 10 minutos. /start sem token válido não associa contas. Apenas chats privados de IDs previamente ligados podem chamar o Agent; grupos e utilizadores desconhecidos são ignorados.
 
 08:00 Europe/Lisbon: um resumo por utilizador com as suas reuniões. Janela de recuperação até 08:15. Uma hora antes: um lembrete por evento/participante, janela entre 55 e 60 minutos antes. Cancelamentos são excluídos; mudança de hora muda a chave do lembrete. O scheduler usa timezone IANA, incluindo horário de verão.

@@ -1,10 +1,19 @@
-import type { ActivityEvent, ExternalConnection, IntegrationJob, PendingAction, NotificationDelivery, CalendarKey, RepositoryLink } from "./integration-model";
+import type {
+  ActivityEvent,
+  ExternalConnection,
+  IntegrationJob,
+  PendingAction,
+  NotificationDelivery,
+  CalendarKey,
+  RepositoryLink,
+} from "./integration-model";
 export type Role = "admin" | "engineer";
 export interface Member {
   id: string;
   name: string;
   email: string;
   role: Role;
+  archived?: boolean;
   telegramChatId?: string;
   telegramUserId?: string;
 }
@@ -17,11 +26,11 @@ export interface Entity {
 }
 export const taskStatuses = {
   backlog: "Backlog",
-  todo: "Por fazer",
-  doing: "Em curso",
-  review: "Em revisão",
-  blocked: "Bloqueada",
-  done: "Concluída",
+  todo: "To do",
+  doing: "In progress",
+  review: "Review",
+  blocked: "Blocked",
+  done: "Done",
 } as const;
 export const projectStatuses = {
   planned: "Por iniciar",
@@ -34,8 +43,6 @@ export const stages = {
   new: "New",
   contacted: "Contacted",
   meeting: "Meeting",
-  talking: "Talking",
-  opportunity: "Opportunity",
   proposal: "Proposal",
   client: "Client",
   dormant: "Dormant",
@@ -52,6 +59,7 @@ export interface Task extends Entity {
   dueOn: string | null;
   projectId: string | null;
   organizationId: string | null;
+  visibility?: "private" | "team";
   priority?: TaskPriority;
   pullRequestId?: string | null;
 }
@@ -82,7 +90,8 @@ export interface Meeting extends Entity {
   projectId: string | null;
   cancelled: boolean;
   reminderMinutes: number;
-  calendarKey?: CalendarKey;
+  calendarKey?: CalendarKey | "personal";
+  groupId?: string;
   externalParticipants?: string[];
   googleCalendarId?: string;
   googleEventId?: string;
@@ -200,12 +209,34 @@ export interface Store extends WorkspaceData {
   integrationJobs: IntegrationJob[];
   pendingActions: PendingAction[];
   notificationDeliveries: NotificationDelivery[];
-  oauthStates: { hash: string; memberId: string; calendarKey: CalendarKey; expiresAt: string; verifier: string; status?: "processing" | "completed" | "failed" }[];
+  oauthStates: {
+    hash: string;
+    memberId: string;
+    calendarKey: CalendarKey;
+    expiresAt: string;
+    verifier: string;
+    status?: "processing" | "completed" | "failed";
+  }[];
   telegramLinks: { hash: string; memberId: string; expiresAt: string }[];
-  agentReceipts: { key: string; memberId: string; state: "running" | "done"; response?: string; pendingIds?: string[]; createdAt: string }[];
+  agentReceipts: {
+    key: string;
+    memberId: string;
+    state: "running" | "done";
+    response?: string;
+    pendingIds?: string[];
+    createdAt: string;
+  }[];
 
   revision: number;
-  accounts: { memberId: string; passwordHash: string; mustChangePassword?: boolean; temporaryExpiresAt?: string; disabled?: boolean; failedAttempts?: number; lockedUntil?: string }[];
+  accounts: {
+    memberId: string;
+    passwordHash: string;
+    mustChangePassword?: boolean;
+    temporaryExpiresAt?: string;
+    disabled?: boolean;
+    failedAttempts?: number;
+    lockedUntil?: string;
+  }[];
   sessions: { hash: string; memberId: string; expiresAt: string }[];
   captureReceipts: { memberId: string; key: string; ids: string[] }[];
 }

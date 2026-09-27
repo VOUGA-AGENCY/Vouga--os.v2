@@ -66,7 +66,7 @@ export function TaskRow({
           {project?.name ?? "Sem projeto"}
           {!compact && ` · ${member?.name}`}
           {task.status === "blocked" && (
-            <span className="danger"> · Bloqueada</span>
+            <span className="danger"> · Blocked</span>
           )}
           {task.status === "doing" && " · Em curso"}
         </span>

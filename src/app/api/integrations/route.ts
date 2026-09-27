@@ -1,7 +1,11 @@
 import { resolveGoogleConflict } from "@/services/calendar-service";
 import { requireMember } from "@/application/auth";
 import { runtime, api, required } from "@/services/runtime";
-import { listRepositories, linkRepository } from "@/services/github-service";
+import {
+  listRepositories,
+  linkRepository,
+  syncProjectGithub,
+} from "@/services/github-service";
 import { connectBot, telegramLink } from "@/services/telegram-service";
 import { enqueue } from "@/services/activity-service";
 import { errorResponse, jsonBody } from "@/foundation/http";
@@ -49,7 +53,13 @@ export async function GET(request: Request) {
           ctx.env.GROQ_TRANSCRIPTION_MODEL || "whisper-large-v3-turbo",
       },
       members: data.members
-        .filter((member) => me.role === "admin" || member.id === me.id)
+        .filter(
+          (member) =>
+            !member.archived &&
+            member.name !== "Engineer" &&
+            (me.role === "admin" || member.id === me.id),
+        )
+        .sort((a, b) => a.name.localeCompare(b.name, "pt"))
         .map((member) => ({
           id: member.id,
           name: member.name,
@@ -105,7 +115,9 @@ export async function POST(request: Request) {
         "Só administradores podem configurar integrações.",
         403,
       );
-    if (body.action === "github.link")
+    if (body.action === "github.sync")
+      await syncProjectGithub(ctx, me, text(body.projectId, "Projeto", 100));
+    else if (body.action === "github.link")
       await linkRepository(
         ctx,
         me,

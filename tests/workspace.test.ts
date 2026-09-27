@@ -60,12 +60,13 @@ describe("role boundaries and projections", () => {
       run("task.save", { title: "x", projectId: "discovery" }, engineer),
     ).toThrow("Não tens acesso");
   });
-  it("allows an engineer to book an administrator's internal calendar", () => {
+  it("allows an engineer to book Contacto for an administrator", () => {
     run(
       "meeting.save",
       {
         title: "Reunião delegada",
         calendarOwnerId: "afonso",
+        calendarKey: "contacto",
         participantIds: ["afonso"],
         startsAt: "2026-09-25T14:00",
         endsAt: "2026-09-25T14:30",
@@ -73,7 +74,7 @@ describe("role boundaries and projections", () => {
       engineer,
     );
     const meeting = data.meetings.at(-1)!;
-    expect(meeting.createdBy).toBe("engineer");
+    expect(meeting.createdBy).toBe("vasco");
     expect(meeting.calendarOwnerId).toBe("afonso");
     expect(workspaceFor(data, data.members[1], now).meetings).toContainEqual(
       meeting,
@@ -81,9 +82,20 @@ describe("role boundaries and projections", () => {
     expect(workspaceFor(data, engineer, now).meetings).toContainEqual(meeting);
   });
   it("only shows other people's calendar events to engineers when explicitly shared", () => {
-    run("meeting.save", { title: "Planeamento privado", visibility: "private", startsAt: "2026-09-25T10:00", endsAt: "2026-09-25T10:30" });
+    run("meeting.save", {
+      title: "Planeamento privado",
+      visibility: "private",
+      startsAt: "2026-09-25T10:00",
+      endsAt: "2026-09-25T10:30",
+    });
     const privateMeeting = data.meetings.at(-1)!;
-    run("meeting.save", { title: "Planeamento de equipa", startsAt: "2026-09-25T11:00", endsAt: "2026-09-25T11:30", visibility: "team" });
+    run("meeting.save", {
+      title: "Planeamento de equipa",
+      calendarKey: "contacto",
+      startsAt: "2026-09-25T11:00",
+      endsAt: "2026-09-25T11:30",
+      visibility: "team",
+    });
     const sharedMeeting = data.meetings.at(-1)!;
     const view = workspaceFor(data, engineer, now);
     expect(view.meetings).not.toContainEqual(privateMeeting);
@@ -125,31 +137,76 @@ describe("ordinary work", () => {
   it("creates a task with only its title and completes it without extra evidence", () => {
     run("task.save", { title: "Enviar proposta" }, engineer);
     const task = data.tasks.at(-1)!;
-    expect(task.ownerId).toBe("engineer");
+    expect(task.ownerId).toBe("vasco");
     expect(task.dueOn).toBeNull();
     run("task.status", { id: task.id, version: 1, status: "done" }, engineer);
     expect(task.status).toBe("done");
   });
   it("keeps task comments and status changes in one visible timeline", () => {
-    run("task.comment", { taskId: "flow", body: "API pronta para revisão" }, engineer);
+    run(
+      "task.comment",
+      { taskId: "flow", body: "API pronta para revisão" },
+      engineer,
+    );
     run("task.status", { id: "flow", version: 2, status: "review" }, engineer);
     const view = workspaceFor(data, engineer, now);
-    expect(view.taskComments.some((item) => item.taskId === "flow" && item.body === "API pronta para revisão")).toBe(true);
-    expect(view.taskActivity.some((item) => item.taskId === "flow" && item.body.includes("Em revisão"))).toBe(true);
-    expect(workspaceFor(data, admin, now).taskComments.some((item) => item.taskId === "flow")).toBe(true);
+    expect(
+      view.taskComments.some(
+        (item) =>
+          item.taskId === "flow" && item.body === "API pronta para revisão",
+      ),
+    ).toBe(true);
+    expect(
+      view.taskActivity.some(
+        (item) => item.taskId === "flow" && item.body.includes("Review"),
+      ),
+    ).toBe(true);
+    expect(
+      workspaceFor(data, admin, now).taskComments.some(
+        (item) => item.taskId === "flow",
+      ),
+    ).toBe(true);
   });
   it("requires a status note and records the CRM transition", () => {
-    const organization = data.organizations.find((item) => item.id === "norte")!;
-    expect(() => run("organization.stage", { id: organization.id, version: organization.version, stage: "meeting" })).toThrow("Nota de estado");
-    run("organization.stage", { id: organization.id, version: organization.version, stage: "meeting", note: "Reunião com a direção" });
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    expect(() =>
+      run("organization.stage", {
+        id: organization.id,
+        version: organization.version,
+        stage: "meeting",
+      }),
+    ).toThrow("Nota de estado");
+    run("organization.stage", {
+      id: organization.id,
+      version: organization.version,
+      stage: "meeting",
+      note: "Reunião com a direção",
+    });
     expect(organization.stage).toBe("meeting");
-    expect(data.interactions.at(-1)).toMatchObject({ organizationId: "norte", stageTo: "meeting", body: "Reunião com a direção" });
+    expect(data.interactions.at(-1)).toMatchObject({
+      organizationId: "norte",
+      stageTo: "meeting",
+      body: "Reunião com a direção",
+    });
   });
   it("links a company event to its calendar and timeline", () => {
-    run("meeting.save", { title: "Reunião Santosom", organizationId: "norte", startsAt: "2026-09-25T10:00", endsAt: "2026-09-25T10:30", participantIds: ["afonso"] });
+    run("meeting.save", {
+      title: "Reunião Santosom",
+      organizationId: "norte",
+      startsAt: "2026-09-25T10:00",
+      endsAt: "2026-09-25T10:30",
+      participantIds: ["afonso"],
+    });
     const meeting = data.meetings.at(-1)!;
-    expect(data.interactions.at(-1)).toMatchObject({ organizationId: "norte", meetingId: meeting.id });
-    expect(workspaceFor(data, data.members[1], now).meetings).toContainEqual(meeting);
+    expect(data.interactions.at(-1)).toMatchObject({
+      organizationId: "norte",
+      meetingId: meeting.id,
+    });
+    expect(workspaceFor(data, data.members[1], now).meetings).toContainEqual(
+      meeting,
+    );
   });
   it("rejects stale edits without replacing newer content", () => {
     run("task.status", { id: "proposal", version: 1, status: "doing" });
@@ -167,7 +224,7 @@ describe("ordinary work", () => {
         body: "Cliente pediu nova data",
         nextStep: "Ligar ao Pedro",
         followUpOn: "2026-10-01",
-        stage: "talking",
+        stage: "contacted",
       },
       engineer,
     );
@@ -254,30 +311,73 @@ describe("text capture", () => {
   it("proposes a company, person and follow-up from one commercial note", () => {
     const [draft] = parseCapture(
       "Conheci o João da MetalX. Têm problemas de stock. Quer falar connosco em outubro. Lembra-me dia 2 de outubro.",
-      data, admin, now,
+      data,
+      admin,
+      now,
     );
-    expect(draft).toMatchObject({ kind: "contact", title: "MetalX", person: "João", date: "2026-10-02", nextStep: "Retomar contacto" });
+    expect(draft).toMatchObject({
+      kind: "contact",
+      title: "MetalX",
+      person: "João",
+      date: "2026-10-02",
+      nextStep: "Retomar contacto",
+    });
     const result = run("capture.commit", { key: "metalx", drafts: [draft] });
-    const organization = data.organizations.find((item) => item.name === "MetalX");
+    const organization = data.organizations.find(
+      (item) => item.name === "MetalX",
+    );
     expect(result.ids).toContain(organization?.id);
     expect(organization?.followUpOn).toBe("2026-10-02");
-    expect(data.contacts.some((person) => person.organizationId === organization?.id && person.name === "João")).toBe(true);
+    expect(
+      data.contacts.some(
+        (person) =>
+          person.organizationId === organization?.id && person.name === "João",
+      ),
+    ).toBe(true);
   });
   it("proposes a linked meeting and preparation task from one sentence", () => {
-    const drafts = parseCapture("Marca uma reunião com a Santosom terça às 10 e cria uma tarefa para preparar a apresentação no dia anterior.", data, admin, now);
+    const drafts = parseCapture(
+      "Marca uma reunião com a Santosom terça às 10 e cria uma tarefa para preparar a apresentação no dia anterior.",
+      data,
+      admin,
+      now,
+    );
     expect(drafts.map((draft) => draft.kind)).toEqual(["meeting", "task"]);
     expect(drafts[0].time).toBe("10:00");
     expect(drafts[1].date).toBe("2026-09-28");
     run("capture.commit", { key: "santosom", drafts });
-    const organization = data.organizations.find((item) => item.name === "Santosom");
-    expect(data.meetings.some((meeting) => meeting.organizationId === organization?.id)).toBe(true);
-    expect(data.tasks.some((task) => task.organizationId === organization?.id && task.dueOn === "2026-09-28")).toBe(true);
+    const organization = data.organizations.find(
+      (item) => item.name === "Santosom",
+    );
+    expect(
+      data.meetings.some(
+        (meeting) => meeting.organizationId === organization?.id,
+      ),
+    ).toBe(true);
+    expect(
+      data.tasks.some(
+        (task) =>
+          task.organizationId === organization?.id &&
+          task.dueOn === "2026-09-28",
+      ),
+    ).toBe(true);
   });
   it("proposes a CRM status change with a required history note", () => {
-    const [draft] = parseCapture("Passei na Norte Metal. Muda o estado para Talking e coloca uma nota a dizer que querem voltar a falar em outubro.", data, admin, now);
-    expect(draft).toMatchObject({ kind: "crm", organizationId: "norte", stage: "talking" });
+    const [draft] = parseCapture(
+      "Passei na Norte Metal. Muda o estado para Talking e coloca uma nota a dizer que querem voltar a falar em outubro.",
+      data,
+      admin,
+      now,
+    );
+    expect(draft).toMatchObject({
+      kind: "crm",
+      organizationId: "norte",
+      stage: "contacted",
+    });
     run("capture.commit", { key: "crm-transition", drafts: [draft] });
-    expect(data.organizations.find((item) => item.id === "norte")?.stage).toBe("talking");
+    expect(data.organizations.find((item) => item.id === "norte")?.stage).toBe(
+      "contacted",
+    );
     expect(data.interactions.at(-1)?.body).toContain("querem voltar a falar");
   });
   it("commits idempotently even if a response is lost", () => {
@@ -300,7 +400,7 @@ describe("text capture", () => {
             ...emptyDraft(engineer),
             kind: "meeting",
             title: "Revisão",
-            ownerId: "miguel",
+            ownerId: "vasco",
             date: "2026-09-25",
             time: "15:00",
             duration: "45",
@@ -311,13 +411,17 @@ describe("text capture", () => {
     );
     const meeting = data.meetings.at(-1)!;
     expect(meeting.startsAt).toBe("2026-09-25T14:00:00.000Z");
-    expect(meeting.participantIds).toEqual(["miguel"]);
+    expect(meeting.participantIds).toEqual(["vasco"]);
   });
 });
 
 describe("Home without notification duplication", () => {
   it("keeps approaching meetings, deadlines and CRM follow-ups out of OS alerts", () => {
-    run("meeting.save", {title:"Reunião", startsAt:"2026-09-24T10:00", endsAt:"2026-09-24T10:30"});
+    run("meeting.save", {
+      title: "Reunião",
+      startsAt: "2026-09-24T10:00",
+      endsAt: "2026-09-24T10:30",
+    });
     expect(workspaceFor(data, admin, now).alerts).toEqual([]);
     expect(workspaceFor(data, engineer, now).alerts).toEqual([]);
   });
@@ -357,33 +461,78 @@ describe("Home notes and personal calendars", () => {
     run("note.save", { title: "Só Vasco" }, vasco);
     const personal = data.notes.at(-1)!;
     expect(workspaceFor(data, admin, now).notes).not.toContainEqual(personal);
-    run("note.save", { title: "Para Ana", visibility: "shared", recipientIds: [ana.id] }, vasco);
+    run(
+      "note.save",
+      { title: "Para Ana", visibility: "shared", recipientIds: [ana.id] },
+      vasco,
+    );
     const shared = data.notes.at(-1)!;
     expect(workspaceFor(data, vasco, now).notes).toContainEqual(shared);
     expect(workspaceFor(data, ana, now).notes).toContainEqual(shared);
     expect(workspaceFor(data, admin, now).notes).not.toContainEqual(shared);
-    expect(() => run("note.save", { ...shared, body: "Changed" }, ana)).toThrow("Não tens acesso");
+    expect(() => run("note.save", { ...shared, body: "Changed" }, ana)).toThrow(
+      "Não tens acesso",
+    );
     run("note.save", { ...shared, visibility: "private" }, vasco);
-    expect(workspaceFor(data, ana, now).notes.some((note) => note.id === shared.id)).toBe(false);
+    expect(
+      workspaceFor(data, ana, now).notes.some((note) => note.id === shared.id),
+    ).toBe(false);
   });
   it("requires a real recipient for shared notes", () => {
-    expect(() => run("note.save", { title: "Missing recipient", visibility: "shared", recipientIds: [] })).toThrow("Escolhe pelo menos");
-    expect(() => run("note.save", { title: "Invalid recipient", visibility: "shared", recipientIds: ["unknown"] })).toThrow();
+    expect(() =>
+      run("note.save", {
+        title: "Missing recipient",
+        visibility: "shared",
+        recipientIds: [],
+      }),
+    ).toThrow("Escolhe pelo menos");
+    expect(() =>
+      run("note.save", {
+        title: "Invalid recipient",
+        visibility: "shared",
+        recipientIds: ["unknown"],
+      }),
+    ).toThrow();
   });
   it("allows scheduling for selected participants without giving the organizer an alert", () => {
     const vasco = data.members.find((member) => member.id === "vasco")!;
     const ana = data.members.find((member) => member.id === "ana")!;
-    run("meeting.save", { title: "Reunião da Ana", startsAt: "2026-09-24T10:00", endsAt: "2026-09-24T10:30", participantIds: [ana.id] }, vasco);
+    run(
+      "meeting.save",
+      {
+        title: "Reunião da Ana",
+        calendarKey: "contacto",
+        startsAt: "2026-09-24T10:00",
+        endsAt: "2026-09-24T10:30",
+        participantIds: [ana.id],
+      },
+      vasco,
+    );
     const meeting = data.meetings.at(-1)!;
     expect(workspaceFor(data, ana, now).meetings).toContainEqual(meeting);
     expect(workspaceFor(data, ana, now).alerts).toEqual([]);
-    expect(workspaceFor(data, vasco, now).alerts.some((alert) => alert.id === meeting.id)).toBe(false);
-    expect(() => run("meeting.save", { title: "Empty", startsAt: "2026-09-24T10:00", endsAt: "2026-09-24T10:30", participantIds: [] })).toThrow("Escolhe pelo menos");
+    expect(
+      workspaceFor(data, vasco, now).alerts.some(
+        (alert) => alert.id === meeting.id,
+      ),
+    ).toBe(false);
+    expect(() =>
+      run("meeting.save", {
+        title: "Empty",
+        startsAt: "2026-09-24T10:00",
+        endsAt: "2026-09-24T10:30",
+        participantIds: [],
+      }),
+    ).not.toThrow();
   });
   it("provides the six named profiles and individual login accounts", () => {
     for (const id of ["miguel", "afonso", "vasco", "patrick", "ana", "pedro"]) {
-      expect(data.members.find((member) => member.id === id)?.role).toBe(["miguel", "afonso"].includes(id) ? "admin" : "engineer");
-      expect(data.accounts.some((account) => account.memberId === id)).toBe(true);
+      expect(data.members.find((member) => member.id === id)?.role).toBe(
+        ["miguel", "afonso"].includes(id) ? "admin" : "engineer",
+      );
+      expect(data.accounts.some((account) => account.memberId === id)).toBe(
+        true,
+      );
     }
   });
 });

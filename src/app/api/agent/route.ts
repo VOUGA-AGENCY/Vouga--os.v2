@@ -1,6 +1,10 @@
 import { requireMember } from "@/application/auth";
 import { runtime } from "@/services/runtime";
-import { runAgent, decideAction } from "@/services/agent-service";
+import {
+  runAgent,
+  decideAction,
+  summarizeMyWork,
+} from "@/services/agent-service";
 import { errorResponse, jsonBody } from "@/foundation/http";
 import { record, text } from "@/domain/validation";
 export async function POST(request: Request) {
@@ -8,6 +12,8 @@ export async function POST(request: Request) {
     const me = await requireMember(request),
       body = record(await jsonBody(request)),
       ctx = runtime();
+    if (body.summary === true)
+      return Response.json(await summarizeMyWork(ctx, me));
     if (body.pendingId)
       return Response.json(
         await decideAction(

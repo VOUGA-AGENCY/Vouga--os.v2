@@ -1,3 +1,4 @@
+import { queueCreationNotices } from "@/services/creation-notifications";
 import { captureChanges } from "@/services/activity-service";
 import type { ActivityEvent } from "@/domain/integration-model";
 import { randomUUID } from "node:crypto";
@@ -37,7 +38,7 @@ function executeCore(
   const command = record(input);
   const action = text(command.action, "Ação", 50);
   const me = data.members.find((m) => m.id === actor.id);
-  if (!me) throw new AppError("Sessão inválida.", 401);
+  if (!me || me.archived) throw new AppError("Sessão inválida.", 401);
   const v = record(command.values ?? {});
   const base = (): Entity => ({
     id: randomUUID(),
@@ -57,7 +58,7 @@ function executeCore(
   };
   const member = (value: unknown) => {
     const id = text(value, "Pessoa", 100);
-    if (!data.members.some((m) => m.id === id))
+    if (!data.members.some((m) => m.id === id && !m.archived))
       throw new AppError("Seleciona uma pessoa da equipa.");
     return id;
   };
@@ -102,8 +103,16 @@ function executeCore(
       allow(canSeeTask(me, existing, data));
       version(existing, values.version);
     }
-    const project = projectId(values.projectId);
+    const visibility = choice(
+      values.visibility ?? existing?.visibility ?? "team",
+      ["private", "team"] as const,
+      "Visibilidade",
+    );
+    const project =
+      visibility === "private" ? null : projectId(values.projectId);
     const ownerId = owner(values.ownerId ?? me.id, project);
+    if (visibility === "private" && ownerId !== me.id)
+      throw new AppError("Uma tarefa privada tem de estar atribuída a ti.");
     if (project) {
       const linkedProject = find(data.projects, project);
       if (
@@ -116,6 +125,7 @@ function executeCore(
     }
     const task = {
       ...(existing ?? base()),
+      visibility,
       title: text(values.title, "Título", 160),
       body: body(values.body),
       status: choice(
@@ -127,43 +137,72 @@ function executeCore(
       dueOn: day(values.dueOn),
       projectId: project,
       organizationId: organizationId(values.organizationId),
-      priority: choice(values.priority ?? existing?.priority ?? "none", ["none", "low", "medium", "high", "urgent"] as const, "Prioridade"),
+      priority: choice(
+        values.priority ?? existing?.priority ?? "none",
+        ["none", "low", "medium", "high", "urgent"] as const,
+        "Prioridade",
+      ),
     };
     if (existing) {
       if (existing.status !== task.status)
-        data.taskActivity.push({ ...base(), taskId: existing.id, body: `Estado: ${taskStatuses[existing.status]} → ${taskStatuses[task.status]}` });
+        data.taskActivity.push({
+          ...base(),
+          taskId: existing.id,
+          body: `Estado: ${taskStatuses[existing.status]} → ${taskStatuses[task.status]}`,
+        });
       Object.assign(existing, task);
       touch(existing);
     } else {
       data.tasks.push(task);
-      data.taskActivity.push({ ...base(), taskId: task.id, body: "Tarefa criada" });
+      data.taskActivity.push({
+        ...base(),
+        taskId: task.id,
+        body: "Tarefa criada",
+      });
     }
     return task.id;
   };
-  const saveMeeting = (values: Values) => {
+  const saveMeeting = (values: Values, trustedGroupId?: string) => {
     const existing = values.id ? find(data.meetings, values.id) : null;
     if (existing) {
       allow(canEditMeeting(me, existing));
       version(existing, values.version);
     }
-    const calendarOwnerId = member(values.calendarOwnerId ?? existing?.calendarOwnerId ?? me.id);
-    // Engineers can place a requested meeting on an administrator's internal calendar.
+    const calendarOwnerId = member(
+      values.calendarOwnerId ?? existing?.calendarOwnerId ?? me.id,
+    );
+    const calendarKey = choice(
+      values.calendarKey ??
+        existing?.calendarKey ??
+        (values.organizationId
+          ? "contacto"
+          : me.role === "admin"
+            ? "office"
+            : "personal"),
+      ["office", "contacto", "personal"] as const,
+      "Calendário",
+    );
     allow(
       me.role === "admin" ||
-        calendarOwnerId === me.id ||
-        data.members.some(
-          (m) => m.id === calendarOwnerId && m.role === "admin",
-        ),
+        calendarKey === "contacto" ||
+        (calendarKey === "personal" && calendarOwnerId === me.id),
     );
-    if (existing?.recurringEventId || existing?.allDay) throw new AppError("Edita este evento recorrente ou de dia inteiro no Google Calendar.");
-    const startsAt = instant(values.startsAt);
-    const endsAt = instant(values.endsAt);
+    const allDay = boolean(values.allDay, existing?.allDay ?? false);
+    const startsAt = instant(
+      allDay ? `${dateKey(instant(values.startsAt))}T00:00` : values.startsAt,
+    );
+    const endsAt = instant(
+      allDay ? `${dateKey(instant(values.endsAt))}T00:00` : values.endsAt,
+    );
     if (endsAt <= startsAt)
       throw new AppError("O fim tem de ser depois do início.");
     if (Date.parse(endsAt) - Date.parse(startsAt) > 7 * 86400000)
       throw new AppError("O compromisso não pode exceder sete dias.");
-    const participants = stringList(values.participantIds ?? existing?.participantIds ?? [calendarOwnerId]);
-    if (!participants.length) throw new AppError("Escolhe pelo menos um participante.");
+    const participants = stringList(
+      values.participantIds ?? existing?.participantIds ?? [calendarOwnerId],
+    );
+    if (calendarKey === "personal" && !participants.includes(calendarOwnerId))
+      participants.push(calendarOwnerId);
     participants.forEach(member);
     const meeting = {
       ...(existing ?? base()),
@@ -178,23 +217,49 @@ function executeCore(
       endsAt,
       calendarOwnerId,
       participantIds: participants,
-      calendarKey: choice(values.calendarKey ?? existing?.calendarKey ?? (values.organizationId && !values.projectId ? "contacto" : "office"), ["office", "contacto"] as const, "Calendário"),
-      externalParticipants: (() => { const emails = Array.isArray(values.externalParticipants) ? stringList(values.externalParticipants) : String(values.externalParticipants ?? existing?.externalParticipants?.join(",") ?? "").split(/[,;\s]+/).filter(Boolean); if (emails.length > 50 || emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) throw new AppError("Participantes externos inválidos."); return [...new Set(emails)]; })(),
+      calendarKey,
+      externalParticipants: (() => {
+        const emails = Array.isArray(values.externalParticipants)
+          ? stringList(values.externalParticipants)
+          : String(
+              values.externalParticipants ??
+                existing?.externalParticipants?.join(",") ??
+                "",
+            )
+              .split(/[,;\s]+/)
+              .filter(Boolean);
+        if (
+          emails.length > 50 ||
+          emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        )
+          throw new AppError("Participantes externos inválidos.");
+        return [...new Set(emails)];
+      })(),
       organizationId: organizationId(values.organizationId),
       projectId: projectId(values.projectId),
+      groupId: trustedGroupId ?? existing?.groupId,
+      allDay: boolean(values.allDay, existing?.allDay ?? false),
       cancelled: existing?.cancelled ?? false,
       reminderMinutes: 10,
-      visibility: choice(values.visibility ?? existing?.visibility ?? "team", ["private", "team"] as const, "Visibilidade"),
+      visibility: choice(
+        values.visibility ?? existing?.visibility ?? "team",
+        ["private", "team"] as const,
+        "Visibilidade",
+      ),
     };
     if (existing) {
       Object.assign(existing, meeting);
       touch(existing);
     } else {
       data.meetings.push(meeting);
-      if (meeting.organizationId) data.interactions.push({
-        ...base(), organizationId: meeting.organizationId, channel: "meeting",
-        body: `Evento marcado: ${meeting.title}`, meetingId: meeting.id,
-      });
+      if (meeting.organizationId)
+        data.interactions.push({
+          ...base(),
+          organizationId: meeting.organizationId,
+          channel: "meeting",
+          body: `Evento marcado: ${meeting.title}`,
+          meetingId: meeting.id,
+        });
     }
     return meeting.id;
   };
@@ -232,8 +297,14 @@ function executeCore(
     };
     if (existing && item.stage !== existing.stage) {
       const statusNote = text(values.statusNote, "Nota de estado", 10000);
-      data.interactions.push({ ...base(), organizationId: existing.id,
-        channel: "note", body: statusNote, stageFrom: existing.stage, stageTo: item.stage });
+      data.interactions.push({
+        ...base(),
+        organizationId: existing.id,
+        channel: "note",
+        body: statusNote,
+        stageFrom: existing.stage,
+        stageTo: item.stage,
+      });
     }
     if (existing) {
       Object.assign(existing, item);
@@ -254,17 +325,25 @@ function executeCore(
     );
     if (visibility === "private" && existing)
       allow(existing.createdBy === me.id);
-    const recipientIds = visibility === "shared" ? stringList(values.recipientIds ?? existing?.recipientIds ?? []) : [];
+    const recipientIds =
+      visibility === "shared"
+        ? stringList(values.recipientIds ?? existing?.recipientIds ?? [])
+        : [];
     recipientIds.forEach(member);
-    if (visibility === "shared" && !recipientIds.length) throw new AppError("Escolhe pelo menos uma pessoa para a nota.");
+    if (visibility === "shared" && !recipientIds.length)
+      throw new AppError("Escolhe pelo menos uma pessoa para a nota.");
     const item = {
       ...(existing ?? base()),
       title: text(values.title, "Título", 160),
       body: body(values.body),
       projectId: projectId(values.projectId),
       organizationId: organizationId(values.organizationId),
-      meetingId: values.meetingId ? find(data.meetings, values.meetingId).id : null,
-      contactId: values.contactId ? find(data.contacts, values.contactId).id : null,
+      meetingId: values.meetingId
+        ? find(data.meetings, values.meetingId).id
+        : null,
+      contactId: values.contactId
+        ? find(data.contacts, values.contactId).id
+        : null,
       visibility,
       recipientIds,
       pinned: boolean(values.pinned, existing?.pinned ?? false),
@@ -278,18 +357,44 @@ function executeCore(
   };
   switch (action) {
     case "meeting.participants": {
-      const event = find(data.meetings, v.id); allow(canEditMeeting(me, event)); version(event, v.version);
-      const participants = stringList(v.participantIds); participants.forEach(member);
-      if (!participants.length) throw new AppError("Escolhe pelo menos um participante.");
-      event.participantIds = participants; touch(event); return {message:"Participantes associados."};
+      const event = find(data.meetings, v.id);
+      allow(canEditMeeting(me, event));
+      version(event, v.version);
+      const participants = stringList(v.participantIds);
+      participants.forEach(member);
+      if (
+        event.calendarKey === "personal" &&
+        !participants.includes(event.calendarOwnerId)
+      )
+        participants.push(event.calendarOwnerId);
+      event.participantIds = participants;
+      touch(event);
+      return { message: "Participantes associados." };
     }
 
-    case "inbox.save": { data.inbox.push({...base(), ownerId:me.id, body:text(v.body,"Captura",10000),resolved:false}); return {message:"Guardado na Inbox."}; }
+    case "inbox.save": {
+      data.inbox.push({
+        ...base(),
+        ownerId: me.id,
+        body: text(v.body, "Captura", 10000),
+        resolved: false,
+      });
+      return { message: "Guardado na Inbox." };
+    }
     case "task.linkPR": {
-      const task = find(data.tasks, v.id); allow(canSeeTask(me, task, data)); version(task, v.version);
-      const pr = v.pullRequestId ? find(data.pullRequests, v.pullRequestId) : null;
-      if (pr) { allow(pr.projectId === task.projectId); projectId(pr.projectId); }
-      task.pullRequestId = pr?.id ?? null; touch(task); return { message: "Pull request associada." };
+      const task = find(data.tasks, v.id);
+      allow(canSeeTask(me, task, data));
+      version(task, v.version);
+      const pr = v.pullRequestId
+        ? find(data.pullRequests, v.pullRequestId)
+        : null;
+      if (pr) {
+        allow(pr.projectId === task.projectId);
+        projectId(pr.projectId);
+      }
+      task.pullRequestId = pr?.id ?? null;
+      touch(task);
+      return { message: "Pull request associada." };
     }
 
     case "task.save":
@@ -306,8 +411,12 @@ function executeCore(
         "Estado",
       ) as keyof typeof taskStatuses;
       touch(task);
-      if (previous !== task.status) data.taskActivity.push({ ...base(), taskId: task.id,
-        body: `Estado: ${taskStatuses[previous]} → ${taskStatuses[task.status]}` });
+      if (previous !== task.status)
+        data.taskActivity.push({
+          ...base(),
+          taskId: task.id,
+          body: `Estado: ${taskStatuses[previous]} → ${taskStatuses[task.status]}`,
+        });
       return {
         message:
           task.status === "done" ? "Tarefa concluída." : "Estado atualizado.",
@@ -316,7 +425,11 @@ function executeCore(
     case "task.comment": {
       const task = find(data.tasks, v.taskId);
       allow(canSeeTask(me, task, data));
-      const comment = { ...base(), taskId: task.id, body: text(v.body, "Comentário", 10000) };
+      const comment = {
+        ...base(),
+        taskId: task.id,
+        body: text(v.body, "Comentário", 10000),
+      };
       data.taskComments.push(comment);
       touch(task);
       return { message: "Comentário adicionado.", ids: [comment.id] };
@@ -329,16 +442,107 @@ function executeCore(
       touch(task);
       return { message: "Tarefa adiada para amanhã." };
     }
-    case "meeting.save":
-      saveMeeting(v);
-      return { message: "Guardado no calendário interno." };
+    case "meeting.save": {
+      if (!Array.isArray(v.calendarTargets)) {
+        const event = v.id ? find(data.meetings, v.id) : null;
+        if (
+          event &&
+          (event.groupId ||
+            (v.calendarKey === "personal" && event.googleEventId))
+        ) {
+          const siblings = event.groupId
+            ? data.meetings.filter(
+                (m) =>
+                  m.groupId === event.groupId &&
+                  !m.cancelled &&
+                  canEditMeeting(me, m),
+              )
+            : [event];
+          v.calendarTargets = siblings.map((m) =>
+            m.calendarKey === "personal"
+              ? `personal:${m.calendarOwnerId}`
+              : (m.calendarKey ?? "office"),
+          );
+          if (v.calendarKey && v.calendarKey !== event.calendarKey)
+            v.calendarTargets = [
+              v.calendarKey === "personal"
+                ? `personal:${v.calendarOwnerId ?? event.calendarOwnerId}`
+                : v.calendarKey,
+            ];
+        } else {
+          saveMeeting(v);
+          return { message: "Evento guardado." };
+        }
+      }
+      const targets = [...new Set(stringList(v.calendarTargets))];
+      if (!targets.length)
+        throw new AppError("Escolhe pelo menos um calendário.");
+      const original = v.id ? find(data.meetings, v.id) : null;
+      if (original) {
+        allow(canEditMeeting(me, original));
+        version(original, v.version);
+      }
+      let groupId = original?.groupId ?? original?.id ?? randomUUID();
+      const allSiblings = original
+        ? data.meetings.filter(
+            (m) => m.id === original.id || m.groupId === groupId,
+          )
+        : [];
+      const siblings = allSiblings.filter((m) => canEditMeeting(me, m));
+      // Editing a visible destination must not modify hidden calendars, even indirectly
+      // through a later Google webhook. Detach only the destinations this user controls.
+      if (siblings.length !== allSiblings.length) groupId = randomUUID();
+      const targetOf = (m: (typeof data.meetings)[number]) =>
+        m.calendarKey === "personal"
+          ? `personal:${m.calendarOwnerId}`
+          : (m.calendarKey ?? "office");
+      for (const target of targets) {
+        const key = target.startsWith("personal:")
+          ? "personal"
+          : choice(target, ["office", "contacto"] as const, "Calendário");
+        const match = siblings.find(
+          (m) => targetOf(m) === target && !m.cancelled,
+        );
+        saveMeeting(
+          {
+            ...v,
+            id: match?.id,
+            version: match?.version,
+            calendarKey: key,
+            calendarOwnerId: key === "personal" ? target.slice(9) : me.id,
+          },
+          groupId,
+        );
+      }
+      for (const sibling of siblings.filter(
+        (m) => !targets.includes(targetOf(m)),
+      )) {
+        sibling.cancelled = true;
+        sibling.groupId = groupId;
+        touch(sibling);
+      }
+      return { message: "Evento guardado nos calendários selecionados." };
+    }
     case "meeting.cancel": {
       const item = find(data.meetings, v.id);
       allow(canEditMeeting(me, item));
       version(item, v.version);
-      if (item.cancelled && item.googleEventId) throw new AppError("Cria um novo evento para substituir o compromisso cancelado no Google.");
-      item.cancelled = !item.cancelled;
-      touch(item);
+      if (item.cancelled && item.googleEventId)
+        throw new AppError(
+          "Cria um novo evento para substituir o compromisso cancelado no Google.",
+        );
+      const allSiblings = item.groupId
+        ? data.meetings.filter((m) => m.groupId === item.groupId)
+        : [item];
+      const siblings = allSiblings.filter((m) => canEditMeeting(me, m));
+      const groupId =
+        siblings.length === allSiblings.length ? item.groupId : randomUUID();
+      const cancelled = !item.cancelled;
+      for (const sibling of siblings) {
+        sibling.cancelled = cancelled;
+        sibling.groupId = groupId;
+        touch(sibling);
+      }
       return {
         message: item.cancelled
           ? "Compromisso cancelado."
@@ -351,26 +555,42 @@ function executeCore(
     case "organization.stage": {
       const organization = find(data.organizations, v.id);
       version(organization, v.version);
-      const stage = choice(v.stage, Object.keys(stages), "Estado") as keyof typeof stages;
-      if (stage === organization.stage) return { message: "Estado sem alterações." };
+      const stage = choice(
+        v.stage,
+        Object.keys(stages),
+        "Estado",
+      ) as keyof typeof stages;
+      if (stage === organization.stage)
+        return { message: "Estado sem alterações." };
       const note = text(v.note, "Nota de estado", 10000);
-      data.interactions.push({ ...base(), organizationId: organization.id,
-        channel: "note", body: note, stageFrom: organization.stage, stageTo: stage });
+      data.interactions.push({
+        ...base(),
+        organizationId: organization.id,
+        channel: "note",
+        body: note,
+        stageFrom: organization.stage,
+        stageTo: stage,
+      });
       organization.stage = stage;
       touch(organization);
       return { message: "Estado e nota guardados." };
     }
     case "organization.note": {
       const organization = find(data.organizations, v.id);
-      data.interactions.push({ ...base(), organizationId: organization.id,
-        channel: "note", body: text(v.body, "Nota", 10000) });
+      data.interactions.push({
+        ...base(),
+        organizationId: organization.id,
+        channel: "note",
+        body: text(v.body, "Nota", 10000),
+      });
       touch(organization);
       return { message: "Nota adicionada à timeline." };
     }
     case "contact.add": {
       const organizationId = find(data.organizations, v.organizationId).id;
       const contact = {
-        ...base(), organizationId,
+        ...base(),
+        organizationId,
         name: text(v.name, "Nome", 160),
         email: text(v.email, "Email", 200, false),
         phone: text(v.phone, "Telefone", 50, false),
@@ -388,7 +608,11 @@ function executeCore(
     case "interaction.add": {
       const organization = find(data.organizations, v.organizationId);
       version(organization, v.version);
-      const nextStage = choice(v.stage ?? organization.stage, Object.keys(stages), "Estado") as keyof typeof stages;
+      const nextStage = choice(
+        v.stage ?? organization.stage,
+        Object.keys(stages),
+        "Estado",
+      ) as keyof typeof stages;
       data.interactions.push({
         ...base(),
         organizationId: organization.id,
@@ -574,14 +798,30 @@ function executeCore(
       for (const value of v.drafts) {
         const d = record(value);
         const kind = choice(d.kind, Object.keys(captureKinds), "Tipo");
-        if (!d.organizationId && d.organizationName && kind !== "inbox" && kind !== "crm") {
+        if (
+          !d.organizationId &&
+          d.organizationName &&
+          kind !== "inbox" &&
+          kind !== "crm"
+        ) {
           const name = text(d.organizationName, "Organização", 160);
-          const existing = data.organizations.find((organization) =>
-            organization.name.toLocaleLowerCase("pt") === name.toLocaleLowerCase("pt"));
-          d.organizationId = existing?.id ?? saveOrganization({
-            name, person: "", email: "", phone: "", ownerId: d.ownerId,
-            stage: "new", nextStep: "", followUpOn: "",
-          });
+          const existing = data.organizations.find(
+            (organization) =>
+              organization.name.toLocaleLowerCase("pt") ===
+              name.toLocaleLowerCase("pt"),
+          );
+          d.organizationId =
+            existing?.id ??
+            saveOrganization({
+              name,
+              person: "",
+              email: "",
+              phone: "",
+              ownerId: d.ownerId,
+              stage: "new",
+              nextStep: "",
+              followUpOn: "",
+            });
         }
         if (kind === "task") ids.push(saveTask({ ...d, dueOn: d.date }));
         else if (kind === "note") ids.push(saveNote(d));
@@ -619,10 +859,22 @@ function executeCore(
             if (d.nextStep)
               org.nextStep = text(d.nextStep, "Próximo passo", 500);
             if (d.date) org.followUpOn = day(d.date);
-            if (d.person && !data.contacts.some((contact) =>
-              contact.organizationId === id && contact.name.toLocaleLowerCase("pt") === String(d.person).toLocaleLowerCase("pt"))) {
-              const contact = { ...base(), organizationId: id,
-                name: text(d.person, "Pessoa", 160), email: "", phone: "" };
+            if (
+              d.person &&
+              !data.contacts.some(
+                (contact) =>
+                  contact.organizationId === id &&
+                  contact.name.toLocaleLowerCase("pt") ===
+                    String(d.person).toLocaleLowerCase("pt"),
+              )
+            ) {
+              const contact = {
+                ...base(),
+                organizationId: id,
+                name: text(d.person, "Pessoa", 160),
+                email: "",
+                phone: "",
+              };
               data.contacts.push(contact);
               if (!org.person) org.person = contact.name;
             }
@@ -634,15 +886,34 @@ function executeCore(
             );
         } else if (kind === "crm") {
           const id = organizationId(d.organizationId);
-          if (!id) throw new AppError("Escolhe uma organização existente para atualizar o CRM.");
+          if (!id)
+            throw new AppError(
+              "Escolhe uma organização existente para atualizar o CRM.",
+            );
           const org = find(data.organizations, id);
-          const stage = choice(d.stage, Object.keys(stages), "Estado") as keyof typeof stages;
+          const stage = choice(
+            d.stage,
+            Object.keys(stages),
+            "Estado",
+          ) as keyof typeof stages;
           const note = text(d.body, "Nota de estado", 10000);
           if (stage !== org.stage) {
-            data.interactions.push({ ...base(), organizationId: id, channel: "note", body: note,
-              stageFrom: org.stage, stageTo: stage });
+            data.interactions.push({
+              ...base(),
+              organizationId: id,
+              channel: "note",
+              body: note,
+              stageFrom: org.stage,
+              stageTo: stage,
+            });
             org.stage = stage;
-          } else data.interactions.push({ ...base(), organizationId: id, channel: "note", body: note });
+          } else
+            data.interactions.push({
+              ...base(),
+              organizationId: id,
+              channel: "note",
+              body: note,
+            });
           touch(org);
           ids.push(id);
         } else if (kind === "update") {
@@ -668,8 +939,12 @@ function executeCore(
           data.reminders.push(reminder);
           ids.push(reminder.id);
         } else if (kind === "inbox") {
-          const item = { ...base(), body: text(d.body || d.title, "Captura", 10000),
-            ownerId: me.id, resolved: false };
+          const item = {
+            ...base(),
+            body: text(d.body || d.title, "Captura", 10000),
+            ownerId: me.id,
+            resolved: false,
+          };
           data.inbox.push(item);
           ids.push(item.id);
         }
@@ -690,9 +965,16 @@ function executeCore(
 
 import { localDateTime as localTime } from "@/domain/time";
 
-export function executeCommand(data: Store, actor: Member, input: unknown, now = new Date().toISOString(), source: ActivityEvent["source"] = "os") {
+export function executeCommand(
+  data: Store,
+  actor: Member,
+  input: unknown,
+  now = new Date().toISOString(),
+  source: ActivityEvent["source"] = "os",
+) {
   const before = structuredClone(data);
   const result = executeCore(data, actor, input, now);
   captureChanges(data, before, actor, source, now);
+  queueCreationNotices(data, before, actor, now);
   return result;
 }
