@@ -31,6 +31,43 @@
 :root[data-theme="light"] .composer-hint { color: var(--color-muted); }
 :root[data-theme="light"] .note-sharing select,
 :root[data-theme="light"] .note-sharing fieldset label { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border-strong); }
+:root[data-theme="light"] .elegant-dark-pattern {
+  --color-surface: #ffffff;
+  --color-surface-hover: #f0f1f4;
+  --color-surface-active: #e5e7ec;
+  --color-ink: #202124;
+  --color-muted: #5f6368;
+  --color-subtle: #74777d;
+  --color-border: rgb(24 31 46 / 9%);
+  --color-border-strong: rgb(24 31 46 / 16%);
+  color: var(--color-ink);
+  background: #ffffff;
+}
+:root[data-theme="light"] .elegant-dark-pattern-gradient {
+  background: radial-gradient(100% 100% at 0% 0%, #ffffff 0%, #f5f6f8 100%);
+}
+:root[data-theme="light"] .elegant-dark-pattern-streak {
+  opacity: .11;
+  background: linear-gradient(90deg, #ff7a1a 0%, #133698 100%);
+}
+:root[data-theme="light"] .elegant-dark-pattern-texture { opacity: .018; }
+:root[data-theme="light"] .elegant-dark-pattern-dots {
+  opacity: .22;
+  background-image: radial-gradient(circle at var(--border-width) var(--border-width), rgb(50 55 65 / 45%) var(--border-width), transparent 0);
+}
+:root[data-theme="light"] .elegant-dark-pattern-highlight {
+  display: block;
+  background: linear-gradient(90deg, rgb(255 122 26 / 5%) 0%, rgb(19 54 152 / 6%) 100%);
+}
+:root[data-theme="light"] .home-summary { background: rgb(255 255 255 / 80%); }
+:root[data-theme="light"] .login-pattern .login-logo { filter: invert(1); }
+:root[data-theme="light"] .login-pattern .login-form-wrap input {
+  border-color: rgb(24 31 46 / 16%);
+  background: rgb(255 255 255 / 70%);
+}
+:root[data-theme="light"] .login-pattern .login-form-wrap input:hover { border-color: rgb(24 31 46 / 25%); }
+:root[data-theme="light"] .login-pattern .login-submit { background: #133698; color: #ffffff; }
+:root[data-theme="light"] .login-pattern .login-submit:hover { background: #0e2a78; }
 .appearance-settings { margin-bottom: var(--space-7); }
 .theme-options { display: flex; gap: var(--space-2); }
 .theme-options button[aria-pressed="true"] { background: var(--color-surface-active); border-color: var(--color-border-strong); color: var(--color-ink); }

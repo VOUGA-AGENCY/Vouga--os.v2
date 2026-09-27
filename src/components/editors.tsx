@@ -510,12 +510,17 @@ export function RecordEditor({
             <button
               type="button"
               className="text-button danger"
-              onClick={() =>
+              onClick={() => {
+                if (
+                  !item.cancelled &&
+                  !window.confirm(`Eliminar o evento “${item.title}”?`)
+                )
+                  return;
                 void workspace
                   .command("meeting.cancel", { id, version: item.version })
                   .then(onClose)
-                  .catch((error) => workspace.notify(error.message))
-              }
+                  .catch((error) => workspace.notify(error.message));
+              }}
             >
               {item.cancelled ? "Restaurar evento" : "Eliminar evento"}
             </button>
@@ -539,6 +544,40 @@ export function RecordEditor({
           values={item ? { id, version: item.version } : {}}
           onClose={onClose}
           label={item ? "Save project" : "Create project"}
+          extra={
+            item ? (
+              <>
+                <button
+                  type="button"
+                  className="text-button danger"
+                  onClick={() => {
+                    if (
+                      !window.confirm(
+                        `Eliminar o projeto “${item.name}” e todas as respetivas tarefas?`,
+                      )
+                    )
+                      return;
+                    void workspace
+                      .command("project.delete", {
+                        id: item.id,
+                        version: item.version,
+                      })
+                      .then(onClose)
+                      .catch((error) => workspace.notify(error.message));
+                  }}
+                >
+                  Delete project
+                </button>
+                <button
+                  type="button"
+                  className="button-secondary"
+                  onClick={onClose}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : undefined
+          }
         >
           <input
             className="composer-title"
@@ -621,6 +660,33 @@ export function RecordEditor({
         action="pr.save"
         values={pr ? { id, version: pr.version } : {}}
         onClose={onClose}
+        extra={
+          pr ? (
+            <>
+              <button
+                type="button"
+                className="text-button danger"
+                onClick={() => {
+                  if (!window.confirm(`Remover a pull request “${pr.title}”?`))
+                    return;
+                  void workspace
+                    .command("pr.delete", { id: pr.id, version: pr.version })
+                    .then(onClose)
+                    .catch((error) => workspace.notify(error.message));
+                }}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            </>
+          ) : undefined
+        }
       >
         <input
           type="hidden"

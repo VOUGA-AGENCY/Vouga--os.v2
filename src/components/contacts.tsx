@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { CalendarDays, Plus, Search, X, ListFilter } from "lucide-react";
+import { CalendarDays, Pencil, Plus, Search, Trash2, X, ListFilter } from "lucide-react";
 import { stages, type Organization, type Stage } from "@/domain/model";
 import { localDateTime, toInstant } from "@/domain/time";
 import { useWorkspace } from "./context";
@@ -24,7 +24,7 @@ export function Contacts() {
 }
 
 export function CompanyPanel({ company, onClose }: { company: Organization; onClose: () => void }) {
-  const { data, command, notify, capture } = useWorkspace();
+  const { data, command, notify, capture, edit } = useWorkspace();
   const [stage, setStage] = useState<Stage>(company.stage);
   const [stageNote, setStageNote] = useState("");
   const [note, setNote] = useState("");
@@ -47,7 +47,7 @@ export function CompanyPanel({ company, onClose }: { company: Organization; onCl
     catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível agendar."); }
   }
   return <div className="side-panel-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><aside className="side-panel" role="dialog" aria-modal="true" aria-label={company.name}>
-    <header className="side-panel-header"><span>Company</span><button onClick={() => capture()}>Ask Agent</button><button aria-label="Close company" onClick={onClose}><X size={17}/></button></header>
+    <header className="side-panel-header"><span>Company</span><button onClick={() => { onClose(); edit({ type: "organization", id: company.id }); }}><Pencil size={14}/>Edit</button><button className="danger" onClick={() => { if (!window.confirm(`Eliminar a empresa “${company.name}” e o respetivo histórico CRM?`)) return; void command("organization.delete", { id: company.id, version: company.version }).then(onClose).catch((reason) => notify(reason instanceof Error ? reason.message : "Não foi possível eliminar.")); }}><Trash2 size={14}/>Delete</button><button onClick={() => capture()}>Ask Agent</button><button aria-label="Close company" onClick={onClose}><X size={17}/></button></header>
     <div className="side-panel-scroll"><div className="company-panel-title"><h2>{company.name}</h2><span><i className={`crm-dot crm-dot-${company.stage}`}/>{stages[company.stage]}</span></div>
       <section className="company-panel-section"><h3>Status</h3><div className="company-stage-row"><select aria-label="Company status" value={stage} onChange={(event) => setStage(event.target.value as Stage)}>{Object.entries(stages).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></div>{stage !== company.stage && <div className="company-stage-note"><textarea aria-label="Status note" value={stageNote} onChange={(event) => setStageNote(event.target.value)} placeholder="What changed? A short note is required." rows={2}/><button disabled={!stageNote.trim()} onClick={() => void changeStage()}>Confirm status</button></div>}</section>
       <section className="company-panel-section"><h3>Calendar</h3><button className="company-schedule" onClick={() => setScheduling(!scheduling)}><CalendarDays size={15}/>Schedule event</button>{scheduling && <form className="company-event-form" onSubmit={(event) => { event.preventDefault(); void schedule(event.currentTarget); }}><input name="title" aria-label="Event title" defaultValue={`Meeting · ${company.name}`} required/><div><label>Date<input name="date" type="date" required/></label><label>Time<input name="time" type="time" required/></label><label>Duration<select name="duration" defaultValue="30"><option value="30">30 min</option><option value="60">1 hour</option><option value="90">90 min</option></select></label></div><label>Calendar<select name="calendarKey" defaultValue="contacto"><option value="contacto">Contacto</option><option value="office">Office</option></select></label><fieldset><legend>Participants</legend>{data.members.filter((member) => member.id !== data.me.id).map((member) => <label key={member.id}><input type="checkbox" name="participantIds" value={member.id}/>{member.name}</label>)}</fieldset><label>Visibility<select name="visibility" defaultValue="private"><option value="private">Participants only</option><option value="team">Visible to team</option></select></label><textarea name="description" placeholder="Description (optional)" rows={2}/><button>Save event</button></form>}</section>

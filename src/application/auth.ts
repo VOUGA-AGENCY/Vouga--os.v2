@@ -4,6 +4,7 @@ import type { Member } from "@/domain/model";
 import { AppError } from "@/domain/validation";
 import { repository } from "@/persistence/store";
 import { hashPassword, verifyPassword } from "@/persistence/password";
+import { verifySupabasePassword } from "@/persistence/supabase/auth";
 export const SESSION_COOKIE = "vouga_local_session";
 export const SESSION_AGE = 60 * 60 * 24 * 7;
 const digest = (token: string) =>
@@ -99,10 +100,20 @@ export async function requireMember(request: Request) {
 }
 export async function login(identifier: string, password: string) {
   const key = identifier.trim().toLowerCase();
+  const externalEmail = key.includes("@")
+    ? await verifySupabasePassword(key, password)
+    : null;
+  if (key.includes("@") && !externalEmail)
+    throw new AppError("Utilizador ou palavra-passe incorretos.", 401);
   const token = randomBytes(32).toString("hex");
   const outcome = await repository().transact((data) => {
+    const localPart = externalEmail?.split("@", 1)[0];
     const me = data.members.find(
-      (m) => m.email.toLowerCase() === key || m.name.toLowerCase() === key,
+      (m) =>
+        m.email.toLowerCase() === (externalEmail || key) ||
+        m.name.toLowerCase() === (localPart || key) ||
+        m.id === localPart ||
+        (localPart === "roque" && m.id === "afonso"),
     );
     const account = data.accounts.find((a) => a.memberId === me?.id);
     const now = Date.now();
@@ -117,7 +128,7 @@ export async function login(identifier: string, password: string) {
       account.failedAttempts = 0;
       delete account.lockedUntil;
     }
-    if (!verifyPassword(password, account.passwordHash)) {
+    if (!externalEmail && !verifyPassword(password, account.passwordHash)) {
       account.failedAttempts = (account.failedAttempts || 0) + 1;
       if (account.failedAttempts >= 5)
         account.lockedUntil = new Date(now + 15 * 60000).toISOString();
@@ -135,6 +146,10 @@ export async function login(identifier: string, password: string) {
       };
     account.failedAttempts = 0;
     delete account.lockedUntil;
+    if (externalEmail) {
+      account.mustChangePassword = false;
+      delete account.temporaryExpiresAt;
+    }
     const mustChangePassword = !!account.mustChangePassword;
     data.sessions = data.sessions.filter(
       (s) => s.expiresAt > new Date(now).toISOString(),

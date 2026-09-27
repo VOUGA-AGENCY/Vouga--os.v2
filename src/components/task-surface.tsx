@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { CalendarDays, GripVertical, MessageSquare, Paperclip, Plus, Search, X, ListFilter, SlidersHorizontal } from "lucide-react";
+import { CalendarDays, GripVertical, MessageSquare, Paperclip, Plus, Search, Trash2, X, ListFilter, SlidersHorizontal } from "lucide-react";
 import { taskStatuses, type Task, type TaskPriority, type TaskStatus } from "@/domain/model";
 import { dateKey, relativeDate, shortDate } from "@/domain/time";
 import { useWorkspace } from "./context";
@@ -113,7 +113,7 @@ export function TaskPanel({ id, projectId, onClose }: { id?: string; projectId?:
     finally { setUploading(false); }
   }
   return <div className="side-panel-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><aside className="side-panel" role="dialog" aria-modal="true" aria-label={task?.title ?? "New task"}>
-    <header className="side-panel-header"><span>{task ? "Task" : "New task"}</span><button onClick={() => capture()}>Ask Agent</button><button aria-label="Close task" onClick={onClose}><X size={17}/></button></header>
+    <header className="side-panel-header"><span>{task ? "Task" : "New task"}</span>{task && <button className="danger" aria-label="Delete task" onClick={() => { if (!window.confirm(`Eliminar a tarefa “${task.title}”?`)) return; void command("task.delete", { id: task.id, version: task.version }).then(onClose).catch((reason) => notify(reason instanceof Error ? reason.message : "Não foi possível eliminar.")); }}><Trash2 size={15}/>Delete</button>}<button onClick={() => capture()}>Ask Agent</button><button aria-label="Close task" onClick={onClose}><X size={17}/></button></header>
     <div className="side-panel-scroll"><form key={task?.id ?? "new"} className="task-detail-form" onSubmit={async (event) => { event.preventDefault(); const fields = Object.fromEntries(new FormData(event.currentTarget)); setError(""); try { await command("task.save", { ...fields, ...(task ? { id: task.id, version: task.version } : {}), organizationId: task?.organizationId ?? "" }); if (!task) onClose(); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível guardar."); } }}>
       <input className="task-detail-title" name="title" defaultValue={task?.title ?? ""} placeholder="Task title" required autoFocus={!task}/>
       <textarea name="body" defaultValue={task?.body ?? ""} placeholder="Add a description…" rows={4}/>

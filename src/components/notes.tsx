@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { LockKeyhole, Plus, Users, X } from "lucide-react";
+import { LockKeyhole, Plus, Trash2, Users, X } from "lucide-react";
 import { useWorkspace, type Editor } from "./context";
 
 export function StickyNotes() {
@@ -23,7 +23,7 @@ export function NoteComposer({ editor, onClose }: { editor: Editor; onClose: () 
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => { const previous = document.activeElement as HTMLElement | null; const dialog = ref.current; dialog?.showModal(); dialog?.querySelector<HTMLInputElement>('input[name="title"]')?.focus(); return () => { dialog?.close(); previous?.focus(); }; }, []);
   return <dialog ref={ref} className="note-composer-dialog" aria-label={note ? "Nota" : "Nova nota"} onCancel={(event) => { event.preventDefault(); onClose(); }} onClick={(event) => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose(); } }}>
-    <header className="side-panel-header"><span>{note ? "Nota" : "Nova nota"}</span><button type="button" aria-label="Fechar nota" onClick={onClose}><X size={17}/></button></header>
+    <header className="side-panel-header"><span>{note ? "Nota" : "Nova nota"}</span>{note && writable && <button type="button" className="danger" onClick={() => { if (!window.confirm(`Eliminar a nota “${note.title}”?`)) return; void command("note.delete", { id: note.id, version: note.version }).then(onClose).catch((reason) => setError(reason instanceof Error ? reason.message : "Não foi possível eliminar.")); }}><Trash2 size={14}/>Eliminar</button>}<button type="button" aria-label="Fechar nota" onClick={onClose}><X size={17}/></button></header>
     <form className="note-composer" onSubmit={async (event) => { event.preventDefault(); const values = new FormData(event.currentTarget); setError(""); try { await command("note.save", { ...(note ?? {}), title: values.get("title"), body: values.get("body"), visibility, recipientIds: recipients, projectId: note?.projectId ?? editor.projectId, organizationId: note?.organizationId ?? editor.organizationId }); onClose(); } catch (error) { setError(error instanceof Error ? error.message : "Não foi possível guardar."); } }}>
       <input name="title" className="composer-title" aria-label="Título da nota" placeholder="Uma ideia, um lembrete…" defaultValue={note?.title} required maxLength={160} readOnly={!writable} autoFocus/>
       <textarea name="body" className="composer-description" aria-label="Texto da nota" placeholder="Escreve aqui…" defaultValue={note?.body} rows={10} readOnly={!writable}/>

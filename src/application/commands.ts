@@ -400,6 +400,25 @@ function executeCore(
     case "task.save":
       saveTask(v);
       return { message: "Tarefa guardada." };
+    case "task.delete": {
+      const task = find(data.tasks, v.id);
+      allow(canSeeTask(me, task, data));
+      version(task, v.version);
+      data.tasks = data.tasks.filter((item) => item.id !== task.id);
+      data.taskComments = data.taskComments.filter(
+        (item) => item.taskId !== task.id,
+      );
+      data.taskAttachments = data.taskAttachments.filter(
+        (item) => item.taskId !== task.id,
+      );
+      data.taskActivity = data.taskActivity.filter(
+        (item) => item.taskId !== task.id,
+      );
+      data.activity = data.activity.filter(
+        (item) => !(item.entityType === "task" && item.entityId === task.id),
+      );
+      return { message: "Tarefa eliminada." };
+    }
     case "task.status": {
       const task = find(data.tasks, v.id);
       allow(canSeeTask(me, task, data));
@@ -552,6 +571,32 @@ function executeCore(
     case "organization.save":
       saveOrganization(v);
       return { message: "Contacto guardado." };
+    case "organization.delete": {
+      const organization = find(data.organizations, v.id);
+      version(organization, v.version);
+      data.organizations = data.organizations.filter(
+        (item) => item.id !== organization.id,
+      );
+      data.contacts = data.contacts.filter(
+        (item) => item.organizationId !== organization.id,
+      );
+      data.interactions = data.interactions.filter(
+        (item) => item.organizationId !== organization.id,
+      );
+      data.tasks.forEach((item) => {
+        if (item.organizationId === organization.id) item.organizationId = null;
+      });
+      data.meetings.forEach((item) => {
+        if (item.organizationId === organization.id) item.organizationId = null;
+      });
+      data.projects.forEach((item) => {
+        if (item.organizationId === organization.id) item.organizationId = null;
+      });
+      data.activity = data.activity.filter(
+        (item) => item.companyId !== organization.id,
+      );
+      return { message: "Empresa eliminada." };
+    }
     case "organization.stage": {
       const organization = find(data.organizations, v.id);
       version(organization, v.version);
@@ -671,6 +716,40 @@ function executeCore(
       } else data.projects.push(item);
       return { message: "Projeto guardado." };
     }
+    case "project.delete": {
+      const project = find(data.projects, v.id);
+      allow(canSeeProject(me, project));
+      version(project, v.version);
+      const taskIds = new Set(
+        data.tasks
+          .filter((item) => item.projectId === project.id)
+          .map((item) => item.id),
+      );
+      data.projects = data.projects.filter((item) => item.id !== project.id);
+      data.tasks = data.tasks.filter((item) => !taskIds.has(item.id));
+      data.taskComments = data.taskComments.filter(
+        (item) => !taskIds.has(item.taskId),
+      );
+      data.taskAttachments = data.taskAttachments.filter(
+        (item) => !taskIds.has(item.taskId),
+      );
+      data.taskActivity = data.taskActivity.filter(
+        (item) => !taskIds.has(item.taskId),
+      );
+      data.updates = data.updates.filter((item) => item.projectId !== project.id);
+      data.pullRequests = data.pullRequests.filter(
+        (item) => item.projectId !== project.id,
+      );
+      data.meetings.forEach((item) => {
+        if (item.projectId === project.id) item.projectId = null;
+      });
+      data.activity = data.activity.filter(
+        (item) =>
+          !(item.projectId === project.id ||
+            (item.entityType === "task" && taskIds.has(item.entityId))),
+      );
+      return { message: "Projeto e respetivas tarefas eliminados." };
+    }
     case "project.update": {
       const id = projectId(v.projectId);
       if (!id) throw new AppError("Escolhe o projeto.");
@@ -684,6 +763,13 @@ function executeCore(
     case "note.save":
       saveNote(v);
       return { message: "Nota guardada." };
+    case "note.delete": {
+      const note = find(data.notes, v.id);
+      allow(note.createdBy === me.id || me.role === "admin");
+      version(note, v.version);
+      data.notes = data.notes.filter((item) => item.id !== note.id);
+      return { message: "Nota eliminada." };
+    }
     case "note.pin": {
       const note = find(data.notes, v.id);
       allow(canSeeNote(me, note, data));
@@ -740,6 +826,16 @@ function executeCore(
       return {
         message: "Pull request guardado. Estado atualizado manualmente.",
       };
+    }
+    case "pr.delete": {
+      const pr = find(data.pullRequests, v.id);
+      projectId(pr.projectId);
+      version(pr, v.version);
+      data.pullRequests = data.pullRequests.filter((item) => item.id !== pr.id);
+      data.tasks.forEach((task) => {
+        if (task.pullRequestId === pr.id) task.pullRequestId = null;
+      });
+      return { message: "Pull request removido do projeto." };
     }
     case "reminder.done": {
       const reminder = find(data.reminders, v.id);

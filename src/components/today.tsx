@@ -5,6 +5,7 @@ import { CalendarDays, Check, Inbox, Plus } from "lucide-react";
 import { dateKey, timeLabel } from "@/domain/time";
 import { useWorkspace } from "./context";
 import { TaskLine } from "./task-surface";
+import { DarkGradientBg } from "./ui/elegant-dark-pattern";
 export function Today() {
   const { data, edit, capture, command, notify } = useWorkspace();
   const [summary, setSummary] = useState("");
@@ -28,7 +29,8 @@ export function Today() {
     )
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   return (
-    <div className="home-focus">
+    <DarkGradientBg>
+      <div className="home-focus">
       <header className="focus-header">
         <div>
           <h1>Home</h1>
@@ -73,15 +75,6 @@ export function Today() {
           Ask or capture <kbd>⌘ K</kbd>
         </button>
       </header>
-      {summary && (
-        <section
-          className="home-summary"
-          aria-label="Resumo do Vouga Agent"
-          role="status"
-        >
-          {summary}
-        </section>
-      )}
       <div className="home-focus-grid">
         <section className="focus-section">
           <header>
@@ -155,6 +148,17 @@ export function Today() {
           </div>
         </section>
       </div>
-    </div>
+      {summary && (
+        <section
+          className="home-summary"
+          aria-label="Resumo do Vouga Agent"
+          role="status"
+        >
+          <header>Resumo</header>
+          <p>{summary}</p>
+        </section>
+      )}
+      </div>
+    </DarkGradientBg>
   );
 }
