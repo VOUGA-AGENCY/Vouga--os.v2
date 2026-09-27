@@ -1,0 +1,4927 @@
+{
+  "source": "Vouga--os",
+  "date": "2026-09-24",
+  "files": [
+    {
+      "path": "src/app/(workspace)/calendar/calendar-view.test.tsx",
+      "lines": 103,
+      "sha256": "fb83d9dd4c95b7eeff6b9075fd57731902887db010783809ca5b4b97403fc599",
+      "imports": [
+        "node:fs",
+        "node:path",
+        "react-dom/server",
+        "vitest",
+        "@/projections/calendar/calendar",
+        "./calendar-view"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/calendar/calendar-view.tsx",
+      "lines": 861,
+      "sha256": "6af3ef21f2b904f2dec85d60eaa4ea98e6147e2cf2ea007328888991f69bf9cb",
+      "imports": [
+        "react",
+        "next/link",
+        "lucide-react",
+        "@/projections/calendar/calendar",
+        "@/projections/calendar/calendar-time",
+        "@/foundation/navigation/return-to",
+        "./calendar-week-grid"
+      ],
+      "exports": ["CalendarSurface"]
+    },
+    {
+      "path": "src/app/(workspace)/calendar/calendar-week-grid.tsx",
+      "lines": 266,
+      "sha256": "7c146c484933ee4a8599ce519cdc1dbe311ce404f05a7e9694804377f4be9d3a",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "lucide-react",
+        "react",
+        "@/foundation/navigation/return-to",
+        "@/projections/calendar/calendar",
+        "@/projections/calendar/calendar-time",
+        "./calendar-week-layout"
+      ],
+      "exports": ["CalendarWeekGrid"]
+    },
+    {
+      "path": "src/app/(workspace)/calendar/calendar-week-layout.test.ts",
+      "lines": 114,
+      "sha256": "506cac38ce83f9ca1bd98eb21e2681ee1929d26addc29fcb2d15bbf5e934926c",
+      "imports": [
+        "vitest",
+        "@/projections/calendar/calendar",
+        "./calendar-week-layout"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/calendar/calendar-week-layout.ts",
+      "lines": 112,
+      "sha256": "c096fc27c8e3c136e413d7103c3019c56f980600ef6f85d1a266be61cb1478ed",
+      "imports": [
+        "@/projections/calendar/calendar",
+        "@/projections/calendar/calendar-time"
+      ],
+      "exports": ["CalendarWeekPlacement", "layoutTimedEntries"]
+    },
+    {
+      "path": "src/app/(workspace)/calendar/error.tsx",
+      "lines": 17,
+      "sha256": "2330fd1658c659b46a9ab69025b14f80971cf1d7dea8934405837cbc0c0cdd81",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/calendar/google-event/[eventId]/actions.ts",
+      "lines": 75,
+      "sha256": "0acb4b092ef146ed7de5582e289e03c165f7b3e970031ae51413f70167803103",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/application/google/google-event-artifact-service",
+        "@/foundation/composition/google",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/feedback",
+        "@/foundation/security/google-access"
+      ],
+      "exports": [
+        "GoogleEventArtifactFormState",
+        "saveGoogleEventArtifactAction",
+        "deleteGoogleEventAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/calendar/google-event/[eventId]/google-event-artifact-form.tsx",
+      "lines": 162,
+      "sha256": "e7e497866362728c3b32a66aabd11a7c6243f00528e01a417d67e3676e2dc8c3",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/members/contracts",
+        "@/application/meetings/contracts",
+        "@/domain/google/google-event-artifact",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["GoogleEventArtifactForm"]
+    },
+    {
+      "path": "src/app/(workspace)/calendar/google-event/[eventId]/page.tsx",
+      "lines": 157,
+      "sha256": "ee47a0a0d559bad1b1a40743df2974365a8c7bc29fbbd8b8d4323ed10e331f1d",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/application/google/google-event-artifact-service",
+        "@/foundation/composition/google",
+        "@/foundation/navigation/return-to",
+        "./google-event-artifact-form",
+        "@/foundation/ui/confirm-action",
+        "./actions",
+        "@/foundation/security/google-access",
+        "@/persistence/supabase/server",
+        "@/persistence/google/supabase-google-calendar-event-projection-repository"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/calendar/loading.tsx",
+      "lines": 15,
+      "sha256": "e952c631ec8d287b8df84bc84deab0989e36b6aac59b72b8c11f7ddb08bf27f0",
+      "imports": ["@/foundation/appearance/brand-mark"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/calendar/page.tsx",
+      "lines": 60,
+      "sha256": "a5dd51d65c46b050968a8f2f638613f846edf95d463e2d8711c9f0cd5400c45e",
+      "imports": [
+        "@/foundation/composition/calendar",
+        "@/projections/calendar/calendar",
+        "@/projections/calendar/calendar-time",
+        "./calendar-view"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/collection-loading.tsx",
+      "lines": 20,
+      "sha256": "7f7b12da520f769e825454b5f94d151079bd58630a0806925a9d56e987967caa",
+      "imports": ["@/foundation/appearance/brand-mark"],
+      "exports": ["CollectionLoading"]
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/close-deal/close-deal-form.tsx",
+      "lines": 337,
+      "sha256": "1c7107ea9c217a1b955842a6cc93a2c87b7c15e14eb37d7ccd106f4ec1f56dbf",
+      "imports": [
+        "next/link",
+        "react",
+        "lucide-react",
+        "../../actions",
+        "@/projections/projects/project-read-model",
+        "@/domain/projects/project"
+      ],
+      "exports": ["CloseDealForm"]
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/close-deal/page.tsx",
+      "lines": 71,
+      "sha256": "044f58d2cf2d37b9da74fd6fd4d14e8c111fd5a5a394ef06fffbc762e697f833",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/projects",
+        "@/foundation/composition/relations",
+        "../../actions",
+        "./close-deal-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/company-history-list.test.tsx",
+      "lines": 53,
+      "sha256": "b9bf5706e274f1c28f25d14e21a6c489e83fce518bef5f0e74006a42c99ab8c6",
+      "imports": [
+        "react-dom/server",
+        "vitest",
+        "@/projections/relations/relations-read-model",
+        "./company-history-list"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/company-history-list.tsx",
+      "lines": 168,
+      "sha256": "8df6cdb912d0c0f40ffc05c1c2e051b75e5188f2c7f9c209d431a76c2f73330d",
+      "imports": [
+        "next/link",
+        "react",
+        "lucide-react",
+        "@/app/(workspace)/relations/actions",
+        "@/domain/relations/contact",
+        "@/foundation/navigation/return-to",
+        "@/projections/relations/relations-read-model"
+      ],
+      "exports": ["CompanyHistoryList"]
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/edit/page.tsx",
+      "lines": 29,
+      "sha256": "278fb37f8248afe5ec845366b34e80cef93889a1261de2144e29f44348be9464",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/companies",
+        "../../actions",
+        "../../company-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/not-found.tsx",
+      "lines": 19,
+      "sha256": "c5157d39b30dc5e4001e0745be074c222ff704640e5646d9869b286319a27847",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/[companyId]/page.tsx",
+      "lines": 201,
+      "sha256": "7a3e329bf1b407d9a0f89f6937ae298b99237c71f2c56374f667da39dbb9b153",
+      "imports": [
+        "next/image",
+        "next/link",
+        "next/navigation",
+        "lucide-react",
+        "@/domain/companies/company",
+        "@/domain/projects/project",
+        "@/domain/relations/contact",
+        "@/application/auth/current-user",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/projects",
+        "@/foundation/composition/relations",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/confirm-action",
+        "../../context-panel",
+        "../actions",
+        "./company-history-list"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/actions.ts",
+      "lines": 326,
+      "sha256": "e6f0ccc43d67167d35ee73c1f7db6f04abeee12b0b115bc56caa2c6ec732c823",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/companies/company-service",
+        "@/application/auth/current-user",
+        "@/domain/companies/company",
+        "@/domain/projects/project",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/projects",
+        "@/foundation/composition/relations",
+        "@/persistence/supabase/server",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "CompanyFormState",
+        "createCompanyAction",
+        "updateCompanyAction",
+        "archiveCompanyAction",
+        "deleteCompanyAction",
+        "closeDealAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/companies/close-deal.test.ts",
+      "lines": 124,
+      "sha256": "6b10b0efdd16facd76de7f05f0eff8069bdae1abd22b554d698985937057a72d",
+      "imports": [
+        "vitest",
+        "@/domain/projects/project",
+        "@/domain/companies/company"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/company-form.tsx",
+      "lines": 190,
+      "sha256": "88bedd9c32979ee61cb03b2ee6d43c42395d551a40176b1b088e013d34bb7804",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/companies/contracts",
+        "@/domain/companies/company",
+        "@/foundation/ui/form-controls",
+        "@/projections/companies/company-read-model",
+        "./actions"
+      ],
+      "exports": ["CompanyForm"]
+    },
+    {
+      "path": "src/app/(workspace)/companies/error.tsx",
+      "lines": 21,
+      "sha256": "fb38a2945c92f65efdbeffc0ff20a8c181b2f64efd897698cfc4a007f7641c16",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/loading.tsx",
+      "lines": 5,
+      "sha256": "2b4fc661e668f75e78003205bada32c1032e0b04719117e7870e586d4338095c",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/new/page.tsx",
+      "lines": 43,
+      "sha256": "42cbddd0f9622b8384fcd72e32e30f809cb4da3ce94b6cd095e4f577022e5809",
+      "imports": [
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/foundation/composition/companies",
+        "../actions",
+        "../company-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/companies/page.tsx",
+      "lines": 2,
+      "sha256": "18daa90c9b4e5ec967a2a5b20df47416b7a8e3950308844e13279484324acec3",
+      "imports": ["next/navigation"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/context/context-engine-view.tsx",
+      "lines": 466,
+      "sha256": "8558df8d0a9f45be61d02946324366eebef196705cfa4e634328a43b55d4272b",
+      "imports": [
+        "react",
+        "next/link",
+        "lucide-react",
+        "@/projections/context-engine/context-engine"
+      ],
+      "exports": ["ContextEngineView"]
+    },
+    {
+      "path": "src/app/(workspace)/context/page.tsx",
+      "lines": 63,
+      "sha256": "2d4873352f90739c452e755d891dd9caf7bbd9236fcc4f7bd469eb78a67d5a15",
+      "imports": [
+        "@/application/auth/current-user",
+        "@/foundation/composition/context-engine",
+        "next/navigation",
+        "@/projections/context-engine/export-markdown",
+        "../copy-context-button",
+        "./context-engine-view"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/context-panel.tsx",
+      "lines": 119,
+      "sha256": "2c157f2d3cae084dcadb217830579b8a869560524d96538ade6dbf1b7f3b0ed5",
+      "imports": [
+        "next/link",
+        "lucide-react",
+        "@/projections/context-engine/context-engine",
+        "@/projections/context-engine/export-markdown",
+        "./copy-context-button"
+      ],
+      "exports": ["ContextPanel"]
+    },
+    {
+      "path": "src/app/(workspace)/copy-context-button.tsx",
+      "lines": 37,
+      "sha256": "39804c62e1efd5a8d548be294f43368353ddb04880f90622583c1b08e1617730",
+      "imports": ["react", "lucide-react"],
+      "exports": ["CopyContextButton"]
+    },
+    {
+      "path": "src/app/(workspace)/costs/[costId]/edit/page.tsx",
+      "lines": 17,
+      "sha256": "7260c221d6badc3373842e974caa4d4af0622fae499c557e1b3a48e8c89fe981",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/costs",
+        "../../actions",
+        "../../cost-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/[costId]/not-found.tsx",
+      "lines": 15,
+      "sha256": "d36b1eab0741b9c3d0c54f5ec23763845aec9ca8cef2514fb767f2320f66d6ed",
+      "imports": ["next/link"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/[costId]/page.tsx",
+      "lines": 177,
+      "sha256": "e62a3debcd131f9cab41c94dfa740d89371fe33a0701201561d0236636a902dd",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/domain/costs/cost",
+        "@/application/governance/require-governance-access",
+        "@/application/auth/current-user",
+        "@/foundation/composition/costs",
+        "@/foundation/composition/context-engine",
+        "@/foundation/ui/confirm-action",
+        "../../context-panel",
+        "../actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/actions.ts",
+      "lines": 128,
+      "sha256": "fc28e8790171b95c56161a7281da367cd013ced86a8e3cdc14186cae9ca8f689",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/costs/cost-service",
+        "@/application/governance/require-governance-access",
+        "@/domain/costs/cost",
+        "@/foundation/composition/costs",
+        "@/foundation/ui/feedback",
+        "@/projections/calendar/calendar-time"
+      ],
+      "exports": [
+        "CostFormState",
+        "createCostAction",
+        "updateCostAction",
+        "activateCostAction",
+        "payCostAction",
+        "endCostAction",
+        "cancelCostAction",
+        "cancelCostTodayAction",
+        "recordCashBalanceAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/costs/cash-balance-form.tsx",
+      "lines": 59,
+      "sha256": "a48089ebe456299f794ef58324c46e291877c60dde255791fa35ed98c4985804",
+      "imports": [
+        "react",
+        "@/application/members/contracts",
+        "@/foundation/ui/form-controls",
+        "@/projections/calendar/calendar-time",
+        "./actions"
+      ],
+      "exports": ["CashBalanceForm"]
+    },
+    {
+      "path": "src/app/(workspace)/costs/cost-form.tsx",
+      "lines": 264,
+      "sha256": "e11177adb56978fe0b727b0a4d0f4c0f7e2ef9d931349a765c0d46464fa5ccc4",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/costs/contracts",
+        "@/domain/costs/cost",
+        "@/foundation/ui/form-controls",
+        "@/projections/costs/cost-read-model",
+        "./actions"
+      ],
+      "exports": ["CostForm"]
+    },
+    {
+      "path": "src/app/(workspace)/costs/error.tsx",
+      "lines": 15,
+      "sha256": "e6264ffb70f409bf56790cc5c82d024e6271ce2d5197a8a7fdf835b83f82b526",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/layout.tsx",
+      "lines": 10,
+      "sha256": "01fb430d7b947bf68389f43a36d0793ced2a2a28a5ca49d38fcf8b78201730a0",
+      "imports": [
+        "@/foundation/security/governance-protected-surface",
+        "@/application/governance/require-governance-access"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/loading.tsx",
+      "lines": 4,
+      "sha256": "c72876155bfa76d9acc5e66a55482eef78ad4a20dff1724ccd661ed5c1880a80",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/new/page.tsx",
+      "lines": 13,
+      "sha256": "39699f2ff37a25cf3303b96a25ba9fa682b0ea03afd676609b5879bdc182d631",
+      "imports": [
+        "@/foundation/composition/costs",
+        "../actions",
+        "../cost-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/costs/page.tsx",
+      "lines": 277,
+      "sha256": "de196dd6a97889015862d266c3cb99fb927dd0baf4fadaf15450f91b82daf1fe",
+      "imports": [
+        "next/link",
+        "@/domain/costs/cost",
+        "@/foundation/composition/costs",
+        "@/projections/costs/cost-finance",
+        "@/projections/costs/cost-read-model",
+        "@/application/governance/require-governance-access",
+        "./cash-balance-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/[decisionId]/not-found.tsx",
+      "lines": 19,
+      "sha256": "af336b1ae15ce9e07d6888690f04e70c2ab17c38eb9b3bf13b610f4d2f9f9194",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/[decisionId]/page.tsx",
+      "lines": 140,
+      "sha256": "925d06f8b39d2e13f6f2e029bd8d1d9ab5b634243b65f500519e98eab1c5770e",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/domain/decisions/decision",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/decisions",
+        "@/projections/decisions/decision-read-model",
+        "../../context-panel"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/[decisionId]/review/page.tsx",
+      "lines": 43,
+      "sha256": "ad7d2becdd60617547acfcdf2bfe295f7260697cb8fea77f3882cc881bf19d7f",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/decisions",
+        "../../actions",
+        "../../decision-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/actions.ts",
+      "lines": 71,
+      "sha256": "70954b4f2512b7972b96af60655de3d95b5f62017488155a680067bdc195efcb",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/decisions/decision-service",
+        "@/domain/decisions/decision",
+        "@/foundation/composition/decisions",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "DecisionFormState",
+        "createDecisionAction",
+        "reviewDecisionAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/decisions/decision-form.tsx",
+      "lines": 243,
+      "sha256": "8ddf852782125b0aa70c6acef5197ed4cf2ea2007cbb9fef8974653a8e6bbdaa",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/decisions/contracts",
+        "@/domain/decisions/decision",
+        "@/domain/tasks/task",
+        "@/projections/decisions/decision-read-model",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["DecisionForm"]
+    },
+    {
+      "path": "src/app/(workspace)/decisions/error.tsx",
+      "lines": 21,
+      "sha256": "74ded21e8e315caf6bde25c9e3eec696cf9eb5a689579c565860b2ba597fdf81",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/loading.tsx",
+      "lines": 5,
+      "sha256": "ceacf9f17795bf7f283b8336f96269829d0042046eed3cd8cccd262e141feb01",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/new/page.tsx",
+      "lines": 37,
+      "sha256": "15fca560086b17afcf7f939523e2fe03983f28cf5bfe450ffe341e84e26344ca",
+      "imports": [
+        "@/foundation/composition/decisions",
+        "../actions",
+        "../decision-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/page.tsx",
+      "lines": 130,
+      "sha256": "b1096426489fa86bb76f9ac250e082eb24b736438aa240b9d43795639066a4c7",
+      "imports": [
+        "next/link",
+        "@/domain/decisions/decision",
+        "@/foundation/composition/decisions",
+        "@/projections/decisions/decision-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/decisions/related-decision-list.tsx",
+      "lines": 26,
+      "sha256": "740b2070d5b17960f3d6a19b85bd941b4aa8bfc1e0cdfcd1f102c240a31070b0",
+      "imports": [
+        "next/link",
+        "@/domain/decisions/decision",
+        "@/projections/decisions/decision-read-model"
+      ],
+      "exports": ["RelatedDecisionList"]
+    },
+    {
+      "path": "src/app/(workspace)/error.tsx",
+      "lines": 21,
+      "sha256": "fb0825ae8f1d3b1b7abe198eebdb368819bffaaf64fb74f202cf72ef11e96570",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/governance/actions.ts",
+      "lines": 115,
+      "sha256": "6e0e55c85b0649a091243a44328b5d1ae7771b987a5178bbf5c34141d70f8716",
+      "imports": [
+        "next/cache",
+        "@/application/auth/current-user",
+        "@/persistence/supabase/server",
+        "@supabase/supabase-js",
+        "@/foundation/config/supabase-env"
+      ],
+      "exports": [
+        "changeUserRoleAction",
+        "toggleUserActiveAction",
+        "createUserAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/governance/create-user-form.tsx",
+      "lines": 89,
+      "sha256": "726c7fa3461bd2c36fc81fbefe48429681ede9249f64a19dba69a24fbaec8ec6",
+      "imports": ["react", "./actions"],
+      "exports": ["CreateUserForm"]
+    },
+    {
+      "path": "src/app/(workspace)/governance/layout.tsx",
+      "lines": 10,
+      "sha256": "c41efc5fd7768bc17676c2bfae146bdd2f95681b830b2822559344554e8b2bc8",
+      "imports": [
+        "@/foundation/security/governance-protected-surface",
+        "@/application/governance/require-governance-access"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/governance/locked/governance-unlock-form.tsx",
+      "lines": 75,
+      "sha256": "b3293b64af6eea57bdca9aaa382982e43ee03922eda3d16215fbe0cee434ac17",
+      "imports": ["react", "next/navigation"],
+      "exports": ["GovernanceUnlockForm"]
+    },
+    {
+      "path": "src/app/(workspace)/governance/locked/page.tsx",
+      "lines": 38,
+      "sha256": "5637df525db44e0c73667c2e9754916859fc4af8c004ebe5f560c23f3b0e8609",
+      "imports": ["./governance-unlock-form"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/governance/member-row-controls.tsx",
+      "lines": 75,
+      "sha256": "d600734b1f5e8c53c9adaf264383810ef06b00c83267b9e45bb1f37ce5548e36",
+      "imports": ["react", "./actions"],
+      "exports": ["MemberRowControls"]
+    },
+    {
+      "path": "src/app/(workspace)/governance/page.tsx",
+      "lines": 106,
+      "sha256": "732f510317ce131d391a380f5e2bb08dddc44a101631ea65b64b1aa8f08f9aee",
+      "imports": [
+        "next/link",
+        "lucide-react",
+        "@/application/governance/require-governance-access",
+        "@/application/auth/current-user",
+        "@/persistence/supabase/server",
+        "./member-row-controls",
+        "./create-user-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/layout.tsx",
+      "lines": 29,
+      "sha256": "ff798adc06938e351b8e8f6de1300cadebe8d6f2d8c1bd761d0762b3b977cd55",
+      "imports": [
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/foundation/composition/global-search",
+        "@/foundation/config/supabase-env",
+        "@/foundation/navigation/app-shell"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/loading.tsx",
+      "lines": 11,
+      "sha256": "b984d3829d4c1f952acca2c10b9d6b5e38fae6ed7bc0983ff6dc8565d2ffb539",
+      "imports": ["@/foundation/appearance/brand-mark"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/[meetingId]/close/close-form.tsx",
+      "lines": 46,
+      "sha256": "964773b2dc4f3cd3da1184555e0510b50ae44ff57c58af8f0753abc009e6156c",
+      "imports": [
+        "next/link",
+        "react",
+        "@/foundation/ui/form-controls",
+        "../../actions"
+      ],
+      "exports": ["CloseMeetingForm"]
+    },
+    {
+      "path": "src/app/(workspace)/meetings/[meetingId]/close/page.tsx",
+      "lines": 32,
+      "sha256": "81a29ca94dbd3dabeaefa1d0df986c80fd79aa7614660409433b6385647bc041",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/meetings",
+        "@/foundation/navigation/return-to",
+        "./close-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/[meetingId]/edit/page.tsx",
+      "lines": 37,
+      "sha256": "9d210027a6155b86e765aed53bd7625da7b6907b82ab1c8182ca8d615bfb8279",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/meetings",
+        "../../actions",
+        "../../meeting-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/[meetingId]/not-found.tsx",
+      "lines": 19,
+      "sha256": "637136c237decb83408ab26aa740c7182c893fe21fa106a6672c18e9ce852770",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/[meetingId]/page.tsx",
+      "lines": 204,
+      "sha256": "4d2d5f3ca2d16a85995ecf28c0a8341550587e46fd01860800f4755477f0b9b3",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/domain/meetings/meeting",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/meetings",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/confirm-action",
+        "@/application/auth/current-user",
+        "../../context-panel",
+        "../actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/actions.ts",
+      "lines": 168,
+      "sha256": "7a4c977a6a62247eda48372f2ee3730815c38fafba84d510760ea0cc61312baa",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/application/meetings/meeting-service",
+        "@/foundation/composition/meetings",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/feedback",
+        "@/domain/meetings/meeting",
+        "@/foundation/composition/google"
+      ],
+      "exports": [
+        "MeetingFormState",
+        "createMeetingAction",
+        "updateMeetingAction",
+        "closeMeetingAction",
+        "cancelMeetingAction",
+        "deleteMeetingAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/meetings/error.tsx",
+      "lines": 21,
+      "sha256": "000fe48f700897248a817ae72691d97c26c1a1f899e0b825e0607a778bb67cd6",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/loading.tsx",
+      "lines": 5,
+      "sha256": "cbd2eaf236cf983560ab5e2ef5839a0bc38d4da3303064756cf6b7dc7644c761",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/meeting-form.tsx",
+      "lines": 324,
+      "sha256": "f3a0711cc5c2305f183481e2f737be88ba6b5c8312881a0450384e465795db93",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/meetings/contracts",
+        "@/domain/meetings/meeting",
+        "@/foundation/ui/form-controls",
+        "@/projections/calendar/calendar-time",
+        "@/projections/meetings/meeting-read-model",
+        "./actions"
+      ],
+      "exports": ["MeetingForm"]
+    },
+    {
+      "path": "src/app/(workspace)/meetings/new/page.tsx",
+      "lines": 66,
+      "sha256": "5dcb65dfccb6dc0cfe011152df79dca24748c7a782d95b81e3284896c424218a",
+      "imports": [
+        "@/application/auth/current-user",
+        "@/foundation/composition/meetings",
+        "@/projections/calendar/calendar-time",
+        "@/foundation/navigation/return-to",
+        "../actions",
+        "../meeting-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/meetings/page.tsx",
+      "lines": 305,
+      "sha256": "fcee98c2ec98040af0f0706d78e7ccb3af88bf0479dc7ed56a2b65a60332a009",
+      "imports": [
+        "lucide-react",
+        "next/link",
+        "@/domain/meetings/meeting",
+        "@/foundation/composition/meetings",
+        "@/projections/calendar/calendar-time",
+        "@/projections/meetings/meeting-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/notes/actions.ts",
+      "lines": 75,
+      "sha256": "2f1e14e638883176d30ecf9b7990e6a4ead82b4d2ae47e9ac7c11ad081479fc9",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/application/notes/note-service",
+        "@/foundation/composition/notes",
+        "@/foundation/security/google-access",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "createFolderAction",
+        "createOsNoteAction",
+        "createGoogleDocumentAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/notes/notes-workspace.tsx",
+      "lines": 991,
+      "sha256": "34b0566a037fee3da57777f4676a7dadd0582541b8344b00be5ab54d86a3eb8d",
+      "imports": [
+        "lucide-react",
+        "react",
+        "@/domain/notes/note",
+        "@/persistence/supabase/browser",
+        "./actions"
+      ],
+      "exports": ["NotesWorkspace"]
+    },
+    {
+      "path": "src/app/(workspace)/notes/page.tsx",
+      "lines": 54,
+      "sha256": "33edd17fab4a7c098afaad3fb8eba419af4b22c100e9fbfbc1a04f8e567adbb1",
+      "imports": [
+        "lucide-react",
+        "@/application/auth/current-user",
+        "@/foundation/composition/google",
+        "@/foundation/composition/notes",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-access",
+        "./notes-workspace"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/page.tsx",
+      "lines": 5,
+      "sha256": "7c9e7845d51c079c9ba90fcca727db5a13b8c8eafafe96e1f50249b809919f57",
+      "imports": ["next/navigation"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/[projectId]/edit/page.tsx",
+      "lines": 32,
+      "sha256": "abc53caab3f06197fab143f8026e78174004d693470dfeb157fa5a2b19479f9b",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/projects",
+        "../../actions",
+        "../../project-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/[projectId]/not-found.tsx",
+      "lines": 15,
+      "sha256": "7e45abffab8c9d69eec7463aec93c7bfcd26bb7ff27347192cb2da8cb48d3e14",
+      "imports": ["next/link"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/[projectId]/page.tsx",
+      "lines": 339,
+      "sha256": "afb34d98bdb900ff555dc6c9534e05cebdf34b2fa68c989b65b32374229f3f01",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/domain/projects/project",
+        "@/foundation/composition/projects",
+        "@/projections/projects/project-activity",
+        "@/projections/projects/project-finance",
+        "@/projections/projects/project-read-model",
+        "../project-status-update"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/actions.ts",
+      "lines": 147,
+      "sha256": "7986d5219c89a039e61ed97085e6d85df496790454620da7638aef28344b3955",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/projects/project-service",
+        "@/domain/projects/project",
+        "@/foundation/composition/projects",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "createProjectAction",
+        "updateProjectAction",
+        "transitionProjectAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/projects/error.tsx",
+      "lines": 15,
+      "sha256": "ddd5129d5ae43b142a03a948483922b43dcb00415de644898944163a9b7ac447",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/loading.tsx",
+      "lines": 9,
+      "sha256": "37ab489380a343cae96fd7d09fd12c58bba1670c608251122336eb0deef22b3a",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/new/page.tsx",
+      "lines": 22,
+      "sha256": "52ed8f0a7626604ef18c3f592e7313f5fa0dd8fb79d0a5691a501e12b6e0e709",
+      "imports": [
+        "@/foundation/composition/projects",
+        "../actions",
+        "../project-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/page.tsx",
+      "lines": 103,
+      "sha256": "e2966bf44f772df297095fc115de74ce4bb087a6648c86d3aabaf486cbfc9ac5",
+      "imports": [
+        "next/link",
+        "@/domain/projects/project",
+        "@/foundation/composition/projects",
+        "@/projections/projects/project-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/projects/project-form.tsx",
+      "lines": 403,
+      "sha256": "089f5855a3f2955b9d408814847e8f02e385fd728883b792ec75ea2f52a52527",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/projects/contracts",
+        "@/application/projects/project-service",
+        "@/foundation/ui/form-controls",
+        "@/projections/projects/project-read-model"
+      ],
+      "exports": ["ProjectForm"]
+    },
+    {
+      "path": "src/app/(workspace)/projects/project-status-update.tsx",
+      "lines": 84,
+      "sha256": "bc4040eef0fb3d3ab811f10b76b61170e8e0227604b99f0b322ad7825dcf19b1",
+      "imports": [
+        "lucide-react",
+        "react",
+        "@/domain/projects/project",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["ProjectStatusUpdate"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/actions.ts",
+      "lines": 231,
+      "sha256": "b84677696a35c64c103b1c52bc576562b2f81626389234f200ac645ac14e62e9",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/application/relations/relations-service",
+        "@/application/companies/company-service",
+        "@/domain/relations/contact",
+        "@/domain/companies/company",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/relations",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "RelationsFormState",
+        "createContactAction",
+        "updateContactAction",
+        "archiveContactAction",
+        "deleteContactAction",
+        "createTemplateAction",
+        "updateProspectingStageAction",
+        "setPrimaryContactAction",
+        "recordProspectingTouchAction",
+        "recordContactInteractionAction",
+        "updateInteractionBodyAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/relations/auto-submit-directory-filters.tsx",
+      "lines": 13,
+      "sha256": "fbcaa2e6d5753921be01c354a99fbaedf592794b013a27653e1a2046f5ca6dc5",
+      "imports": [],
+      "exports": ["AutoSubmitDirectoryFilters"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/contact-form.tsx",
+      "lines": 339,
+      "sha256": "f7af2b000f69df3df5c7b6d2163724f272143f875b99a94cd5e2730435f2aea2",
+      "imports": [
+        "next/image",
+        "next/link",
+        "react",
+        "@/application/members/contracts",
+        "@/application/relations/contracts",
+        "@/domain/relations/contact",
+        "@/foundation/ui/form-controls",
+        "@/projections/relations/relations-read-model",
+        "./actions"
+      ],
+      "exports": ["ContactForm"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/contacts/[contactId]/contact-history-list.test.tsx",
+      "lines": 81,
+      "sha256": "33508256397ea6bdb15e3cff2d151ffc6bf333fcd0c189609538abad063ff675",
+      "imports": [
+        "react-dom/server",
+        "vitest",
+        "@/projections/relations/relations-read-model",
+        "./contact-history-list"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/contacts/[contactId]/contact-history-list.tsx",
+      "lines": 174,
+      "sha256": "e1f5e77b087c37c375d818393d4fc9c267c09a1074e130b0d21155674e799993",
+      "imports": [
+        "react",
+        "lucide-react",
+        "@/app/(workspace)/relations/actions",
+        "@/domain/relations/contact",
+        "@/projections/relations/relations-read-model"
+      ],
+      "exports": ["ContactHistoryList"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/contacts/[contactId]/edit/page.tsx",
+      "lines": 28,
+      "sha256": "ca978c719374b3f784491cedbbff8a242221d404e3c2c071f692a35a849d9d43",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/relations",
+        "../../../actions",
+        "../../../contact-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/contacts/[contactId]/page.tsx",
+      "lines": 194,
+      "sha256": "3ad2db5e99694553004e042074306b77f05e4c8137f281d4b32d85280cfd159c",
+      "imports": [
+        "next/image",
+        "next/link",
+        "next/navigation",
+        "lucide-react",
+        "@/app/(workspace)/context-panel",
+        "@/domain/relations/contact",
+        "@/application/auth/current-user",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/projects",
+        "@/foundation/composition/relations",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/confirm-action",
+        "../../actions",
+        "./contact-history-list"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/contacts/new/page.tsx",
+      "lines": 30,
+      "sha256": "f4ee66ae66492372d3177ceb2d6f3335e9424bfefe01f218d96e6f7c85a1597f",
+      "imports": [
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/foundation/composition/relations",
+        "../../actions",
+        "../../contact-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/copy-script-button.tsx",
+      "lines": 22,
+      "sha256": "f9acd068015d1fc952d8e5ee333f9614f37e9716cb95979983fc39af8751eea2",
+      "imports": ["react", "lucide-react"],
+      "exports": ["CopyScriptButton"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/interaction-modal.tsx",
+      "lines": 183,
+      "sha256": "61646f7c54b7ea8508f28b62a07dfe09eaedd7a6482987b51a41704e2053afed",
+      "imports": [
+        "lucide-react",
+        "react",
+        "@/domain/relations/contact",
+        "@/domain/companies/company",
+        "@/foundation/ui/form-controls",
+        "@/projections/relations/relations-read-model",
+        "./actions",
+        "./relations-view"
+      ],
+      "exports": ["InteractionModal"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/messages/new/page.tsx",
+      "lines": 42,
+      "sha256": "8ebd9fb625b28d6150ca3ee762f3639a7ef6165c0d428039cf7eaeba3bb77532",
+      "imports": ["next/link", "../../actions"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/organization-list.tsx",
+      "lines": 68,
+      "sha256": "2ffbdfba4539d582fab3a04674b9b5b059d310e6917a19b6287dadf8cd4d85bb",
+      "imports": ["next/link", "lucide-react", "react"],
+      "exports": ["OrganizationList"]
+    },
+    {
+      "path": "src/app/(workspace)/relations/page.tsx",
+      "lines": 558,
+      "sha256": "4566f0bce06c8cd995d0745151f3683c0510662a6253f0f6658739910e84afff",
+      "imports": [
+        "next/image",
+        "next/link",
+        "lucide-react",
+        "@/domain/companies/company",
+        "@/domain/relations/contact",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/relations",
+        "@/foundation/navigation/return-to",
+        "@/projections/relations/relations-read-model",
+        "./copy-script-button",
+        "./interaction-modal",
+        "./organization-list",
+        "./auto-submit-directory-filters",
+        "./relations-view"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/prospecting-entry.test.ts",
+      "lines": 31,
+      "sha256": "36daff00dc9110e9f94583ad7f846ff990e526d59b1a7c9bc96dc3fcdb893c7d",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/relations-view.test.ts",
+      "lines": 83,
+      "sha256": "6bc483da7886f1651a3b4de66498811c8742382b60d6b9bbb57ed884640c5d92",
+      "imports": ["vitest", "./relations-view"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/relations/relations-view.ts",
+      "lines": 90,
+      "sha256": "893823bcd61ceb755afa8c39fb5647bfa6ca524649aa9a26db1b4fa6ef4ce876",
+      "imports": [],
+      "exports": [
+        "RELATIONS_VIEWS",
+        "RELATIONS_LAYOUTS",
+        "RELATIONS_SORTS",
+        "RelationsView",
+        "RelationsLayout",
+        "RelationsSort",
+        "RelationsSegment",
+        "InteractionCompanyOption",
+        "resolveRelationsView",
+        "resolveRelationsSegment",
+        "resolveRelationsLayout",
+        "resolveRelationsSort",
+        "relationsHref",
+        "sortRelationItems",
+        "profilesForInteractionCompany"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/[roadmapItemId]/edit/page.tsx",
+      "lines": 29,
+      "sha256": "7f2224bc09f2c2d9e23c9c932e3cfaedd437541c74689fdb326bc27cf073eb73",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/roadmap",
+        "../../actions",
+        "../../roadmap-item-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/[roadmapItemId]/not-found.tsx",
+      "lines": 18,
+      "sha256": "d8c1580c8177a10a5b4c6f2033895f62b4f91839abda68abe99336fab547bcb2",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/[roadmapItemId]/page.tsx",
+      "lines": 115,
+      "sha256": "fff8299ea15b67f93be71599241bb26b1673b30215c514214e2e74ea9bbe8af5",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/domain/roadmap/roadmap-item",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/roadmap",
+        "@/foundation/ui/confirm-action",
+        "../../context-panel",
+        "../actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/actions.ts",
+      "lines": 70,
+      "sha256": "dbec14e44cffcb1759cd3ab054a730a13d8205d4a3b1f08356f466677eaccce0",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/roadmap/roadmap-service",
+        "@/domain/roadmap/roadmap-item",
+        "@/foundation/composition/roadmap",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "RoadmapFormState",
+        "createRoadmapItemAction",
+        "updateRoadmapItemAction",
+        "completeRoadmapItemAction",
+        "abandonRoadmapItemAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/error.tsx",
+      "lines": 19,
+      "sha256": "34e591ec305ab5327176fe7fc18041ae86792d54b05193e9bb435789405f5d52",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/loading.tsx",
+      "lines": 5,
+      "sha256": "8a30d4683083bfeeaedaba4c307931460916880bd9df2378f94603fc87829ad5",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/new/page.tsx",
+      "lines": 15,
+      "sha256": "1e293680f64cde58ae8979ff7ba0999248f2dd7b23892d38b3a5430f53135629",
+      "imports": [
+        "../actions",
+        "../roadmap-item-form",
+        "@/foundation/composition/roadmap"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/page.tsx",
+      "lines": 123,
+      "sha256": "40a884acc2ba50be03bab4d0a91b75c747b58844b207be4598303e46038059d1",
+      "imports": [
+        "next/link",
+        "@/domain/roadmap/roadmap-item",
+        "@/foundation/composition/roadmap",
+        "@/projections/roadmap/roadmap-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/roadmap/roadmap-item-form.tsx",
+      "lines": 207,
+      "sha256": "2822ae4eb202e608b37fe8df545b6602352c586fecddd2107149f748762c273e",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/roadmap/contracts",
+        "@/domain/roadmap/roadmap-item",
+        "@/projections/roadmap/roadmap-read-model",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["RoadmapItemForm"]
+    },
+    {
+      "path": "src/app/(workspace)/settings/google-actions.ts",
+      "lines": 54,
+      "sha256": "3fbceb3f62a5d45db6e8aa0dbd4665bd7b4b5b2b5e1a210b2de24a40a7526ffd",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/foundation/composition/google",
+        "@/foundation/ui/feedback",
+        "@/foundation/security/google-access"
+      ],
+      "exports": ["disconnectGoogleAction", "saveGoogleCalendarsAction"]
+    },
+    {
+      "path": "src/app/(workspace)/settings/page.tsx",
+      "lines": 261,
+      "sha256": "efee2e00ed3e2b152c11877fa1e7c18d5c21fba67f2e805f53bbe6c588d01a09",
+      "imports": [
+        "lucide-react",
+        "@/application/auth/actions",
+        "@/application/auth/current-user",
+        "@/foundation/composition/google",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-access",
+        "./google-actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/[sprintId]/close/close-sprint-form.tsx",
+      "lines": 99,
+      "sha256": "6b4251569274aa93804cbc923088ec13da9614c8102e6a0076ede49a22cd0777",
+      "imports": [
+        "next/link",
+        "react",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task",
+        "@/foundation/ui/form-controls",
+        "@/projections/sprints/sprint-read-model",
+        "../../actions"
+      ],
+      "exports": ["CloseSprintForm"]
+    },
+    {
+      "path": "src/app/(workspace)/sprints/[sprintId]/close/page.tsx",
+      "lines": 23,
+      "sha256": "3b050c74811b34a08f755e31b7bf2985bb79fc668287ab70c98c8967bb86e020",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/sprints",
+        "../../actions",
+        "./close-sprint-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/[sprintId]/not-found.tsx",
+      "lines": 18,
+      "sha256": "dabc40b66d02449c3a1a49b3b99112af233a92d5409962a14210605e2eb48a74",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/[sprintId]/page.tsx",
+      "lines": 255,
+      "sha256": "5de7dbdc2b98bd985e603deeb39038425f3323a931c9842bb26bde425aa94c88",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/sprints",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/confirm-action",
+        "../../context-panel",
+        "../actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/actions.ts",
+      "lines": 88,
+      "sha256": "7e58cae582df0bdd8c56c104ab6a0f51cd23847ad5ea066ede79b52bfbd7747f",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/sprints/sprint-service",
+        "@/domain/sprints/sprint",
+        "@/foundation/composition/sprints",
+        "@/foundation/ui/feedback"
+      ],
+      "exports": [
+        "SprintFormState",
+        "createSprintAction",
+        "activateSprintAction",
+        "cancelSprintAction",
+        "addSprintTasksAction",
+        "removeSprintTaskAction",
+        "closeSprintAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/sprints/error.tsx",
+      "lines": 19,
+      "sha256": "2f843720edfc10efeff3f5489dfebadbf74323e62b01385bb30b7214456fa654",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/loading.tsx",
+      "lines": 5,
+      "sha256": "9dbc4a8441dd8de69f114a41d4a12ff36585bc64848a9cff664bd6f601afcd95",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/new/page.tsx",
+      "lines": 15,
+      "sha256": "80a5906591c31d70b9568583282d2b42df13b05d39df21be6e6b1932bffd8588",
+      "imports": [
+        "@/foundation/composition/sprints",
+        "../actions",
+        "../sprint-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/page.tsx",
+      "lines": 134,
+      "sha256": "c09eed6f7a84a675b90337bdd15bdb9a81a89bf3909cec7bc76b628e667676c1",
+      "imports": [
+        "next/link",
+        "@/domain/sprints/sprint",
+        "@/foundation/composition/sprints",
+        "@/projections/sprints/sprint-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/sprints/sprint-form.tsx",
+      "lines": 102,
+      "sha256": "27ed348a2dabd40a92b5c8df59256f0f77eb5238989bdec2852a217f85b3578c",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/sprints/contracts",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["SprintForm"]
+    },
+    {
+      "path": "src/app/(workspace)/tasks/[taskId]/edit/page.tsx",
+      "lines": 17,
+      "sha256": "33c41d163e0f530e1476fb1b2609ea3b20c1c47b30c7132f0e1ebc5630b64614",
+      "imports": [
+        "next/navigation",
+        "@/foundation/composition/tasks",
+        "../../actions",
+        "../../task-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/[taskId]/not-found.tsx",
+      "lines": 18,
+      "sha256": "2d48564f9b512fcc4061b3dcaf131bbca219053325988d48319efde4013407d2",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/[taskId]/page.tsx",
+      "lines": 137,
+      "sha256": "1af9c04a3615f65cedafcfc799f33b40fc3479d7bbe98b9d66c8a1215121c162",
+      "imports": [
+        "next/link",
+        "next/navigation",
+        "@/application/auth/current-user",
+        "@/domain/tasks/task",
+        "@/foundation/composition/context-engine",
+        "@/foundation/composition/tasks",
+        "@/foundation/navigation/return-to",
+        "@/foundation/ui/confirm-action",
+        "../../context-panel",
+        "../actions"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/actions.ts",
+      "lines": 165,
+      "sha256": "6aec2e9c7295718822718582c68057e1c77d032c05b2e8a0f37b406cde9955bc",
+      "imports": [
+        "next/cache",
+        "next/navigation",
+        "@/application/tasks/task-service",
+        "@/domain/tasks/task",
+        "@/foundation/composition/tasks",
+        "@/foundation/ui/feedback",
+        "@/foundation/navigation/return-to",
+        "@/projections/calendar/calendar-time"
+      ],
+      "exports": [
+        "TaskFormState",
+        "createTaskAction",
+        "updateTaskAction",
+        "startTaskAction",
+        "unblockTaskAction",
+        "cancelTaskAction",
+        "blockTaskAction",
+        "completeTaskAction",
+        "updateTaskStatusAction",
+        "deleteTaskAction"
+      ]
+    },
+    {
+      "path": "src/app/(workspace)/tasks/error.tsx",
+      "lines": 19,
+      "sha256": "07beeaff2d7468b5e826955face160560c8c36be43322b819f3042882e223711",
+      "imports": ["@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/loading.tsx",
+      "lines": 5,
+      "sha256": "f4a4ab5105f8e67fc19f638877e06c0a6edf6ac1451db41bb10da1ae185cfaca",
+      "imports": ["../collection-loading"],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/new/page.tsx",
+      "lines": 34,
+      "sha256": "8a80207680fbf2c60021b6e2dcb863aa8b6ebe21c61705276cda50bc804f49bc",
+      "imports": [
+        "@/foundation/composition/tasks",
+        "../actions",
+        "../task-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/page.tsx",
+      "lines": 141,
+      "sha256": "7cd3389183a8d104dab6a9769d738165667dd4669c00e2a47e9b05b0e83d92ad",
+      "imports": [
+        "next/link",
+        "@/domain/tasks/task",
+        "@/foundation/composition/tasks",
+        "@/projections/tasks/task-read-model",
+        "./task-status-update"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/(workspace)/tasks/related-task-list.tsx",
+      "lines": 24,
+      "sha256": "adc4cb5ede1f948fa468ae8b14e6118adc085443a9a80d031743ee1e7cfa90d5",
+      "imports": [
+        "next/link",
+        "@/domain/tasks/task",
+        "@/projections/tasks/task-read-model"
+      ],
+      "exports": ["RelatedTaskList"]
+    },
+    {
+      "path": "src/app/(workspace)/tasks/task-form.tsx",
+      "lines": 157,
+      "sha256": "b93e053c5ccb3775f81f58bead7b83fb3d5ddaef0d848115d6673703c9b6747a",
+      "imports": [
+        "next/link",
+        "react",
+        "@/application/tasks/contracts",
+        "@/foundation/ui/form-controls",
+        "@/projections/tasks/task-read-model",
+        "@/projections/calendar/calendar-time",
+        "./actions"
+      ],
+      "exports": ["TaskForm"]
+    },
+    {
+      "path": "src/app/(workspace)/tasks/task-status-update.tsx",
+      "lines": 123,
+      "sha256": "fac67da7fbc47b19ae50fbf0fb1232f09dc7230fb801750bba03107adcad9a73",
+      "imports": [
+        "lucide-react",
+        "react",
+        "@/domain/tasks/task",
+        "@/foundation/ui/form-controls",
+        "./actions"
+      ],
+      "exports": ["TaskStatusUpdate"]
+    },
+    {
+      "path": "src/app/(workspace)/work/page.tsx",
+      "lines": 51,
+      "sha256": "ca44e9bf48a8bb22b4591875796ebf79f162a1c09d8fc69fabff861684982c4b",
+      "imports": ["next/link", "lucide-react"],
+      "exports": []
+    },
+    {
+      "path": "src/app/api/google/oauth/callback/route.ts",
+      "lines": 120,
+      "sha256": "5c7c1091542c551c37e2f99b7a58f40a7fe47bab890281a735cba599f814fdcb",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/application/google/google-connection-service",
+        "@/foundation/composition/google",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-oauth-state",
+        "@/foundation/ui/feedback",
+        "@/foundation/security/google-access",
+        "@/foundation/composition/notes"
+      ],
+      "exports": ["GET"]
+    },
+    {
+      "path": "src/app/api/google/oauth/start/route.ts",
+      "lines": 59,
+      "sha256": "8bffe01145d5be23f24a968e6ca5647d271530347ae9201d1bfa6c8a0649a12f",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/foundation/composition/google",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-oauth-state",
+        "@/foundation/ui/feedback",
+        "@/foundation/security/google-access"
+      ],
+      "exports": ["GET"]
+    },
+    {
+      "path": "src/app/api/google/picker/start/route.ts",
+      "lines": 56,
+      "sha256": "f99ca49217ed2d73a8c6fd2ac9d453a8bd6a3cc5a55a66cb5d7cb06106a19410",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/foundation/composition/google",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-oauth-state",
+        "@/foundation/ui/feedback",
+        "@/foundation/security/google-access"
+      ],
+      "exports": ["GET"]
+    },
+    {
+      "path": "src/app/api/governance/lock/route.ts",
+      "lines": 16,
+      "sha256": "e04b776d52500dc72916aa953985d411592f8ad54e0df96f74c3d3c8e45cee16",
+      "imports": ["next/server", "@/foundation/security/governance-session"],
+      "exports": ["POST"]
+    },
+    {
+      "path": "src/app/api/governance/unlock/route.ts",
+      "lines": 57,
+      "sha256": "f889e1f8819767861ded1754eb90be4d3a272301fe3d21af76c9eb16d247f34b",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/foundation/config/governance-env",
+        "@/foundation/security/governance-access-key",
+        "@/foundation/security/governance-session"
+      ],
+      "exports": ["POST"]
+    },
+    {
+      "path": "src/app/api/notes/[noteId]/route.ts",
+      "lines": 111,
+      "sha256": "2797a62be27aecb6746276fbc03b09d6c937d8397535f9f212c6244146feb60f",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/application/notes/note-service",
+        "@/foundation/composition/notes",
+        "@/foundation/security/google-access"
+      ],
+      "exports": ["GET", "PATCH", "DELETE"]
+    },
+    {
+      "path": "src/app/api/notes/files/[noteId]/route.ts",
+      "lines": 27,
+      "sha256": "40ec1342c068a8a21f2fd0c8554a4b95862da71bb02b91cf63a4a53caffe4f66",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/foundation/composition/notes"
+      ],
+      "exports": ["GET"]
+    },
+    {
+      "path": "src/app/api/notes/folders/[folderId]/route.ts",
+      "lines": 41,
+      "sha256": "837c52390b3f9834ee32766c87a380fb4796bb08028f102fb7922b5cc273075f",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/application/notes/note-service",
+        "@/foundation/composition/notes"
+      ],
+      "exports": ["PATCH", "DELETE"]
+    },
+    {
+      "path": "src/app/api/notes/upload/route.ts",
+      "lines": 46,
+      "sha256": "2a2cc9c839b73d2fba8cccc72bf0cfdfdf763b54972e454028b729243c5d370e",
+      "imports": [
+        "next/server",
+        "@/application/auth/current-user",
+        "@/application/notes/note-service",
+        "@/foundation/composition/notes"
+      ],
+      "exports": ["POST", "PUT"]
+    },
+    {
+      "path": "src/app/globals.css",
+      "lines": 12240,
+      "sha256": "7cec9b4bedf433f3851e58f9fa1e51d0d191c670a696ccbbae542553ef25067f",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "lines": 20,
+      "sha256": "f1d29961b754d1c0f6b570a26c66867cc451c21fd1e278c237a06e126d329b82",
+      "imports": ["next"],
+      "exports": ["metadata"]
+    },
+    {
+      "path": "src/app/login/login-form.tsx",
+      "lines": 246,
+      "sha256": "b3dfea918e3dec74ded8bfd3fb2d9ad9510d3aca9dee1b897b5c24c4db2cd3b6",
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/application/auth/messages",
+        "@/foundation/ui/submit-button",
+        "@/persistence/supabase/browser"
+      ],
+      "exports": ["LoginForm"]
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "lines": 41,
+      "sha256": "3f00f3f4e54da147092f456e3c2f6cf1e320432f8d69029d8e6496e4a1746fbb",
+      "imports": [
+        "next/image",
+        "@/foundation/appearance/brand-mark",
+        "@/foundation/config/supabase-env",
+        "./login-form"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "lines": 19,
+      "sha256": "7a6021e4ff8782fec658a8d989deb85f4bec889ebdecfd3aa4f50e692053837f",
+      "imports": ["next/link", "@/foundation/ui/system-state"],
+      "exports": []
+    },
+    {
+      "path": "src/application/auth/actions.ts",
+      "lines": 14,
+      "sha256": "d53c531d4afab3ac0a9a4d8298faca5e0a183d8446362b706988c0d938179d92",
+      "imports": [
+        "next/navigation",
+        "next/headers",
+        "@/foundation/security/governance-session",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["signOut"]
+    },
+    {
+      "path": "src/application/auth/current-user.ts",
+      "lines": 39,
+      "sha256": "5108b4953608919514441a30cdf7d37d424bad288d230a5516b2a7d68f1e09d0",
+      "imports": ["react", "@/persistence/supabase/server"],
+      "exports": ["UserRole", "AuthenticatedUser", "getAuthenticatedUser"]
+    },
+    {
+      "path": "src/application/auth/messages.test.ts",
+      "lines": 25,
+      "sha256": "d6c27805a474514a12e165b23f589ae8ffee8378aaf6b53dac31ce3dbf278d9b",
+      "imports": ["vitest", "@/foundation/config/supabase-env", "./messages"],
+      "exports": []
+    },
+    {
+      "path": "src/application/auth/messages.ts",
+      "lines": 17,
+      "sha256": "c222e96900a1a108ee5604beb22d4f60d9d20010242ea60f6b4e77da34c7a11a",
+      "imports": ["@/foundation/config/supabase-env"],
+      "exports": ["getAuthenticationErrorMessage"]
+    },
+    {
+      "path": "src/application/companies/company-service.test.ts",
+      "lines": 166,
+      "sha256": "3e30d2983927eac76de1431483c4851a85939739051aaabb3a23d1b2434d5c07",
+      "imports": [
+        "vitest",
+        "./contracts",
+        "./company-service",
+        "@/domain/companies/company"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/companies/company-service.ts",
+      "lines": 122,
+      "sha256": "8d4d736efbe9c76561ff9b9dddc56ff86c94f800e92934df0557fd23e4c69ebe",
+      "imports": [
+        "@/domain/companies/company",
+        "@/application/members/contracts",
+        "./contracts"
+      ],
+      "exports": [
+        "CompanyNotFoundError",
+        "CompanyOwnerError",
+        "CompanyDeleteBlockedError",
+        "CompanyService",
+        "getCompanyApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/companies/contracts.ts",
+      "lines": 12,
+      "sha256": "7e91a92ca1e80aefe2c396444b8cc478a291b55c4374a9b18166583d5aeaf764",
+      "imports": [
+        "@/domain/companies/company",
+        "@/application/members/contracts"
+      ],
+      "exports": ["CompanyRepository"]
+    },
+    {
+      "path": "src/application/costs/contracts.ts",
+      "lines": 50,
+      "sha256": "a37100782e3740ed3ec6bce903e797e4d9f6f11ccae32c8dc621c502817097af",
+      "imports": ["@/application/members/contracts", "@/domain/costs/cost"],
+      "exports": [
+        "CostContextOption",
+        "CostFormOptions",
+        "CostContextDirectory",
+        "CostRepository",
+        "CashBalanceSnapshot",
+        "CashBalanceRepository"
+      ]
+    },
+    {
+      "path": "src/application/costs/cost-service.test.ts",
+      "lines": 136,
+      "sha256": "ece4183f20a2f46ffa4a32278ffbd841167d70297249eb56b82f1679423707a7",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/costs/cost",
+        "./contracts",
+        "./cost-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/costs/cost-service.ts",
+      "lines": 142,
+      "sha256": "cf546c0a500b0a6a411ed881069761a64ec835affe9e8cfb06e36a1b29bfbc59",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/costs/cost",
+        "./contracts"
+      ],
+      "exports": [
+        "CostNotFoundError",
+        "CostReferenceError",
+        "CostService",
+        "getCostApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/decisions/contracts.ts",
+      "lines": 46,
+      "sha256": "0fb8aace53ee0733ece77d66c8afcbc609245faf98dade0fad9116424064ec5c",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/decisions/decision",
+        "@/domain/tasks/task"
+      ],
+      "exports": [
+        "DecisionCompanyOption",
+        "DecisionMeetingOption",
+        "DecisionTaskOption",
+        "DecisionRepository",
+        "DecisionContextDirectory",
+        "DecisionFormOptions"
+      ]
+    },
+    {
+      "path": "src/application/decisions/decision-service.test.ts",
+      "lines": 163,
+      "sha256": "a0bfc28184f51c09ef358376ca5c348537fae09e41932454f8d0dad0f198bcb8",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/decisions/decision",
+        "./contracts",
+        "./decision-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/decisions/decision-service.ts",
+      "lines": 107,
+      "sha256": "f44db2e3644b2c5d987bde944ec43076368379e228c3ad3ac8e1ac6a04615751",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/decisions/decision",
+        "./contracts"
+      ],
+      "exports": [
+        "DecisionNotFoundError",
+        "DecisionReferenceError",
+        "DecisionService",
+        "getDecisionApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/google/contracts.ts",
+      "lines": 176,
+      "sha256": "713e87e02626487360fce85889b28f51e046ac06df64fd1ccae718c7b31676f8",
+      "imports": ["@/domain/google/google-connection"],
+      "exports": [
+        "ProtectedGoogleToken",
+        "StoredGoogleConnection",
+        "GoogleAuthorizationTokens",
+        "GoogleIdentity",
+        "GoogleCalendarOption",
+        "GoogleCalendarSelection",
+        "GoogleCalendarEvent",
+        "GoogleCalendarEventInput",
+        "GoogleDriveDocument",
+        "GoogleDocumentContent",
+        "GoogleMeetingMirror",
+        "GoogleConnectionRepository",
+        "GoogleOAuthGateway",
+        "GoogleCalendarGateway",
+        "GoogleDriveDocumentGateway",
+        "GoogleCalendarSelectionRepository",
+        "GoogleMeetingMirrorRepository",
+        "GoogleEventArtifactRepository",
+        "GoogleTokenProtector"
+      ]
+    },
+    {
+      "path": "src/application/google/google-calendar-event-service.ts",
+      "lines": 58,
+      "sha256": "567acd89efd2cdbcf999f333a7d2106ddd92c235d078f957fd6891673702241a",
+      "imports": ["./contracts"],
+      "exports": ["GoogleCalendarEventService"]
+    },
+    {
+      "path": "src/application/google/google-calendar-selection-service.test.ts",
+      "lines": 113,
+      "sha256": "a3ba4e061670674b8bad48a712d716f7798d69a5def3cb5f1a56b3a6acf9fa0a",
+      "imports": [
+        "vitest",
+        "./contracts",
+        "./google-calendar-selection-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/google/google-calendar-selection-service.ts",
+      "lines": 80,
+      "sha256": "307de91cce4a04a369546c34729cd6fa416ba4ff6a0184a243c17026ecb526e7",
+      "imports": ["@/application/google/contracts"],
+      "exports": [
+        "SelectableGoogleCalendar",
+        "GoogleCalendarSelectionError",
+        "GoogleCalendarSelectionService"
+      ]
+    },
+    {
+      "path": "src/application/google/google-connection-service.test.ts",
+      "lines": 116,
+      "sha256": "f6639e85cac9fd003607acecd103a3754e49e263ff6787097c2f0ca0f2ef1ca7",
+      "imports": [
+        "vitest",
+        "./contracts",
+        "./google-connection-service",
+        "./google-scopes"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/google/google-connection-service.ts",
+      "lines": 104,
+      "sha256": "f9b6995ff2e8b4084023fd897d106f5571b04aedb273464d06ace7d0f4492e68",
+      "imports": [
+        "@/application/google/contracts",
+        "@/application/google/google-scopes",
+        "@/domain/google/google-connection"
+      ],
+      "exports": [
+        "GoogleConnectionApplicationError",
+        "GoogleConnectionService",
+        "getGoogleConnectionErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/google/google-drive-document-service.test.ts",
+      "lines": 105,
+      "sha256": "dd8db5652c05c9891c764000f53b371699de8c6576fee4de84f436a799a6bf09",
+      "imports": [
+        "vitest",
+        "./contracts",
+        "./google-drive-document-service",
+        "./google-scopes"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/google/google-drive-document-service.ts",
+      "lines": 74,
+      "sha256": "b50942a671a651c9045869cddf996601c93d40eacb3f090a64bd95b3220bd175",
+      "imports": ["./contracts"],
+      "exports": [
+        "GoogleDriveDocumentError",
+        "GoogleDriveDocumentService",
+        "getGoogleDriveDocumentErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/google/google-event-artifact-service.ts",
+      "lines": 93,
+      "sha256": "c90dbf74ee5078cbfc6848da8c9c85861468074b281eb321cb72c05df132e7ff",
+      "imports": [
+        "@/application/members/contracts",
+        "@/application/meetings/contracts",
+        "@/domain/google/google-event-artifact",
+        "./contracts",
+        "./google-calendar-event-service"
+      ],
+      "exports": [
+        "GoogleEventArtifactNotFoundError",
+        "GoogleEventArtifactService",
+        "getGoogleEventArtifactErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/google/google-meeting-mirror-service.test.ts",
+      "lines": 158,
+      "sha256": "95b4119eafdd0319b587980f312b69162e99d2223adc883f2f48ee8c7f4e65d8",
+      "imports": [
+        "vitest",
+        "@/domain/meetings/meeting",
+        "./contracts",
+        "./google-meeting-mirror-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/google/google-meeting-mirror-service.ts",
+      "lines": 125,
+      "sha256": "5ddf98339afd811802b559f876545405cb80523a1eccf65b16ae6fc04e561b8f",
+      "imports": ["@/domain/meetings/meeting", "./contracts"],
+      "exports": ["GoogleMirrorResult", "GoogleMeetingMirrorService"]
+    },
+    {
+      "path": "src/application/google/google-scopes.ts",
+      "lines": 19,
+      "sha256": "b0bcdc4ebfea0c361045fe72b42e7e78a3b64e49448417ef117ed7c3dc8e9a1a",
+      "imports": [],
+      "exports": [
+        "GOOGLE_IDENTITY_SCOPES",
+        "GOOGLE_DATA_SCOPES",
+        "GOOGLE_DRIVE_FILE_SCOPE",
+        "GOOGLE_OAUTH_SCOPES",
+        "hasRequiredGoogleDataScopes",
+        "hasGoogleDriveFileScope"
+      ]
+    },
+    {
+      "path": "src/application/governance/require-governance-access.ts",
+      "lines": 15,
+      "sha256": "7c6170f5376958bb566f8a554ce206afa60484e72eefacc2499af0cd3e8db553",
+      "imports": ["next/navigation", "@/application/auth/current-user"],
+      "exports": ["requireGovernanceAccess"]
+    },
+    {
+      "path": "src/application/meetings/contracts.ts",
+      "lines": 32,
+      "sha256": "dea594441d1d403cddcf67775d6b1e7cd3b3a725b87d4c6fe8d4014a604330a6",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/meetings/meeting"
+      ],
+      "exports": [
+        "CompanyOption",
+        "MeetingTaskOption",
+        "ContactOption",
+        "MeetingRepository",
+        "MeetingContextDirectory",
+        "MeetingFormOptions"
+      ]
+    },
+    {
+      "path": "src/application/meetings/meeting-service.test.ts",
+      "lines": 85,
+      "sha256": "08b0ede814ec619311bd81f5a1f3c59ca5c9f61cf9a9f3ca950a7658ac7e200f",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/meetings/meeting",
+        "./contracts",
+        "./meeting-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/meetings/meeting-service.ts",
+      "lines": 121,
+      "sha256": "eb4156b4ab97ff7e5f60d825238871d888f7c7a5e105f04b49265ba413112adc",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/meetings/meeting",
+        "./contracts"
+      ],
+      "exports": [
+        "MeetingNotFoundError",
+        "MeetingMemberError",
+        "MeetingCompanyError",
+        "MeetingTaskError",
+        "MeetingService",
+        "getMeetingApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/members/contracts.ts",
+      "lines": 10,
+      "sha256": "e64446e16bf879eb71f0549a57cf949cd189de22a8549799e575f937ddecf4bd",
+      "imports": [],
+      "exports": ["ActiveMember", "MemberDirectory"]
+    },
+    {
+      "path": "src/application/notes/contracts.ts",
+      "lines": 59,
+      "sha256": "58e8fc491ced4d1fee5b4b68c0b8796e7b229c4b391d71815d6223c441f98b74",
+      "imports": ["@/domain/notes/note"],
+      "exports": ["CreateNoteItem", "NoteRepository", "NoteFileStorage"]
+    },
+    {
+      "path": "src/application/notes/google-note-service.test.ts",
+      "lines": 72,
+      "sha256": "2e6961718f4c07bede2d5e0154714818ca24c1031de7e53116f96abae8b505da",
+      "imports": [
+        "vitest",
+        "@/application/google/google-drive-document-service",
+        "./contracts",
+        "./google-note-service",
+        "./note-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/notes/google-note-service.ts",
+      "lines": 129,
+      "sha256": "652a650811d0249f1c8d8cd6e4d1c470dcee0e3ee1589348f64dba787db2ece0",
+      "imports": [
+        "@/application/google/google-drive-document-service",
+        "@/domain/notes/note",
+        "@/persistence/google/google-drive-client",
+        "./contracts",
+        "./note-service"
+      ],
+      "exports": ["GoogleNoteService"]
+    },
+    {
+      "path": "src/application/notes/note-service.test.ts",
+      "lines": 165,
+      "sha256": "d38896afd401afbb786ea7aabde14425abf80d1013d23109ff76f4cc3189aa7c",
+      "imports": [
+        "vitest",
+        "./contracts",
+        "@/domain/notes/note",
+        "./note-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/notes/note-service.ts",
+      "lines": 195,
+      "sha256": "e284cd130cf8fe33ba35504bf1fee2043678de3fe673263d253824cf80bfd83f",
+      "imports": ["@/domain/notes/note", "./contracts"],
+      "exports": [
+        "NoteApplicationError",
+        "NoteConflictError",
+        "NoteService",
+        "getNoteErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/projects/contracts.ts",
+      "lines": 33,
+      "sha256": "97849eac49f267c13f6aa562cfbd005443369df7ad60a6e67e0bfacd99e4959e",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/projects/project"
+      ],
+      "exports": [
+        "ProjectContextOption",
+        "ProjectFormOptions",
+        "ProjectContextDirectory",
+        "ProjectRepository"
+      ]
+    },
+    {
+      "path": "src/application/projects/project-service.test.ts",
+      "lines": 152,
+      "sha256": "8fbad330349c6c4d4f1fbf30a4ac24f765d2cc0c2150ff5623164bb3e2c19bdc",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/projects/project",
+        "./contracts",
+        "./project-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/projects/project-service.ts",
+      "lines": 99,
+      "sha256": "14b7ebd2fd445e2f38b8d6acaf610d3786081bfc28390832f7aff302f38a9863",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/projects/project",
+        "./contracts"
+      ],
+      "exports": [
+        "ProjectNotFoundError",
+        "ProjectReferenceError",
+        "ProjectFormState",
+        "ProjectService",
+        "getProjectApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/relations/contracts.ts",
+      "lines": 59,
+      "sha256": "dc38522535c3223f664c0faf17f8159b539b7be59b1212cb55cadef969fc5789",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/relations/contact",
+        "@/domain/companies/company"
+      ],
+      "exports": [
+        "RelationCompanyOption",
+        "ContactRepository",
+        "RelationsDirectory"
+      ]
+    },
+    {
+      "path": "src/application/relations/relations-service.test.ts",
+      "lines": 102,
+      "sha256": "c720e52fa62822ca55192767c5e2481003f36bb6a11ebfb31e25c201c0ad52a1",
+      "imports": ["vitest", "./contracts", "./relations-service"],
+      "exports": []
+    },
+    {
+      "path": "src/application/relations/relations-service.ts",
+      "lines": 175,
+      "sha256": "b1d26595d1ffba0a12d119f49908b564206d35820652fc5f2518e1644ef91155",
+      "imports": [
+        "@/domain/relations/contact",
+        "@/domain/companies/company",
+        "./contracts"
+      ],
+      "exports": [
+        "RelationsService",
+        "contactValuesFromInput",
+        "getRelationsErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/roadmap/contracts.ts",
+      "lines": 23,
+      "sha256": "ec44460c71d4df7d3fce686ef1673bc8fc5f45166bbe55d8bc104bdd81df37bc",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/roadmap/roadmap-item"
+      ],
+      "exports": [
+        "RoadmapContextOption",
+        "RoadmapFormOptions",
+        "RoadmapContextDirectory",
+        "RoadmapItemRepository"
+      ]
+    },
+    {
+      "path": "src/application/roadmap/roadmap-service.test.ts",
+      "lines": 36,
+      "sha256": "c3733ef657d32e2f1ed8865f7704bac4334be12fc258c96d45ef8c9e950ab202",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/roadmap/roadmap-item",
+        "./contracts",
+        "./roadmap-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/roadmap/roadmap-service.ts",
+      "lines": 55,
+      "sha256": "2a871073d2c30ff962a0a5b3d3028016d24807b2c6871d006d1723778a4aad2a",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/roadmap/roadmap-item",
+        "./contracts"
+      ],
+      "exports": [
+        "RoadmapItemNotFoundError",
+        "RoadmapReferenceError",
+        "RoadmapService",
+        "getRoadmapApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/sprints/contracts.ts",
+      "lines": 19,
+      "sha256": "9f69933b9667191d7f6bd31a8a6921f99e07f78a62e40820b96bd72b541c7b14",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task"
+      ],
+      "exports": [
+        "SprintTaskOption",
+        "SprintFormOptions",
+        "SprintTaskDirectory",
+        "SprintRepository"
+      ]
+    },
+    {
+      "path": "src/application/sprints/sprint-service.test.ts",
+      "lines": 12,
+      "sha256": "031446a83dae52ff15b34a108eb8d7a7b3bfb7311742d45edfc9853eeb903d8a",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/sprints/sprint",
+        "./contracts",
+        "./sprint-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/sprints/sprint-service.ts",
+      "lines": 21,
+      "sha256": "d9a5baa094ea0a6f8246db86e7784649373dda6c159c0f54f1fe1e371c07f1b5",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/sprints/sprint",
+        "./contracts"
+      ],
+      "exports": [
+        "SprintNotFoundError",
+        "SprintReferenceError",
+        "SprintService",
+        "getSprintApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/tasks/contracts.ts",
+      "lines": 37,
+      "sha256": "5473dfe164f5c238aa0f8f31b7072cd0d3689e81e99b8413fad10b5f6647b7e7",
+      "imports": ["@/application/members/contracts", "@/domain/tasks/task"],
+      "exports": [
+        "TaskCompanyOption",
+        "TaskMeetingOption",
+        "TaskDecisionOption",
+        "TaskGoogleEventOption",
+        "TaskRepository",
+        "TaskContextDirectory",
+        "TaskFormOptions"
+      ]
+    },
+    {
+      "path": "src/application/tasks/task-service.test.ts",
+      "lines": 60,
+      "sha256": "7ec6dbe2503c453f35d970424af38406cf350c3512cd8127dfd4c51e692130e9",
+      "imports": [
+        "vitest",
+        "@/application/members/contracts",
+        "@/domain/tasks/task",
+        "./contracts",
+        "./task-service"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/application/tasks/task-service.ts",
+      "lines": 106,
+      "sha256": "4679ec3ecbb2cece47fa427470afb42d102db8f48deee17025d5a2daa9eff1c2",
+      "imports": [
+        "@/application/members/contracts",
+        "@/domain/tasks/task",
+        "./contracts"
+      ],
+      "exports": [
+        "TaskNotFoundError",
+        "TaskReferenceError",
+        "TaskService",
+        "getTaskApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/application/vault/contracts.ts",
+      "lines": 28,
+      "sha256": "83368b689969348defdb38232c34f296b4bb512af3c1f915463de3c95b4d1313",
+      "imports": ["@/domain/vault/vault-entry"],
+      "exports": [
+        "ProtectedVaultPayload",
+        "StoredVaultEntry",
+        "VaultPayloadProtector",
+        "VaultRepository"
+      ]
+    },
+    {
+      "path": "src/application/vault/vault-service.test.ts",
+      "lines": 51,
+      "sha256": "002e99d7199469856ce714cb3f26a7abc870db1e0f53b7c3b2ddf04d5ebca012",
+      "imports": ["vitest", "./contracts", "./vault-service"],
+      "exports": []
+    },
+    {
+      "path": "src/application/vault/vault-service.ts",
+      "lines": 55,
+      "sha256": "8b0edf35a1588da7ec1910312657e94554f1158b77155c4c24fa420ee72a0dfb",
+      "imports": ["@/domain/vault/vault-entry", "./contracts"],
+      "exports": [
+        "VaultNotFoundError",
+        "VaultService",
+        "getVaultApplicationErrorMessage"
+      ]
+    },
+    {
+      "path": "src/domain/companies/company.test.ts",
+      "lines": 170,
+      "sha256": "0cc0db6122df1fb13cc82a777b154090e716e9884d56dc52cb0bbfb5e9452c0c",
+      "imports": ["vitest", "./company"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/companies/company.ts",
+      "lines": 193,
+      "sha256": "6bca648ad4296cdc92c5f0e36463cae922a95d0fa41aa0376b57e217c75e57da",
+      "imports": [],
+      "exports": [
+        "COMPANY_STATUSES",
+        "PROSPECTING_STAGES",
+        "CompanyStatus",
+        "ProspectingStage",
+        "PROSPECTING_STAGE_LABELS",
+        "COMPANY_STATUS_LABELS",
+        "Company",
+        "CompanyValues",
+        "ValidCompanyValues",
+        "CompanyValidationError",
+        "validateCompanyValues",
+        "archiveCompany"
+      ]
+    },
+    {
+      "path": "src/domain/costs/cost.test.ts",
+      "lines": 61,
+      "sha256": "3c9b7dbf6fc2adeb5628cdead814d8f024c04913b544473e4109b00338fe8ab7",
+      "imports": ["vitest", "./cost"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/costs/cost.ts",
+      "lines": 286,
+      "sha256": "7a008aff2eed757fc23968b664962e42ff32d2ddf9dd941e8b254f41745ae29e",
+      "imports": [],
+      "exports": [
+        "COST_TYPES",
+        "CostType",
+        "COST_TYPE_LABELS",
+        "COST_STATUSES",
+        "CostStatus",
+        "COST_STATUS_LABELS",
+        "COST_RECURRENCES",
+        "CostRecurrence",
+        "COST_RECURRENCE_LABELS",
+        "COST_CATEGORIES",
+        "CostCategory",
+        "COST_CATEGORY_LABELS",
+        "Cost",
+        "CostValues",
+        "ValidCostValues",
+        "CostValidationError",
+        "CostTransitionError",
+        "validateCostValues",
+        "assertCostEditable",
+        "activateRecurringCost",
+        "payOneOffCost",
+        "endRecurringCost",
+        "cancelCost"
+      ]
+    },
+    {
+      "path": "src/domain/decisions/decision.test.ts",
+      "lines": 58,
+      "sha256": "04d13cc40cad3d2e769d2f5bbe33ea461d84c0b26428271a695d0e5762d7be1e",
+      "imports": ["vitest", "./decision"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/decisions/decision.ts",
+      "lines": 169,
+      "sha256": "6c8ca0f5958ea3422882a53d3a7f553d07b1abf007b11f6871c572be68fb5c1f",
+      "imports": [],
+      "exports": [
+        "DECISION_STATUSES",
+        "DecisionStatus",
+        "DECISION_STATUS_LABELS",
+        "DECISION_REVIEW_EFFECTS",
+        "DecisionReviewEffect",
+        "DECISION_REVIEW_EFFECT_LABELS",
+        "DecisionRevision",
+        "Decision",
+        "DecisionValues",
+        "ValidDecisionValues",
+        "DecisionValidationError",
+        "DecisionRevisionError",
+        "validateDecisionValues",
+        "validateDecisionRevision",
+        "statusAfterRevision"
+      ]
+    },
+    {
+      "path": "src/domain/google/google-connection.test.ts",
+      "lines": 31,
+      "sha256": "03d98559e8fe75d8d3fd223c4f8a57d90acb93719c4e10a4069c1e537349aea7",
+      "imports": ["vitest", "./google-connection"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/google/google-connection.ts",
+      "lines": 57,
+      "sha256": "7b8e41aee4057a5a07a50d75a0e9f478673ee0a76ca23c1a72afa5164a1eb18e",
+      "imports": [],
+      "exports": [
+        "GoogleConnectionStatus",
+        "GoogleConnection",
+        "InvalidGoogleConnectionError",
+        "createGoogleConnection"
+      ]
+    },
+    {
+      "path": "src/domain/google/google-event-artifact.test.ts",
+      "lines": 56,
+      "sha256": "d56ebef31e7eda66aec58b24ebda5f4d084a619ea40ade9567f1ed78a22e87cd",
+      "imports": ["vitest", "./google-event-artifact"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/google/google-event-artifact.ts",
+      "lines": 110,
+      "sha256": "9cd88d65886aa4ccf0117b5f855409052c79f02ac9d3075786a47fab144bb918",
+      "imports": [],
+      "exports": [
+        "GOOGLE_EVENT_CLASSIFICATIONS",
+        "GoogleEventClassification",
+        "GoogleEventArtifact",
+        "GoogleEventArtifactValues",
+        "GoogleEventArtifactValidationError",
+        "validateGoogleEventArtifact"
+      ]
+    },
+    {
+      "path": "src/domain/meetings/meeting.test.ts",
+      "lines": 125,
+      "sha256": "a94c4e6745616b389e36015394e25877c1671d61fa2e69023d5df3a55d8f4fe1",
+      "imports": ["vitest", "./meeting"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/meetings/meeting.ts",
+      "lines": 206,
+      "sha256": "ac2ec7c974a62c03cf3577375c0f579ea4e0ef1b1074ba6faeb88839743763f9",
+      "imports": [],
+      "exports": [
+        "MEETING_STATUSES",
+        "MeetingStatus",
+        "MEETING_KINDS",
+        "MeetingKind",
+        "VACATION_TONES",
+        "VacationTone",
+        "MEETING_STATUS_LABELS",
+        "MEETING_KIND_LABELS",
+        "MeetingParticipant",
+        "Meeting",
+        "MeetingValues",
+        "ValidMeetingValues",
+        "MeetingValidationError",
+        "MeetingTransitionError",
+        "validateMeetingValues",
+        "effectiveMeetingStatus",
+        "cancelMeeting",
+        "closeMeeting"
+      ]
+    },
+    {
+      "path": "src/domain/notes/note.test.ts",
+      "lines": 27,
+      "sha256": "eb46709bae574c8363c9debca4aee594284483c289001d05e6f2ad041ffff8b0",
+      "imports": ["vitest", "./note"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/notes/note.ts",
+      "lines": 71,
+      "sha256": "550b1408c5e32dbd5a39965f2e2d974c07d7951f6f66033563aee09b77432d6a",
+      "imports": [],
+      "exports": [
+        "NOTE_FOLDER_COLORS",
+        "NOTE_UPLOAD_MAX_BYTES",
+        "NOTE_UPLOAD_MIME_TYPES",
+        "NoteFolderColor",
+        "NoteKind",
+        "NoteFolder",
+        "NoteItem",
+        "InvalidNoteError",
+        "normalizeFolderName",
+        "parseFolderColor",
+        "normalizeNoteTitle",
+        "normalizeNoteBody"
+      ]
+    },
+    {
+      "path": "src/domain/projects/project.test.ts",
+      "lines": 109,
+      "sha256": "3f3d74635bda6b5aee41ae8bc74d10fd1a22893dd07cdf59f511da7ba160bad5",
+      "imports": ["vitest", "./project"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/projects/project.ts",
+      "lines": 348,
+      "sha256": "c50048d46af4f1076b6916dbad0f55a04bbd291a037bd4a071fc413d94243fcc",
+      "imports": [],
+      "exports": [
+        "PROJECT_STATUSES",
+        "ProjectStatus",
+        "PROJECT_STATUS_LABELS",
+        "PROJECT_SCOPE_KINDS",
+        "ProjectScopeKind",
+        "ProjectScopeItem",
+        "ProjectMilestone",
+        "ProjectResource",
+        "Project",
+        "ProjectOwnedItemValues",
+        "ProjectValues",
+        "ValidProjectOwnedItem",
+        "ValidProjectMilestone",
+        "ValidProjectResource",
+        "ValidProjectValues",
+        "ProjectValidationError",
+        "ProjectTransitionError",
+        "validateProjectValues",
+        "transitionProject",
+        "availableProjectTransitions",
+        "assertProjectEditable"
+      ]
+    },
+    {
+      "path": "src/domain/relations/contact.test.ts",
+      "lines": 34,
+      "sha256": "4d353bb9d86ca0a4d375e663e94da509e75b26b6220938758b4e14c567a70175",
+      "imports": ["vitest", "./contact"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/relations/contact.ts",
+      "lines": 114,
+      "sha256": "769aafd361378e0610699c10528461bb57f3fe40bca23d921ad05e152233f3e9",
+      "imports": [],
+      "exports": [
+        "CONTACT_ROLES",
+        "CONTACT_CHANNELS",
+        "ContactRole",
+        "ContactChannel",
+        "ContactDirection",
+        "ContactStatus",
+        "CONTACT_ROLE_LABELS",
+        "CONTACT_CHANNEL_LABELS",
+        "ContactValues",
+        "ValidContactValues",
+        "Contact",
+        "ContactValidationError",
+        "validateContactValues",
+        "initials"
+      ]
+    },
+    {
+      "path": "src/domain/roadmap/roadmap-item.test.ts",
+      "lines": 30,
+      "sha256": "7c7d60c883d3939316923052adac9d842944a6b058681af836b8d859b2abbe91",
+      "imports": ["vitest", "./roadmap-item"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/roadmap/roadmap-item.ts",
+      "lines": 123,
+      "sha256": "db0fd5e09de0d02f5fba72b7edb3a868527f2f2a6d66972287ae38541ec5736c",
+      "imports": [],
+      "exports": [
+        "ROADMAP_KINDS",
+        "RoadmapKind",
+        "ROADMAP_KIND_LABELS",
+        "ROADMAP_HORIZONS",
+        "RoadmapHorizon",
+        "ROADMAP_HORIZON_LABELS",
+        "ROADMAP_LIFECYCLE_STATUSES",
+        "RoadmapLifecycleStatus",
+        "ROADMAP_LIFECYCLE_STATUS_LABELS",
+        "RoadmapItem",
+        "RoadmapItemValues",
+        "ValidRoadmapItemValues",
+        "RoadmapValidationError",
+        "RoadmapTransitionError",
+        "validateRoadmapItemValues",
+        "assertRoadmapItemEditable",
+        "assertHorizonChangeHasDecision",
+        "assertCanFinishRoadmapItem"
+      ]
+    },
+    {
+      "path": "src/domain/sprints/sprint.test.ts",
+      "lines": 11,
+      "sha256": "b26e0bc4b37841ca546f4ca98b4d89f9c9dc0c04fb353d40209a8c94af7e4b55",
+      "imports": ["vitest", "./sprint"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/sprints/sprint.ts",
+      "lines": 140,
+      "sha256": "a082ab17299613bc3c60caebcb74c2d164674e668ba0da80de195521246e4aad",
+      "imports": ["@/domain/tasks/task"],
+      "exports": [
+        "SPRINT_STATUSES",
+        "SprintStatus",
+        "SPRINT_STATUS_LABELS",
+        "SPRINT_CLOSURE_DISPOSITIONS",
+        "SprintClosureDisposition",
+        "SPRINT_CLOSURE_DISPOSITION_LABELS",
+        "SprintTaskCommitment",
+        "Sprint",
+        "SprintValues",
+        "ValidSprintValues",
+        "SprintClosureValues",
+        "SprintValidationError",
+        "SprintTransitionError",
+        "validateSprintValues",
+        "assertCanActivateSprint",
+        "assertCanChangeCommitment",
+        "assertCanCancelSprint",
+        "validateSprintClosure",
+        "deriveSprintProgress"
+      ]
+    },
+    {
+      "path": "src/domain/tasks/task.test.ts",
+      "lines": 71,
+      "sha256": "28f11e1599cef9e7a6921d9cbe61f6b94c746006e999c4ea5becd1f721680507",
+      "imports": ["vitest", "./task"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/tasks/task.ts",
+      "lines": 224,
+      "sha256": "78b22da2d5a25c8d2f9b27f576949e26679bd60161bb1bf9316d114bf082e9d2",
+      "imports": [],
+      "exports": [
+        "TASK_STATUSES",
+        "TaskStatus",
+        "TASK_PURPOSES",
+        "TaskPurpose",
+        "TASK_STATUS_LABELS",
+        "GoogleEventOrigin",
+        "TaskOrigin",
+        "Task",
+        "TaskValues",
+        "ValidTaskValues",
+        "TaskValidationError",
+        "TaskTransitionError",
+        "validateTaskValues",
+        "startTask",
+        "blockTask",
+        "unblockTask",
+        "completeTask",
+        "cancelTask"
+      ]
+    },
+    {
+      "path": "src/domain/vault/vault-entry.test.ts",
+      "lines": 43,
+      "sha256": "3dd3fe1280ebb6badb1866b180e39f590111b953b1ad4b7919622b003f3c4caa",
+      "imports": ["vitest", "./vault-entry"],
+      "exports": []
+    },
+    {
+      "path": "src/domain/vault/vault-entry.ts",
+      "lines": 70,
+      "sha256": "a54405446304f71aaa082715bde1a7f4afb096ff4f5d553e7462e2a39d086b0d",
+      "imports": [],
+      "exports": [
+        "VaultSecret",
+        "VaultEntryValues",
+        "ValidVaultEntryValues",
+        "VaultEntry",
+        "VaultValidationError",
+        "validateVaultEntryValues"
+      ]
+    },
+    {
+      "path": "src/foundation/appearance/brand-mark.tsx",
+      "lines": 22,
+      "sha256": "fdf940ac4c58e1160b4b8ae5bc5e291a2bad7ab6e3ad9d8be790e84a0d8d70e9",
+      "imports": ["next/image"],
+      "exports": ["BrandMark"]
+    },
+    {
+      "path": "src/foundation/appearance/light-theme.test.ts",
+      "lines": 25,
+      "sha256": "132130ea5ab5b48c2fcb41bb62cfcd50e88e8533b76c21e1e201353703242b22",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/appearance/user-menu.tsx",
+      "lines": 82,
+      "sha256": "ebf7d85fa51542a3a5c40301caa33d0a2aefca2d847646fec580129913bc3527",
+      "imports": [
+        "next/link",
+        "lucide-react",
+        "react",
+        "@/application/auth/actions"
+      ],
+      "exports": ["UserMenu"]
+    },
+    {
+      "path": "src/foundation/composition/calendar.ts",
+      "lines": 70,
+      "sha256": "2bb0f30adc525cfdb1642157ba5ba7357e891f95be5771cf75d604d3f93b785e",
+      "imports": [
+        "@/projections/calendar/compose-calendar",
+        "@/projections/calendar/calendar",
+        "@/application/auth/current-user",
+        "@/foundation/security/google-access",
+        "@/persistence/supabase/server",
+        "@/persistence/google/supabase-google-calendar-event-projection-repository",
+        "./meetings",
+        "./google",
+        "@/persistence/members/supabase-member-directory"
+      ],
+      "exports": ["loadCalendar"]
+    },
+    {
+      "path": "src/foundation/composition/companies.ts",
+      "lines": 18,
+      "sha256": "652b838b98852b35f410f34a7e6cbba9b0eb58c4aa0756b26ec74fe0f649c153",
+      "imports": [
+        "react",
+        "@/application/companies/company-service",
+        "@/persistence/companies/supabase-company-read-model",
+        "@/persistence/companies/supabase-company-repository",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createCompanyModule"]
+    },
+    {
+      "path": "src/foundation/composition/context-engine.ts",
+      "lines": 54,
+      "sha256": "1e79a4b723a0990ccdf33448a606460e773aa4f5b36279788932f43d45284809",
+      "imports": [
+        "react",
+        "@/foundation/composition/companies",
+        "@/foundation/composition/costs",
+        "@/foundation/composition/decisions",
+        "@/foundation/composition/meetings",
+        "@/foundation/composition/roadmap",
+        "@/foundation/composition/sprints",
+        "@/foundation/composition/tasks",
+        "@/foundation/composition/relations",
+        "@/foundation/composition/projects",
+        "@/projections/context-engine/context-engine",
+        "@/projections/context-engine/global-context"
+      ],
+      "exports": ["createContextEngine", "createGlobalContextProjection"]
+    },
+    {
+      "path": "src/foundation/composition/costs.ts",
+      "lines": 22,
+      "sha256": "3b6b19f7c6199ac0b462a08b7a518067592c4fc2bca463545aa3511cb1282cf1",
+      "imports": [
+        "react",
+        "@/application/costs/cost-service",
+        "@/persistence/costs/supabase-cash-balance-repository",
+        "@/persistence/costs/supabase-cost-context-directory",
+        "@/persistence/costs/supabase-cost-read-model",
+        "@/persistence/costs/supabase-cost-repository",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createCostModule"]
+    },
+    {
+      "path": "src/foundation/composition/decisions.ts",
+      "lines": 22,
+      "sha256": "7d230e25635cfc0b66d3c9075e02e9a93ae10a8bfa342d58aaeb108ad9daa233",
+      "imports": [
+        "react",
+        "@/application/decisions/decision-service",
+        "@/persistence/decisions/supabase-decision-context-directory",
+        "@/persistence/decisions/supabase-decision-read-model",
+        "@/persistence/decisions/supabase-decision-repository",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createDecisionModule"]
+    },
+    {
+      "path": "src/foundation/composition/global-search.ts",
+      "lines": 41,
+      "sha256": "7cba3849d0dcebcf66c61d6ea86083db565f56a5e5ade3a1e9fd32daef149641",
+      "imports": [
+        "react",
+        "@/projections/search/global-search",
+        "./companies",
+        "./decisions",
+        "./meetings",
+        "./projects",
+        "./roadmap",
+        "./sprints",
+        "./tasks",
+        "./relations"
+      ],
+      "exports": ["createGlobalSearchIndex"]
+    },
+    {
+      "path": "src/foundation/composition/google.ts",
+      "lines": 75,
+      "sha256": "f392195da841f77411c637d7bd43e9a89fe2410e091ba0795297b69a4fca20e3",
+      "imports": [
+        "react",
+        "@/application/google/google-calendar-selection-service",
+        "@/application/google/google-calendar-event-service",
+        "@/application/google/google-connection-service",
+        "@/application/google/google-drive-document-service",
+        "@/application/google/google-meeting-mirror-service",
+        "@/application/google/google-event-artifact-service",
+        "@/foundation/config/google-env",
+        "@/foundation/security/google-token-protector",
+        "@/persistence/google/google-calendar-client",
+        "@/persistence/google/google-drive-client",
+        "@/persistence/google/google-oauth-client",
+        "@/persistence/google/supabase-google-calendar-selection-repository",
+        "@/persistence/google/supabase-google-connection-read-model",
+        "@/persistence/google/supabase-google-connection-repository",
+        "@/persistence/google/supabase-google-meeting-mirror-repository",
+        "@/persistence/google/supabase-google-event-artifact-repository",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/meetings/supabase-meeting-context-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": [
+        "createGoogleConnectionReadModel",
+        "createGoogleIntegrationModule"
+      ]
+    },
+    {
+      "path": "src/foundation/composition/meetings.ts",
+      "lines": 21,
+      "sha256": "3fa8d80ccbd33c62ad0b2e640f144806f5c2d47a72e0829639e2fc86dbe9d359",
+      "imports": [
+        "react",
+        "@/application/meetings/meeting-service",
+        "@/persistence/meetings/supabase-meeting-context-directory",
+        "@/persistence/meetings/supabase-meeting-read-model",
+        "@/persistence/meetings/supabase-meeting-repository",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createMeetingModule"]
+    },
+    {
+      "path": "src/foundation/composition/notes.ts",
+      "lines": 26,
+      "sha256": "e55a85df43446fe0372ddf632a0be41b9d3e4cf1e6fb911a658566463d2789cb",
+      "imports": [
+        "@/application/notes/note-service",
+        "@/persistence/notes/supabase-note-file-storage",
+        "@/persistence/notes/supabase-note-repository",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createNotesModule", "createGoogleNotesModule"]
+    },
+    {
+      "path": "src/foundation/composition/projects.ts",
+      "lines": 22,
+      "sha256": "3e5a49b537844d493b27ed872d544e50f8a9dfc235eec77053f802910e69c649",
+      "imports": [
+        "react",
+        "@/application/projects/project-service",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/projects/supabase-project-context-directory",
+        "@/persistence/projects/supabase-project-read-model",
+        "@/persistence/projects/supabase-project-repository",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createProjectModule"]
+    },
+    {
+      "path": "src/foundation/composition/relations.ts",
+      "lines": 19,
+      "sha256": "c0aa5c660c8dffc033d0b91e7055c5ee71f665f7653a5b4d62988bd6ac490919",
+      "imports": [
+        "react",
+        "@/application/relations/relations-service",
+        "@/persistence/relations/supabase-relations",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createRelationsModule"]
+    },
+    {
+      "path": "src/foundation/composition/roadmap.ts",
+      "lines": 16,
+      "sha256": "48e3470ac9a32b92fb843d46b29c98e8e591dd74f52331d10ac9c510a0b97242",
+      "imports": [
+        "react",
+        "@/application/roadmap/roadmap-service",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/roadmap/supabase-roadmap-context-directory",
+        "@/persistence/roadmap/supabase-roadmap-item-repository",
+        "@/persistence/roadmap/supabase-roadmap-read-model",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createRoadmapModule"]
+    },
+    {
+      "path": "src/foundation/composition/sprints.ts",
+      "lines": 9,
+      "sha256": "ebc00da33f1cbcba5e8d27ba9387584cb330c16a79e5168fb2809cac629e25e6",
+      "imports": [
+        "react",
+        "@/application/sprints/sprint-service",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/sprints/supabase-sprint-read-model",
+        "@/persistence/sprints/supabase-sprint-repository",
+        "@/persistence/sprints/supabase-sprint-task-directory",
+        "@/persistence/supabase/server"
+      ],
+      "exports": ["createSprintModule"]
+    },
+    {
+      "path": "src/foundation/composition/tasks.test.ts",
+      "lines": 36,
+      "sha256": "54fa046035e229419b3c2e104616fd2c40add10f4df21ca205babfa14f2e0eaf",
+      "imports": ["vitest", "./tasks"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/composition/tasks.ts",
+      "lines": 66,
+      "sha256": "0a8f7609f9ef20b5c13885dfb608844b0aaf1d4c3957ffb49d12913a396fb7ca",
+      "imports": [
+        "react",
+        "@/application/tasks/task-service",
+        "@/persistence/members/supabase-member-directory",
+        "@/persistence/tasks/supabase-task-context-directory",
+        "@/persistence/tasks/supabase-task-read-model",
+        "@/persistence/tasks/supabase-task-repository",
+        "@/persistence/supabase/server"
+      ],
+      "exports": [
+        "createTaskModule",
+        "loadTaskGoogleEventOptions",
+        "isTaskOriginCandidate"
+      ]
+    },
+    {
+      "path": "src/foundation/composition/vault.ts",
+      "lines": 18,
+      "sha256": "d2a6630cde66a5f1644fb6568eedc242ca01681bdb846433e4d700fefe14b42b",
+      "imports": [
+        "@/application/vault/vault-service",
+        "@/foundation/config/vault-env",
+        "@/foundation/security/vault-payload-protector",
+        "@/persistence/supabase/server",
+        "@/persistence/vault/supabase-vault-repository"
+      ],
+      "exports": ["createVaultModule"]
+    },
+    {
+      "path": "src/foundation/config/google-env.ts",
+      "lines": 51,
+      "sha256": "bf0209eca108cfd03f49cfcd9f668a200b652f6c74d086ef8e195fa62f1fadc4",
+      "imports": [],
+      "exports": [
+        "GoogleOAuthEnv",
+        "GoogleConfigurationError",
+        "getGoogleOAuthEnv",
+        "requireGoogleOAuthEnv"
+      ]
+    },
+    {
+      "path": "src/foundation/config/governance-env.ts",
+      "lines": 15,
+      "sha256": "c2e4086c0fc44e34558ca8ff6d34625569ba433e1c1d4440b47612ab1794464c",
+      "imports": [],
+      "exports": ["GovernanceSecurityEnv", "getGovernanceSecurityEnv"]
+    },
+    {
+      "path": "src/foundation/config/supabase-env.ts",
+      "lines": 26,
+      "sha256": "c8aec417924fc9d97e4474f097a89ffa4fc09e9842aee00830ac481df0c41ea5",
+      "imports": [],
+      "exports": [
+        "SupabasePublicEnv",
+        "SupabaseConfigurationError",
+        "getSupabasePublicEnv",
+        "requireSupabasePublicEnv"
+      ]
+    },
+    {
+      "path": "src/foundation/config/vault-env.ts",
+      "lines": 31,
+      "sha256": "0d61dcd7c585c28ffa49a990b374422146cd3c0f0224daa4174e28e25d996038",
+      "imports": [],
+      "exports": [
+        "VaultSecurityEnv",
+        "VaultConfigurationError",
+        "getVaultSecurityEnv",
+        "requireVaultSecurityEnv"
+      ]
+    },
+    {
+      "path": "src/foundation/design-tokens.css",
+      "lines": 194,
+      "sha256": "2970dacec5ee0298a50d034f202bbb6a35b5b54b21d232c3b5fc6461d5965e1f",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/navigation/app-shell.tsx",
+      "lines": 179,
+      "sha256": "4305649bff1b5c1c0d715f2cf03728d95fe6e6cc19c759dc82106b4d2ec055c8",
+      "imports": [
+        "react",
+        "next/image",
+        "next/link",
+        "next/navigation",
+        "lucide-react",
+        "@/foundation/appearance/brand-mark",
+        "@/foundation/appearance/user-menu",
+        "@/foundation/search/command-palette",
+        "@/foundation/ui/feedback-center",
+        "@/projections/search/global-search",
+        "@/application/auth/current-user",
+        "./navigation"
+      ],
+      "exports": ["AppShell"]
+    },
+    {
+      "path": "src/foundation/navigation/navigation.ts",
+      "lines": 92,
+      "sha256": "85232cc3731bbfd02daa87962ff307541bc884ce5113d06cfedcd878e54e83e7",
+      "imports": ["lucide-react", "@/application/auth/current-user"],
+      "exports": [
+        "NavigationItem",
+        "navigationItems",
+        "getVisibleNavigationItems",
+        "getVisibleMobileNavigationItems",
+        "flattenNavigation",
+        "isNavigationItemActive"
+      ]
+    },
+    {
+      "path": "src/foundation/navigation/return-to.ts",
+      "lines": 39,
+      "sha256": "8f72469cb268e5e228001ba657cb5b0ffae85f02aec098c20958550b6c2c999d",
+      "imports": [],
+      "exports": ["withReturnTo", "safeWorkspaceReturnTo", "returnLabel"]
+    },
+    {
+      "path": "src/foundation/search/command-palette.tsx",
+      "lines": 279,
+      "sha256": "638b508beb8cc4f130ea1a4a6abdac02e1eb72ea3eb273fea52d641820224b48",
+      "imports": [
+        "react",
+        "next/navigation",
+        "lucide-react",
+        "@/foundation/navigation/navigation",
+        "@/projections/search/global-search",
+        "./search"
+      ],
+      "exports": ["CommandPalette"]
+    },
+    {
+      "path": "src/foundation/search/search.test.ts",
+      "lines": 35,
+      "sha256": "af879a68d08e973553bff0b67d5f2ed86e16ba5a0699167b8f323c4c3da3abb9",
+      "imports": ["vitest", "@/projections/search/global-search", "./search"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/search/search.ts",
+      "lines": 26,
+      "sha256": "bd26d17b89d1ebfa99c106d44398d6ccb6b62623bf27be7c6f13e926c3417580",
+      "imports": ["@/projections/search/global-search"],
+      "exports": ["normalizeSearchValue", "filterSearchItems"]
+    },
+    {
+      "path": "src/foundation/security/google-access.test.ts",
+      "lines": 9,
+      "sha256": "0875b0b9a15f517b32c685a920f1e9d850ce6b7f8cb7b66aaddc8e3a735e3498",
+      "imports": ["vitest", "./google-access"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/google-access.ts",
+      "lines": 5,
+      "sha256": "22b903add4b9d63524ec5d8737eb34f65d0af2f8c5a5aa48519feab4cc136381",
+      "imports": ["@/application/auth/current-user"],
+      "exports": ["canManageGoogle"]
+    },
+    {
+      "path": "src/foundation/security/google-oauth-state.test.ts",
+      "lines": 42,
+      "sha256": "9388126a2c6d36cc271207e0d6c75ac9570839899ce8b0895b5affda82909de3",
+      "imports": ["vitest", "./google-oauth-state"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/google-oauth-state.ts",
+      "lines": 106,
+      "sha256": "14f8f1432edaceb93af8cae729712a4c49f7e7ce508d97adf16eed37e25af119",
+      "imports": [],
+      "exports": [
+        "GOOGLE_OAUTH_STATE_COOKIE",
+        "GOOGLE_OAUTH_STATE_TTL_SECONDS",
+        "createGoogleOAuthState",
+        "verifyGoogleOAuthState",
+        "getGoogleOAuthStateFlow"
+      ]
+    },
+    {
+      "path": "src/foundation/security/google-token-protector.test.ts",
+      "lines": 26,
+      "sha256": "5639c99a3d5c2b58eb59fafc9be92cce3717c2f39217e4a95b120c0edf993119",
+      "imports": ["vitest", "./google-token-protector"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/google-token-protector.ts",
+      "lines": 82,
+      "sha256": "6562782af7a94cb7fbb14ed1535d8166fc2becbbd4a1a7d4446368fa18f0b8db",
+      "imports": ["@/application/google/contracts"],
+      "exports": ["GoogleTokenProtectionError", "AesGoogleTokenProtector"]
+    },
+    {
+      "path": "src/foundation/security/governance-access-key.test.ts",
+      "lines": 26,
+      "sha256": "ebb3ace5653d7496214c2bfd2ff713a461eed90d32c8362621a925d7580f951e",
+      "imports": ["node:crypto", "vitest", "./governance-access-key"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/governance-access-key.ts",
+      "lines": 70,
+      "sha256": "abe81feab18dbf361b09d853a90bd32b945e100f305365852437911a92cf637c",
+      "imports": ["node:crypto"],
+      "exports": ["verifyGovernanceAccessKey"]
+    },
+    {
+      "path": "src/foundation/security/governance-protected-surface.tsx",
+      "lines": 33,
+      "sha256": "290053d8e9d675e8070ca50cf8fa93e98453eb9d6709e7391941cbe3c0898f7a",
+      "imports": ["react", "next/navigation"],
+      "exports": ["GovernanceProtectedSurface"]
+    },
+    {
+      "path": "src/foundation/security/governance-session.test.ts",
+      "lines": 41,
+      "sha256": "a1f2af7ae62d226f9189e6a3e04400684a8da36b55b4ec901de89ab87d4aba0b",
+      "imports": ["vitest", "./governance-session"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/governance-session.ts",
+      "lines": 89,
+      "sha256": "a47e52dc13505eb8f106bfd281fecf9507962c6e3ad298e994184b78f694d618",
+      "imports": [],
+      "exports": [
+        "GOVERNANCE_COOKIE_NAME",
+        "GOVERNANCE_SESSION_TTL_SECONDS",
+        "createGovernanceSession",
+        "verifyGovernanceSession",
+        "isGovernanceProtectedPath"
+      ]
+    },
+    {
+      "path": "src/foundation/security/vault-payload-protector.test.ts",
+      "lines": 33,
+      "sha256": "41675be4a8349e639374218930b7998d307d3671b343ca4d33e03a05bea43499",
+      "imports": ["vitest", "./vault-payload-protector"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/security/vault-payload-protector.ts",
+      "lines": 82,
+      "sha256": "a59cd97383ac62370e1f5bbd2f50e44b591c0513224061fda1b0ab6e7f10a2d2",
+      "imports": [
+        "@/application/vault/contracts",
+        "@/domain/vault/vault-entry"
+      ],
+      "exports": ["VaultProtectionError", "AesVaultPayloadProtector"]
+    },
+    {
+      "path": "src/foundation/ui/confirm-action.tsx",
+      "lines": 49,
+      "sha256": "5fb52fd5176098c9a5a3a61fd0e505dca2977846cd60fc2439cca426ca0dc144",
+      "imports": ["react", "react-dom"],
+      "exports": ["ConfirmAction"]
+    },
+    {
+      "path": "src/foundation/ui/feedback-center.tsx",
+      "lines": 99,
+      "sha256": "1e29261983506fa9b4e02bc43af17a6f16f2998830752d3b93c1a77c7acdf5c5",
+      "imports": ["react", "lucide-react", "./feedback"],
+      "exports": ["FeedbackCenter"]
+    },
+    {
+      "path": "src/foundation/ui/feedback.test.ts",
+      "lines": 22,
+      "sha256": "31f2d5bc5eee68949258ace5862a64b6b15c908be708ee762a69b5769e9e6640",
+      "imports": ["vitest", "./feedback"],
+      "exports": []
+    },
+    {
+      "path": "src/foundation/ui/feedback.ts",
+      "lines": 17,
+      "sha256": "ae3645e0b393ce103d6478e4b1202df59211fb864dd226a6b5e0ea8f437766a9",
+      "imports": [],
+      "exports": [
+        "FEEDBACK_QUERY_KEY",
+        "FEEDBACK_TONE_QUERY_KEY",
+        "withFeedback",
+        "withErrorFeedback"
+      ]
+    },
+    {
+      "path": "src/foundation/ui/form-controls.tsx",
+      "lines": 49,
+      "sha256": "14076631d7262af1686d299e991f4a4c9388e0124dfb8e31df374651c3272580",
+      "imports": ["react", "react-dom"],
+      "exports": [
+        "FormFields",
+        "FormSubmit",
+        "FormFeedback",
+        "RequiredFieldsNote"
+      ]
+    },
+    {
+      "path": "src/foundation/ui/submit-button.tsx",
+      "lines": 18,
+      "sha256": "e850abd1eb56071198f46208f9168af5af04a1cc0a3748443e2583fb2f3a946e",
+      "imports": ["lucide-react"],
+      "exports": ["SubmitButton"]
+    },
+    {
+      "path": "src/foundation/ui/system-state.tsx",
+      "lines": 29,
+      "sha256": "414b3de1c635af37fd24c589f989e88c3982040ba8739562a94107bbec2c90f9",
+      "imports": ["react"],
+      "exports": ["SystemState"]
+    },
+    {
+      "path": "src/persistence/calendar/calendar-seed.test.ts",
+      "lines": 31,
+      "sha256": "ca6719cd4a4f27843309f6fe03927c590eb4085178830e30f5b9ef4165dbb572",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/companies/companies-migration.test.ts",
+      "lines": 36,
+      "sha256": "15dbf8fe794c314a5b8a72eabe077f3dfd98d55f3568469136ba22684cf458ec",
+      "imports": ["node:fs", "node:url", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/companies/supabase-company-read-model.ts",
+      "lines": 83,
+      "sha256": "78d99b1431a7c43db1f06d0bd74b9ab1357f079373be7dc811f1b439822c2ca9",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/companies/company",
+        "@/projections/companies/company-read-model"
+      ],
+      "exports": ["SupabaseCompanyReadModel"]
+    },
+    {
+      "path": "src/persistence/companies/supabase-company-repository.test.ts",
+      "lines": 39,
+      "sha256": "1d529e8514efdaad62b72c7512f6b6ab6bc284ebec67e69cde732f2e2d598bc3",
+      "imports": [
+        "@supabase/supabase-js",
+        "vitest",
+        "./supabase-company-repository"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/companies/supabase-company-repository.ts",
+      "lines": 154,
+      "sha256": "8a4701a8c7ba77ba1275fa2ff8dd8ce33256aa84ec0f89d82dea5e0a56a18926",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/companies/contracts",
+        "@/domain/companies/company"
+      ],
+      "exports": ["CompanyPersistenceError", "SupabaseCompanyRepository"]
+    },
+    {
+      "path": "src/persistence/costs/costs-migration.test.ts",
+      "lines": 23,
+      "sha256": "57ec8d48e1077a8221ae3594467419421da0b96881b347bde8cfecc0eea2b122",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/costs/costs-seed.test.ts",
+      "lines": 32,
+      "sha256": "15344d5fd64bb72760121f0b98c8183e962cb77460a11a661d3efe4a79a31a32",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/costs/supabase-cash-balance-repository.ts",
+      "lines": 42,
+      "sha256": "31bf7103079a87f4f180e9befba58c8fb7f2bf731954fd3157bb28738c4adac6",
+      "imports": ["@supabase/supabase-js", "@/application/costs/contracts"],
+      "exports": ["SupabaseCashBalanceRepository"]
+    },
+    {
+      "path": "src/persistence/costs/supabase-cost-context-directory.ts",
+      "lines": 62,
+      "sha256": "38dc468366f4702f1d417faa3db919c0c17b76110c74628e190d03c535bb43c7",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/costs/contracts",
+        "@/domain/costs/cost"
+      ],
+      "exports": ["SupabaseCostContextDirectory"]
+    },
+    {
+      "path": "src/persistence/costs/supabase-cost-read-model.ts",
+      "lines": 163,
+      "sha256": "9bdd474bf90a17ed9e3c60a42eeaf94d6d509ed74e7d2a97144e8ba362c382fd",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/costs/contracts",
+        "@/domain/costs/cost",
+        "@/projections/costs/cost-read-model"
+      ],
+      "exports": ["SupabaseCostReadModel"]
+    },
+    {
+      "path": "src/persistence/costs/supabase-cost-repository.ts",
+      "lines": 149,
+      "sha256": "a9500322016948d7f9c64acbf3ff0887fa880c6f180836d9358dbbd4b76e7d11",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/costs/contracts",
+        "@/domain/costs/cost"
+      ],
+      "exports": ["SupabaseCostRepository"]
+    },
+    {
+      "path": "src/persistence/decisions/decisions-migration.test.ts",
+      "lines": 53,
+      "sha256": "560accfea3a4b7ac3379904a36007690238c1b48e84f8655a2bf263739fb4797",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/decisions/supabase-decision-context-directory.ts",
+      "lines": 70,
+      "sha256": "27613518974976be3f81bad8644e3c7b4631aa9ebc3e3e5c997a82a89a54bb02",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/decisions/contracts",
+        "@/domain/tasks/task"
+      ],
+      "exports": ["SupabaseDecisionContextDirectory"]
+    },
+    {
+      "path": "src/persistence/decisions/supabase-decision-read-model.ts",
+      "lines": 200,
+      "sha256": "e9e103f17403bc60dc7a0d9d698145c225f48d74d576a3c9b487b4a80b05069e",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/decisions/decision",
+        "@/projections/decisions/decision-read-model"
+      ],
+      "exports": ["SupabaseDecisionReadModel"]
+    },
+    {
+      "path": "src/persistence/decisions/supabase-decision-repository.ts",
+      "lines": 127,
+      "sha256": "7d20d244c3a110ed386a89311783bef68c7015c248903ac326ed80f710be49aa",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/decisions/contracts",
+        "@/domain/decisions/decision"
+      ],
+      "exports": ["SupabaseDecisionRepository"]
+    },
+    {
+      "path": "src/persistence/google/google-calendar-client.test.ts",
+      "lines": 176,
+      "sha256": "8aeadb599583bfc881857d08a886d2a51a486ca8a7d6831bbe5eb8b76cb870d9",
+      "imports": ["vitest", "./google-calendar-client"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-calendar-client.ts",
+      "lines": 340,
+      "sha256": "3137321bb8172ac5cc9d8b7efcae993255b931bcebc066a74510cc59d3d3d4ba",
+      "imports": ["@/application/google/contracts"],
+      "exports": ["GoogleCalendarRequestError", "GoogleCalendarClient"]
+    },
+    {
+      "path": "src/persistence/google/google-calendar-projection-migration.test.ts",
+      "lines": 16,
+      "sha256": "2aa617381e146e94818b815996414ebe65e31b239c7886ce02258dc154828f0c",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-calendar-selections-migration.test.ts",
+      "lines": 35,
+      "sha256": "87af8b5e6696263dffe905286df75fedf3f1202750baa6b0a3366b1df5b008e7",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-connections-migration.test.ts",
+      "lines": 30,
+      "sha256": "db98083d2247ccc6b4cc81b193f44d9c508e68bce86d48f10903ea856fc68789",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-drive-client.test.ts",
+      "lines": 85,
+      "sha256": "2b07b334435204e26bc83272b5e679b1bda0c45be31fbae38cedc076a0abcb46",
+      "imports": ["vitest", "./google-drive-client"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-drive-client.ts",
+      "lines": 234,
+      "sha256": "fd926e96115fd524827da87dda4e68bc82c48110815ba01a8f070c0da4105588",
+      "imports": ["@/application/google/contracts"],
+      "exports": [
+        "GoogleDriveRequestError",
+        "GoogleDocumentConflictError",
+        "GoogleDriveClient"
+      ]
+    },
+    {
+      "path": "src/persistence/google/google-event-artifacts-migration.test.ts",
+      "lines": 33,
+      "sha256": "f4c0472b21c75d449d36d5f84a77631e946ca36f1002e55acbeed06f924fd99b",
+      "imports": ["node:fs/promises", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-meeting-mirrors-migration.test.ts",
+      "lines": 38,
+      "sha256": "b7df9a2e7ff6fe672d1429fd33330742731342f2bb4c89ddf6bb8e94a2d0c5dd",
+      "imports": ["node:fs/promises", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-oauth-client.test.ts",
+      "lines": 78,
+      "sha256": "24a089ed7a513ecb81f489ca4f34ec558ac7f665948e61c5381c22065f28bedb",
+      "imports": [
+        "vitest",
+        "@/application/google/google-scopes",
+        "./google-oauth-client"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/google/google-oauth-client.ts",
+      "lines": 139,
+      "sha256": "a4ba3151496c01480dca4cc0f0a4893240142fbe11581bd82d08ecf35446da86",
+      "imports": [
+        "@/application/google/contracts",
+        "@/application/google/google-scopes",
+        "@/foundation/config/google-env"
+      ],
+      "exports": ["GoogleOAuthRequestError", "GoogleOAuthClient"]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-calendar-event-projection-repository.ts",
+      "lines": 58,
+      "sha256": "39eb160c8aca01ae31a5230d359d50ce91a5b7f2e53939acbb60a376fb3cfe4d",
+      "imports": ["@supabase/supabase-js", "@/application/google/contracts"],
+      "exports": ["SupabaseGoogleCalendarEventProjectionRepository"]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-calendar-selection-repository.ts",
+      "lines": 48,
+      "sha256": "35ca0541a5209969d20427173a134495ef07d0526bce13493fa31acf5291a5c8",
+      "imports": ["@supabase/supabase-js", "@/application/google/contracts"],
+      "exports": [
+        "GoogleCalendarSelectionPersistenceError",
+        "SupabaseGoogleCalendarSelectionRepository"
+      ]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-connection-read-model.ts",
+      "lines": 35,
+      "sha256": "f8467900d0b67d24776d2adb2d65284edfd94def092e3ade803571864ab8694c",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/projections/google/google-connection-read-model",
+        "./supabase-google-connection-repository"
+      ],
+      "exports": ["SupabaseGoogleConnectionReadModel"]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-connection-repository.ts",
+      "lines": 114,
+      "sha256": "cefe2cb03bdb48823879475f01031b5653ee8effeb6838ff0bc8b08aa7865225",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/google/contracts",
+        "@/domain/google/google-connection"
+      ],
+      "exports": [
+        "GoogleConnectionPersistenceError",
+        "SupabaseGoogleConnectionRepository"
+      ]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-event-artifact-repository.ts",
+      "lines": 157,
+      "sha256": "636fa60524eacf6a7dc0ba14da1b287e8ed893121f50d48214bf7b262031c703",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/google/contracts",
+        "@/domain/google/google-event-artifact"
+      ],
+      "exports": ["SupabaseGoogleEventArtifactRepository"]
+    },
+    {
+      "path": "src/persistence/google/supabase-google-meeting-mirror-repository.ts",
+      "lines": 51,
+      "sha256": "cb542ce7e4ae49ace9fa14043baa04825866fbd4484dc218748b247ee2322b29",
+      "imports": ["@supabase/supabase-js", "@/application/google/contracts"],
+      "exports": ["SupabaseGoogleMeetingMirrorRepository"]
+    },
+    {
+      "path": "src/persistence/meetings/calendar-vacations-migration.test.ts",
+      "lines": 31,
+      "sha256": "2bbd967497ac2150b3dbb1b841e0a6f431c35b9cc454fcbb81b652dee468974a",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/meetings/meetings-migration.test.ts",
+      "lines": 70,
+      "sha256": "bc435513f767a62351144637f8471892744cea5a5e8d6258e9846477089103da",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/meetings/remove-legacy-closer-trigger-migration.test.ts",
+      "lines": 22,
+      "sha256": "a4926f2c5d39f1fb553a19a6c877dbb2cd5ff3019b96db7212bb5ebd1248d341",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/meetings/supabase-meeting-context-directory.test.ts",
+      "lines": 33,
+      "sha256": "c4979f8a95482b20632f53b3a02fd1184b3498569d1fc82291c04651674dc18a",
+      "imports": [
+        "@supabase/supabase-js",
+        "vitest",
+        "./supabase-meeting-context-directory"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/meetings/supabase-meeting-context-directory.ts",
+      "lines": 66,
+      "sha256": "e31c60eafbd39188bf5789182399c5427be355ade488130acfad1d4e923f9e43",
+      "imports": ["@supabase/supabase-js", "@/application/meetings/contracts"],
+      "exports": ["SupabaseMeetingContextDirectory"]
+    },
+    {
+      "path": "src/persistence/meetings/supabase-meeting-read-model.ts",
+      "lines": 171,
+      "sha256": "4b8ab50d3e087cac2a3ac91645664ef3788053fc6bc9a465fa38f6f829e59d90",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/meetings/meeting",
+        "@/projections/meetings/meeting-read-model"
+      ],
+      "exports": ["SupabaseMeetingReadModel"]
+    },
+    {
+      "path": "src/persistence/meetings/supabase-meeting-repository.ts",
+      "lines": 215,
+      "sha256": "82f50af250be92a36064033de17871b7dab501260990a380634658790e1d21d2",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/meetings/contracts",
+        "@/domain/meetings/meeting"
+      ],
+      "exports": ["MeetingPersistenceError", "SupabaseMeetingRepository"]
+    },
+    {
+      "path": "src/persistence/members/supabase-member-directory.ts",
+      "lines": 43,
+      "sha256": "4045dc156f79787c0de5ef5e01dc2d5c4a7ef3f008990e44a4004af145dcfd11",
+      "imports": ["@supabase/supabase-js", "@/application/members/contracts"],
+      "exports": ["SupabaseMemberDirectory"]
+    },
+    {
+      "path": "src/persistence/notes/notes-admin-delete-migration.test.ts",
+      "lines": 17,
+      "sha256": "27ad4b52cba0250d3a1512fe766c27f1a88dc95c70da66b6758d12fb5eab55e9",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/notes/notes-migration.test.ts",
+      "lines": 26,
+      "sha256": "04abd34a1551802995d022ab672500587f413622614f4373138d72b6a9b9b4a3",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/notes/notes-upload-limit-migration.test.ts",
+      "lines": 18,
+      "sha256": "8cb22d8b15dea5f904ce34f244687c5dbbfd7a86b03406f69c7c70963a36a62b",
+      "imports": ["node:fs", "node:path", "vitest", "@/domain/notes/note"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/notes/supabase-note-file-storage.test.ts",
+      "lines": 37,
+      "sha256": "7ff58977a65522e24ba03b471f382d5b852042e665500aab973f4932d1ea2f4b",
+      "imports": ["vitest", "./supabase-note-file-storage"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/notes/supabase-note-file-storage.ts",
+      "lines": 46,
+      "sha256": "95cec023aa5d524ce6464cef2ba9d4623a427784238033f95b3ff233db16d762",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/notes/contracts",
+        "@/application/notes/note-service"
+      ],
+      "exports": ["SupabaseNoteFileStorage"]
+    },
+    {
+      "path": "src/persistence/notes/supabase-note-repository.ts",
+      "lines": 209,
+      "sha256": "b5f68e0e70b88435197048dc174d596d7dc250c040bd363040360d5bacdd6ac4",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/notes/contracts",
+        "@/application/notes/note-service",
+        "@/domain/notes/note"
+      ],
+      "exports": ["SupabaseNoteRepository"]
+    },
+    {
+      "path": "src/persistence/projects/projects-migration.test.ts",
+      "lines": 55,
+      "sha256": "a48b3a8d20378650bc12916b7422f88df0ef69feec754f25dd63803d4cb22542",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/projects/supabase-project-context-directory.ts",
+      "lines": 144,
+      "sha256": "26aeac6f15a1255190700e39cd57dc7e4c7f0a7b93422676e198ec811078aadc",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/projects/contracts",
+        "@/domain/projects/project"
+      ],
+      "exports": ["SupabaseProjectContextDirectory"]
+    },
+    {
+      "path": "src/persistence/projects/supabase-project-read-model.ts",
+      "lines": 337,
+      "sha256": "69b3c937ebe1f29191e8f5c6585d94627838056c7efcfac1eb69af0b52f74d5a",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/costs/cost",
+        "@/domain/decisions/decision",
+        "@/domain/meetings/meeting",
+        "@/domain/projects/project",
+        "@/domain/tasks/task",
+        "@/projections/costs/cost-read-model",
+        "@/projections/projects/project-read-model"
+      ],
+      "exports": ["SupabaseProjectReadModel"]
+    },
+    {
+      "path": "src/persistence/projects/supabase-project-repository.ts",
+      "lines": 186,
+      "sha256": "da9cabc1cffe40f472ad230d7bc43cb95aee258064882d3ddcafb6fe3a75ce62",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/projects/contracts",
+        "@/domain/projects/project"
+      ],
+      "exports": ["SupabaseProjectRepository"]
+    },
+    {
+      "path": "src/persistence/relations/company-interactions-migration.test.ts",
+      "lines": 54,
+      "sha256": "177db3fa165f6dd00e2c0868864fe4994e9c4ee4ded0f9173d5cc6b0c287d9ca",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/contact-delete-rpcs-migration.test.ts",
+      "lines": 34,
+      "sha256": "6e3b6e34fb04a94909d31abb0181509530f9d70675f2312ffd6e2b29cdbfca3b",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/contacts-workspace-migration.test.ts",
+      "lines": 36,
+      "sha256": "0edbe2b4d5f069dce3d6f8030db1c57aea81986c18886ad12a45a63821b30a49",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/founder-crm-migration.test.ts",
+      "lines": 30,
+      "sha256": "3862d2b834e759ed44917f9e2b28f5d3a9b4187bbffb42517b4ef5be2fcafcd9",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/prospecting-stages-migration.test.ts",
+      "lines": 21,
+      "sha256": "46d18c5fdb5d234e79b4a2cd3ee60cb446290a46687772fae150c77ec585390c",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/relations-migration.test.ts",
+      "lines": 24,
+      "sha256": "10a12feeed7b7f85eb2f21799b51d71b7f656afb709de73c9a8bdb626b5e322b",
+      "imports": ["vitest", "node:fs"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/supabase-relations-read-model.test.ts",
+      "lines": 128,
+      "sha256": "dd0dda11f443113b2a7d5220d96913f7d6a268eab468555724ffcdbc1a701114",
+      "imports": ["@supabase/supabase-js", "vitest", "./supabase-relations"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/supabase-relations-repository.test.ts",
+      "lines": 74,
+      "sha256": "db3ca8640d81d852d810c13839088d293879065196c54863f4bb9e785a70bc27",
+      "imports": ["@supabase/supabase-js", "vitest", "./supabase-relations"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/relations/supabase-relations.ts",
+      "lines": 575,
+      "sha256": "819378aeba50260f8812b5b061dacff576c2aa49b26025b281c79616226cafa8",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/relations/contracts",
+        "@/domain/relations/contact",
+        "@/domain/relations/contact",
+        "@/domain/companies/company",
+        "@/projections/relations/relations-read-model"
+      ],
+      "exports": [
+        "SupabaseContactRepository",
+        "SupabaseRelationsDirectory",
+        "SupabaseRelationsReadModel"
+      ]
+    },
+    {
+      "path": "src/persistence/relations/update-contact-interactions-migration.test.ts",
+      "lines": 20,
+      "sha256": "d6017d845998bdb4a82da229ddf1cfb4697feceecc250097828fc08267b3af95",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/roadmap/roadmap-migration.test.ts",
+      "lines": 29,
+      "sha256": "701a5607ba7e548bddfee3aa91edafacd271d177f4cf900fbe3c59a2deeae41e",
+      "imports": ["vitest", "node:fs", "node:path"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/roadmap/supabase-roadmap-context-directory.ts",
+      "lines": 38,
+      "sha256": "b3777f643f688d2447c9c4c2db5ab0ef07169b1b77c6f039631230c9b030ab22",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/roadmap/contracts",
+        "@/domain/companies/company",
+        "@/domain/decisions/decision",
+        "@/domain/roadmap/roadmap-item",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task"
+      ],
+      "exports": ["SupabaseRoadmapContextDirectory"]
+    },
+    {
+      "path": "src/persistence/roadmap/supabase-roadmap-item-repository.ts",
+      "lines": 31,
+      "sha256": "597c9024817ff27944d13afecbd2b54bdc9e63daa182ca75a43e988a56d948e5",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/roadmap/contracts",
+        "@/domain/roadmap/roadmap-item"
+      ],
+      "exports": ["SupabaseRoadmapItemRepository"]
+    },
+    {
+      "path": "src/persistence/roadmap/supabase-roadmap-read-model.ts",
+      "lines": 37,
+      "sha256": "a177c67d6ba914405f0f5808cc39b9c621695c4d1c1a71edf33dc956e1cc5a2d",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/decisions/decision",
+        "@/domain/roadmap/roadmap-item",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task",
+        "@/projections/roadmap/roadmap-read-model"
+      ],
+      "exports": ["SupabaseRoadmapReadModel"]
+    },
+    {
+      "path": "src/persistence/sprints/sprints-migration.test.ts",
+      "lines": 8,
+      "sha256": "f2b9d93953a2c405ad9e99c13a04c4729f3c442e73711f05148b3ce9c1c94f85",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/sprints/supabase-sprint-read-model.test.ts",
+      "lines": 53,
+      "sha256": "91c2b4e1b9c305a3e7f988099a908a8da106363fddf96f7405c2475609ff53b6",
+      "imports": [
+        "@supabase/supabase-js",
+        "vitest",
+        "./supabase-sprint-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/sprints/supabase-sprint-read-model.ts",
+      "lines": 123,
+      "sha256": "8ddc0a12eea1e13964d79c822da400666db334abfcd4a128a29376f75d3353d6",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task",
+        "@/projections/sprints/sprint-read-model"
+      ],
+      "exports": ["SupabaseSprintReadModel"]
+    },
+    {
+      "path": "src/persistence/sprints/supabase-sprint-repository.ts",
+      "lines": 22,
+      "sha256": "6268736f148e946c001677c5b8c724cefb399498878a9029dc5d1a5dcca6c36a",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/sprints/contracts",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task"
+      ],
+      "exports": ["SupabaseSprintRepository"]
+    },
+    {
+      "path": "src/persistence/sprints/supabase-sprint-task-directory.ts",
+      "lines": 10,
+      "sha256": "df7c5500f32f36ed43443664ad6d57246c8533241923b0d0e9913f295f0413e2",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/sprints/contracts",
+        "@/domain/tasks/task"
+      ],
+      "exports": ["SupabaseSprintTaskDirectory"]
+    },
+    {
+      "path": "src/persistence/supabase/browser.ts",
+      "lines": 10,
+      "sha256": "45f132566a9498336e811ae05fa956768adff3e98c739bb6be6d8ba46569fd4c",
+      "imports": ["@supabase/ssr", "@/foundation/config/supabase-env"],
+      "exports": ["createClient"]
+    },
+    {
+      "path": "src/persistence/supabase/server.ts",
+      "lines": 27,
+      "sha256": "15535354de1526c8cb8f973926a01a678d338a790fde6422bf3d34934930938b",
+      "imports": [
+        "react",
+        "@supabase/ssr",
+        "next/headers",
+        "@/foundation/config/supabase-env"
+      ],
+      "exports": ["createClient"]
+    },
+    {
+      "path": "src/persistence/supabase/update-session.ts",
+      "lines": 29,
+      "sha256": "a919e3dfc5c1e30a3cd11c2549a57205bc4eef942e302ec107b2c1512b000e1f",
+      "imports": [
+        "@supabase/ssr",
+        "next/server",
+        "@/foundation/config/supabase-env"
+      ],
+      "exports": ["updateSession"]
+    },
+    {
+      "path": "src/persistence/synthetic-dataset.test.ts",
+      "lines": 98,
+      "sha256": "17bc9635c7aa4b215453123a38221d1187b75c34cce11156e4b18f8db7868597",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/tasks/supabase-task-context-directory.ts",
+      "lines": 46,
+      "sha256": "92741518cf52b8b84e6b9fb7e0755a379abffe1a1bb2eb513b7172c7f277776f",
+      "imports": ["@supabase/supabase-js", "@/application/tasks/contracts"],
+      "exports": ["SupabaseTaskContextDirectory"]
+    },
+    {
+      "path": "src/persistence/tasks/supabase-task-read-model.ts",
+      "lines": 165,
+      "sha256": "81e2acb67632d30f15082728d2a6de503762f723fc3214dede0b19d174f44b30",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/domain/tasks/task",
+        "@/projections/tasks/task-read-model"
+      ],
+      "exports": ["SupabaseTaskReadModel"]
+    },
+    {
+      "path": "src/persistence/tasks/supabase-task-repository.ts",
+      "lines": 185,
+      "sha256": "e334ea5ef9445c8fa9fb8de3a450071eec2668e5421c476324447085f68633b8",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/tasks/contracts",
+        "@/domain/tasks/task"
+      ],
+      "exports": ["TaskPersistenceError", "SupabaseTaskRepository"]
+    },
+    {
+      "path": "src/persistence/tasks/tasks-migration.test.ts",
+      "lines": 8,
+      "sha256": "e82a6ba2a20e5a67eb75492f7009e29b0ddcd9dd6283e64bbc4afb136b382102",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/vault/supabase-vault-repository.ts",
+      "lines": 106,
+      "sha256": "c623c0a4036367bf553f4efc9c229db247deab5caf00e40f0c38aa938fae5a5f",
+      "imports": [
+        "@supabase/supabase-js",
+        "@/application/vault/contracts",
+        "@/domain/vault/vault-entry"
+      ],
+      "exports": ["VaultPersistenceError", "SupabaseVaultRepository"]
+    },
+    {
+      "path": "src/persistence/vault/vault-migration.test.ts",
+      "lines": 43,
+      "sha256": "7fe112f54eeecc663f5ecdabc7db820c76567a8eed19608c2f4b8490958c6787",
+      "imports": ["node:fs", "node:path", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/persistence/work/founder-work-simplification-migration.test.ts",
+      "lines": 25,
+      "sha256": "86ab0a42327028dbffb1296d9300fbe30c5223c8b125f0b5a6b50bb94a4e4a78",
+      "imports": ["node:fs", "vitest"],
+      "exports": []
+    },
+    {
+      "path": "src/projections/calendar/calendar-time.test.ts",
+      "lines": 61,
+      "sha256": "47dbfee823d9c43d6555e9fdc3bc55f3fc3989ee4a38957e7cd2b956653b8503",
+      "imports": ["vitest", "./calendar-time"],
+      "exports": []
+    },
+    {
+      "path": "src/projections/calendar/calendar-time.ts",
+      "lines": 152,
+      "sha256": "731f3076fa85f91c4a942fd1ea2f232f9149a54c96b0101b94c08b7ed2c875ae",
+      "imports": [],
+      "exports": [
+        "CalendarView",
+        "isDateKey",
+        "dateKeyInLisbon",
+        "addDays",
+        "addMonths",
+        "startOfWeek",
+        "endOfMonth",
+        "rangeForView",
+        "moveAnchor",
+        "enumerateDays",
+        "entryDateKey",
+        "entryOccursOn",
+        "daysBetween",
+        "lisbonLocalTimeToIso",
+        "lisbonLocalDateTimeToIso",
+        "isoToLisbonLocalDateTime"
+      ]
+    },
+    {
+      "path": "src/projections/calendar/calendar.ts",
+      "lines": 74,
+      "sha256": "13298a3423495e1acc82091484dad77f71c207ec3e7a1385550fe1ab6ac9c7e4",
+      "imports": [],
+      "exports": [
+        "CALENDAR_SOURCE_TYPES",
+        "CalendarSourceType",
+        "CalendarTemporalKind",
+        "CalendarTemporalBasis",
+        "CalendarContextKind",
+        "CalendarEntry",
+        "CalendarMeetingSummary",
+        "CalendarSourceState",
+        "CalendarOwnerOption",
+        "CalendarProjection",
+        "CalendarFilters"
+      ]
+    },
+    {
+      "path": "src/projections/calendar/compose-calendar.test.ts",
+      "lines": 230,
+      "sha256": "419132ccb29eac97688a9c7caf848eb43d4b4139350599547825134a3d015e85",
+      "imports": [
+        "vitest",
+        "@/projections/meetings/meeting-read-model",
+        "@/projections/sprints/sprint-read-model",
+        "@/projections/tasks/task-read-model",
+        "./compose-calendar"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/projections/calendar/compose-calendar.ts",
+      "lines": 293,
+      "sha256": "08ad29b09bd341d9ee6dedee9f984b4abf202011f1c223b00e5f011d28ef55f6",
+      "imports": [
+        "@/domain/meetings/meeting",
+        "@/projections/meetings/meeting-read-model",
+        "@/projections/sprints/sprint-read-model",
+        "@/projections/tasks/task-read-model",
+        "@/application/google/contracts",
+        "@/domain/google/google-event-artifact",
+        "./calendar",
+        "./calendar-time"
+      ],
+      "exports": ["CalendarSources", "composeCalendar"]
+    },
+    {
+      "path": "src/projections/companies/company-read-model.ts",
+      "lines": 29,
+      "sha256": "fd4ddea9ec0ff5d9ed1d5595a3fafacaaa076137f5c5fb43d0007c5039e350b1",
+      "imports": ["@/domain/companies/company"],
+      "exports": ["CompanyListItem", "CompanyDetail", "CompanyReadModel"]
+    },
+    {
+      "path": "src/projections/context-engine/context-engine.test.ts",
+      "lines": 582,
+      "sha256": "cef6aa5d732d7d39f6964ca3f59e6bfd5508ff027359a6630487ed862f5cb303",
+      "imports": [
+        "node:fs",
+        "node:path",
+        "vitest",
+        "@/projections/companies/company-read-model",
+        "@/projections/costs/cost-read-model",
+        "@/projections/context-engine/context-engine",
+        "@/projections/decisions/decision-read-model",
+        "@/projections/meetings/meeting-read-model",
+        "@/projections/roadmap/roadmap-read-model",
+        "@/projections/sprints/sprint-read-model",
+        "@/projections/tasks/task-read-model",
+        "@/projections/relations/relations-read-model"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/projections/context-engine/context-engine.ts",
+      "lines": 1121,
+      "sha256": "082a5249401551df9dac4fce2298d734387db5b31c8562dea871fa60cc3838a5",
+      "imports": [
+        "@/domain/decisions/decision",
+        "@/domain/meetings/meeting",
+        "@/domain/roadmap/roadmap-item",
+        "@/domain/sprints/sprint",
+        "@/domain/tasks/task",
+        "@/domain/companies/company",
+        "@/projections/companies/company-read-model",
+        "@/projections/costs/cost-read-model",
+        "@/projections/decisions/decision-read-model",
+        "@/projections/meetings/meeting-read-model",
+        "@/projections/roadmap/roadmap-read-model",
+        "@/projections/sprints/sprint-read-model",
+        "@/projections/tasks/task-read-model",
+        "@/projections/relations/relations-read-model",
+        "@/domain/companies/company"
+      ],
+      "exports": [
+        "ContextTarget",
+        "ContextItem",
+        "ContextSection",
+        "ObjectContext",
+        "GraphNodeType",
+        "GraphNode",
+        "GraphEdge",
+        "FullContextGraph",
+        "ContextEngine"
+      ]
+    },
+    {
+      "path": "src/projections/context-engine/export-markdown.test.ts",
+      "lines": 139,
+      "sha256": "85292c5cb40f888ee0d2bfe74d35e371830c7676c661db0126c62dd11adde502",
+      "imports": ["vitest", "./context-engine", "./export-markdown"],
+      "exports": []
+    },
+    {
+      "path": "src/projections/context-engine/export-markdown.ts",
+      "lines": 258,
+      "sha256": "2150758becd305b36c13569bfa0a60cea17afd638f478ac0704d666f23647716",
+      "imports": [
+        "./context-engine",
+        "@/domain/companies/company",
+        "@/domain/projects/project",
+        "@/domain/relations/contact",
+        "@/domain/tasks/task",
+        "./global-context"
+      ],
+      "exports": [
+        "ExportMarkdownOptions",
+        "exportContextToMarkdown",
+        "exportGraphToMarkdown",
+        "exportGlobalContextToMarkdown"
+      ]
+    },
+    {
+      "path": "src/projections/context-engine/global-context-export.test.ts",
+      "lines": 140,
+      "sha256": "2f1f504efab3f6359c30be391bf97657a188585a24d5d92200ba64990eedd589",
+      "imports": ["vitest", "./global-context", "./export-markdown"],
+      "exports": []
+    },
+    {
+      "path": "src/projections/context-engine/global-context.ts",
+      "lines": 68,
+      "sha256": "8f4ea43c59d8afd2271065f1985d87661b8c925274613e44b151e9458a2df8fb",
+      "imports": [
+        "@/projections/companies/company-read-model",
+        "@/projections/projects/project-read-model",
+        "@/projections/relations/relations-read-model",
+        "@/projections/tasks/task-read-model"
+      ],
+      "exports": ["GlobalContextSnapshot", "GlobalContextProjection"]
+    },
+    {
+      "path": "src/projections/costs/cost-finance.test.ts",
+      "lines": 95,
+      "sha256": "3d13f6cb3a29869887b311541fd8dd2ae461cdbccb59d17b8324dc115c82dd30",
+      "imports": [
+        "vitest",
+        "@/application/costs/contracts",
+        "./cost-read-model",
+        "./cost-finance"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/projections/costs/cost-finance.ts",
+      "lines": 186,
+      "sha256": "004e5d0f3aeee24b4de0293521ecf8b1ab574722141399770c12a6752fcc2565",
+      "imports": ["@/application/costs/contracts", "./cost-read-model"],
+      "exports": [
+        "CostConfidence",
+        "CostOccurrence",
+        "CostPeriodTotal",
+        "CashPosition",
+        "deriveCostOccurrences",
+        "groupCostTotals",
+        "calculateCashPositions"
+      ]
+    },
+    {
+      "path": "src/projections/costs/cost-read-model.ts",
+      "lines": 51,
+      "sha256": "411f9a5e02229fc0c9e8ebc11e9b9e2d543c9269170e13fad6385f66c063b7c2",
+      "imports": ["@/domain/costs/cost", "@/application/costs/contracts"],
+      "exports": [
+        "CostContextLink",
+        "CostListItem",
+        "CostDetail",
+        "CostReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/decisions/decision-read-model.ts",
+      "lines": 49,
+      "sha256": "357436de8219d140e1e2710ad5eeffa3de6e2efd32f651fad24f0f04caac74fe",
+      "imports": ["@/domain/decisions/decision"],
+      "exports": [
+        "RelatedDecision",
+        "DecisionListItem",
+        "DecisionContextLink",
+        "DecisionDetail",
+        "DecisionReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/google/google-connection-read-model.ts",
+      "lines": 9,
+      "sha256": "2fc714f672c7106bb5dce484b163b335c188ee0cff6f774c289da6e2a0151ade",
+      "imports": [],
+      "exports": ["GoogleConnectionSummary", "GoogleConnectionReadModel"]
+    },
+    {
+      "path": "src/projections/meetings/meeting-read-model.ts",
+      "lines": 50,
+      "sha256": "5ea90619457981a4028917d38f8951aa842f0b864701afa98bb587c63f43b7b1",
+      "imports": ["@/domain/meetings/meeting"],
+      "exports": [
+        "MeetingListItem",
+        "MeetingParticipantView",
+        "MeetingDetail",
+        "MeetingReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/projects/project-activity.test.ts",
+      "lines": 78,
+      "sha256": "111875e4913f87c24b4ae19e228fbbfb9377335a2f1ce34943a3316b6e65ee06",
+      "imports": [
+        "vitest",
+        "./project-read-model",
+        "./project-activity",
+        "./project-finance"
+      ],
+      "exports": []
+    },
+    {
+      "path": "src/projections/projects/project-activity.ts",
+      "lines": 83,
+      "sha256": "83438178ab349bf1ea259dd8ce0b93e7db8e2bca5cc9c3b361923f180b9fe20c",
+      "imports": ["@/domain/projects/project", "./project-read-model"],
+      "exports": ["ProjectActivityItem", "composeProjectActivity"]
+    },
+    {
+      "path": "src/projections/projects/project-finance.ts",
+      "lines": 57,
+      "sha256": "68ec882ea54799468617242ceee6583d67463dd3e275437c10cb973439f1a3c6",
+      "imports": ["@/projections/costs/cost-finance", "./project-read-model"],
+      "exports": [
+        "ProjectExternalCostTotal",
+        "ProjectFinancialSummary",
+        "projectFinancialSummary"
+      ]
+    },
+    {
+      "path": "src/projections/projects/project-read-model.ts",
+      "lines": 90,
+      "sha256": "3335d77f7b7feab7d81f12c782169237fc0fe793158609d5aab1689835baab19",
+      "imports": [
+        "@/projections/costs/cost-read-model",
+        "@/domain/projects/project",
+        "@/domain/decisions/decision",
+        "@/domain/meetings/meeting",
+        "@/domain/tasks/task"
+      ],
+      "exports": [
+        "ProjectPerson",
+        "ProjectTaskItem",
+        "ProjectMeetingItem",
+        "ProjectDecisionItem",
+        "ProjectStatusChange",
+        "ProjectListItem",
+        "ProjectDetail",
+        "ProjectReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/relations/relations-read-model.ts",
+      "lines": 102,
+      "sha256": "c32b1a7e7a0f5959c4bb0e18a9d60498585057d763b11a27bd6fd06668811ae4",
+      "imports": ["@/domain/relations/contact", "@/domain/companies/company"],
+      "exports": [
+        "ContactListItem",
+        "ContactInteractionItem",
+        "CompanyInteractionItem",
+        "GlobalInteractionItem",
+        "ContactDetail",
+        "MessageTemplateItem",
+        "ContactPipelineRow",
+        "RelationsReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/roadmap/roadmap-read-model.ts",
+      "lines": 40,
+      "sha256": "ea85a364a8f5c048d229f7555d83b49c2f47af10290ab245e58331e426518796",
+      "imports": ["@/domain/roadmap/roadmap-item"],
+      "exports": [
+        "RoadmapContextLink",
+        "RoadmapItemSummary",
+        "GlobalRoadmapProjection",
+        "RoadmapItemDetail",
+        "RoadmapReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/search/global-search.test.ts",
+      "lines": 61,
+      "sha256": "563f6eba3c773a62d9a2aa8eaf372dfb5dc2c9274a055010579d229d84b0bc1c",
+      "imports": ["vitest", "./global-search"],
+      "exports": []
+    },
+    {
+      "path": "src/projections/search/global-search.ts",
+      "lines": 156,
+      "sha256": "371ab6d7ec27e9fcd6d4fb8bffb1d935b65261096b006e3278342da4380bf824",
+      "imports": [
+        "@/projections/companies/company-read-model",
+        "@/projections/decisions/decision-read-model",
+        "@/projections/meetings/meeting-read-model",
+        "@/projections/projects/project-read-model",
+        "@/projections/roadmap/roadmap-read-model",
+        "@/projections/sprints/sprint-read-model",
+        "@/projections/tasks/task-read-model",
+        "@/projections/relations/relations-read-model"
+      ],
+      "exports": [
+        "SearchObjectType",
+        "GlobalSearchItem",
+        "GlobalSearchProjection",
+        "composeGlobalSearch"
+      ]
+    },
+    {
+      "path": "src/projections/sprints/sprint-read-model.ts",
+      "lines": 42,
+      "sha256": "8e6d2d4d6ab0c3d45e57280df6d6faf3ffbb75aaa4fdbcdfd0f62624527a9258",
+      "imports": ["@/domain/sprints/sprint", "@/domain/tasks/task"],
+      "exports": [
+        "SprintTaskItem",
+        "SprintListItem",
+        "SprintDetail",
+        "SprintReadModel"
+      ]
+    },
+    {
+      "path": "src/projections/tasks/task-read-model.ts",
+      "lines": 37,
+      "sha256": "2934757b9c03b36bd0551cc80a95d5e63851c2f18e4ccba49c8260c2720b7175",
+      "imports": ["@/domain/tasks/task"],
+      "exports": ["TaskListItem", "TaskDetail", "TaskReadModel"]
+    },
+    {
+      "path": "src/proxy.ts",
+      "lines": 37,
+      "sha256": "7afabb639aaa162572838e9374d56c0f6b273395f809e384462025d7073fc8e5",
+      "imports": [
+        "next/server",
+        "@/foundation/config/governance-env",
+        "@/foundation/security/governance-session",
+        "@/persistence/supabase/update-session"
+      ],
+      "exports": ["proxy", "config"]
+    },
+    {
+      "path": "src/test/server-only.ts",
+      "lines": 1,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "src/test/setup.ts",
+      "lines": 4,
+      "sha256": "712ef75b31224cd972a338c7062cafba4a1fde86e3b31987c3de3ba0466c45bb",
+      "imports": ["vitest"],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260715190000_create_companies.sql",
+      "lines": 165,
+      "sha256": "2a1e8b070f95dc3d4903058f98f7ee92e413760f5b294872cb2df6599a050e8d",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260715230000_create_meetings.sql",
+      "lines": 228,
+      "sha256": "6cdbe8de7a678538acb0dcc6c83ae041d105c9c584829ee231334d0ec429e5f5",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260715233000_fix_meeting_member_triggers.sql",
+      "lines": 54,
+      "sha256": "c7f6f4999c224c8491f1cb330446ce3ed28a49ab1e563df546cd72fc99076118",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260716003000_create_tasks.sql",
+      "lines": 122,
+      "sha256": "3455aee7e4923a8ee4112ecac3df5d6e81fd3eeab1124c3f4b9b9ca4a8dd8c3c",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260716030000_create_decisions.sql",
+      "lines": 312,
+      "sha256": "8d2380a65e8f1511578a5527ecc7a6c51f6e3402ae8b9e16b8c36888657ce477",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260716120000_create_sprints.sql",
+      "lines": 165,
+      "sha256": "d21a96f1014c20521f54cce7c90ff29592b96bc21b18e8c958d16692c2722743",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260716150000_create_roadmap.sql",
+      "lines": 148,
+      "sha256": "247ad9941824f1c7c63dbe8aa184c5fa4f23c47c83c49c7b72361937d98f4190",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260716200000_create_costs.sql",
+      "lines": 229,
+      "sha256": "01a095d271393b30a5471aedc3ba099363216ca54340741e2137b4cf2f2e81b9",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260717163000_create_relations.sql",
+      "lines": 132,
+      "sha256": "9076a6fd31033be583757744b30b468dbabb181389380ebf8a86be1a77e4c47c",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719152000_add_meeting_kind.sql",
+      "lines": 97,
+      "sha256": "c91dd47f4a1b8bc3652c28a866440f12b8b9f4f27a63da68c4e23745b151d3bd",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719165000_create_google_connections.sql",
+      "lines": 62,
+      "sha256": "c824c633ba1631c433ddcd3dac5ac1b632c78aac1c8a5ab27561602ee3dee43a",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719183000_create_google_calendar_selections.sql",
+      "lines": 66,
+      "sha256": "06f55d3cebe562db7f6645bb90d8c221d5b86da836fddc53d36e6f2615bc0b25",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719203000_create_google_meeting_mirrors.sql",
+      "lines": 168,
+      "sha256": "30d4c72f6bc5d93c978afb6d9f9547dc7c3606cd0e43b61192b22ca2c033cbc8",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719213000_create_google_event_artifacts.sql",
+      "lines": 146,
+      "sha256": "35da3149ce071d9d593342b0ee81e5b26531ef2f0423511a9228d48f6f2cc5a8",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260719223000_simplify_founder_work_objects.sql",
+      "lines": 288,
+      "sha256": "35638bc70862441a50617bc24b8f733900d7c745f917acfc68e6c592d4f975aa",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260723173000_add_founder_crm.sql",
+      "lines": 106,
+      "sha256": "a48a8c2cd3af9d8670666444c9b60f7a7fcd749a1aed5cb2f9366d8928ff409d",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260723213000_refine_contacts_workspace.sql",
+      "lines": 194,
+      "sha256": "a90f6a9ecc787dfcc5831fb2de1be57ffe679fd8b43c7e1a061362a5a4882360",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260723233000_add_calendar_vacations.sql",
+      "lines": 169,
+      "sha256": "fa7b9009e96b0d5b352afca2b6e1264bb6da221e7e777f2ba3e789803f6bb71e",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260723234500_create_vault_entries.sql",
+      "lines": 176,
+      "sha256": "111409d993dfd9cc65ded664c8049e037978431fae138a6f0be650a0c5018710",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260724000000_remove_legacy_meeting_closer_trigger.sql",
+      "lines": 5,
+      "sha256": "1c14ce0fb81ddba0626fd84d0b0dad6ff0ee696eee6b9a3e47be8f840e339475",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260726190000_create_projects.sql",
+      "lines": 574,
+      "sha256": "1cde02a20c8c3721d985a8921bfe8c46dd6791c29fc0f207e4d24246c715b443",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260730181500_fix_contact_delete_rpcs.sql",
+      "lines": 84,
+      "sha256": "1842a314444e4758cac97e4480eafdd0ceebd4198b662f03748f187942487fff",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260828194400_add_rbac_roles.sql",
+      "lines": 243,
+      "sha256": "0131179a81ca76cdb9624a4e04f3538e9188c63169709e252b1d4e7ae5811270",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260828223500_set_initial_must_change_password.sql",
+      "lines": 4,
+      "sha256": "dd048a6264e9b3d9d2137e58af91c14f2c47dbff63de33f63d8c010fe89e0ab7",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260829120000_anchor_contact_interactions_to_companies.sql",
+      "lines": 434,
+      "sha256": "e6c8ee530cfb24659af136acc6dbb826fd8b3029787519201aa8b73ac70cc2c9",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260830182000_auto_confirm_users.sql",
+      "lines": 33,
+      "sha256": "27c8d6737948440293801f962e4888893fb607bb6495345b3470f9fc5ad502f4",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260831120000_create_shared_notes_workspace.sql",
+      "lines": 107,
+      "sha256": "f503e23482fe83e35edc9948fe18d4dd95cafd712033860ba9efd9bbfa9693b9",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260831123000_share_google_calendar_projections.sql",
+      "lines": 78,
+      "sha256": "15056bdbef0ba5b97a2dfbd195d0a851503574ce798d98612db79cfa30f4e1c2",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260831130000_restrict_notes_deletes_to_admin.sql",
+      "lines": 16,
+      "sha256": "e962d7574f949d83b8905047c51a434c6d98107b2478f9a8b21a83032bf54b77",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260831133000_raise_notes_upload_limit_to_10mb.sql",
+      "lines": 14,
+      "sha256": "e805e6d163b607c9efb5bedd0a9928c24d57889f48eecba94f8829b39b221f8d",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260901120000_add_company_identity_and_contact.sql",
+      "lines": 14,
+      "sha256": "85200aac826316fc2e1fe4835befb21974c67be18c97f8c6bc131d437a8bc469",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260901121000_add_company_website.sql",
+      "lines": 8,
+      "sha256": "3f17ac3325259bdec7237fed645a5493e4f9a32be78cc44c370d136c3c04e2ed",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260902150000_atomic_close_deal.sql",
+      "lines": 119,
+      "sha256": "cd30b4bcf9fa3be836efb05545aff03ed5d49fc6b750858351f52014da51031e",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260910123000_add_strategic_partnership_and_budgeting_stages.sql",
+      "lines": 132,
+      "sha256": "c681ec48efa1e486a63c1a1ffde553e6653877ba6a4e56d3ecd1843236016002",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/migrations/20260910143000_allow_updating_contact_interactions.sql",
+      "lines": 44,
+      "sha256": "afd87aeebfb95bfb4916025817e8aba6052707446427340e3ddcc853b708d904",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_calendar_dataset.sql",
+      "lines": 88,
+      "sha256": "85a98c55dafb227b47b5d875028d9c2ffcd86b375983e7b380524ffa223c868f",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_calendar_dataset_cleanup.sql",
+      "lines": 13,
+      "sha256": "ce3888815d867389d794eba12799b39bceb03460ed817f74765078b0050fb502",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_costs_dataset.sql",
+      "lines": 48,
+      "sha256": "0935b78144687471efeb1040190865697f32ca167adcbee01c0dea9d52e681e7",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_costs_dataset_cleanup.sql",
+      "lines": 23,
+      "sha256": "a279c2bbf9e8db1a66db0e804367a25958e084a5c48b0c8732caaad596b1a3e9",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_operating_dataset.sql",
+      "lines": 596,
+      "sha256": "6c4a1cf3e8d80e2b8d9451d3fd831f3788d743fcf7b2b4e5cffec8867773ba8d",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_operating_dataset_cleanup.sql",
+      "lines": 68,
+      "sha256": "45e8a1fdc6028c97f150a65af06a2aec7ee7aa1d24cfc4620a2a7f222e0fec29",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_relations_dataset.sql",
+      "lines": 26,
+      "sha256": "d1ca29a2f114010cd6a7eaf8f0d08376dc927c032b03063b39dd6506cf3d453d",
+      "imports": [],
+      "exports": []
+    },
+    {
+      "path": "supabase/seed/synthetic_relations_dataset_cleanup.sql",
+      "lines": 7,
+      "sha256": "79c9f1e37ccbe9fe6d069f18fd927f85116a5e8a97c8764307459d5b3cce4f52",
+      "imports": [],
+      "exports": []
+    }
+  ]
+}

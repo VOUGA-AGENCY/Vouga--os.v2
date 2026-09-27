@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.local/
+.env*
+!.env.example
+*.tsbuildinfo
+test-results/
+.DS_Store
+desktop/macos/build/
+
+# Private exports and import reports
+*_rows.csv
+imports/
+*.pem
