@@ -1068,7 +1068,7 @@ export function ProjectUpdateForm({
       action="project.update"
       values={{ projectId: id }}
       onClose={onDone}
-      label="Registar atualização"
+      label="Log update"
       extra={
         <span className="subtle">
           <Plus size={13} /> Contexto para a equipa
@@ -1076,12 +1076,12 @@ export function ProjectUpdateForm({
       }
     >
       <label>
-        O que mudou?
+          What changed?
         <textarea
           name="body"
           required
           rows={3}
-          placeholder="O que avançou, o que falta ou o que está bloqueado."
+          placeholder="Progress, blockers or next steps."
         />
       </label>
     </SaveForm>

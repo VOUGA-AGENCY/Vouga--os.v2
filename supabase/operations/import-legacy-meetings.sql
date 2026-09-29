@@ -23,14 +23,14 @@
 --   closer_member_id, status (always 'planned' -> cancelled = false)
 --
 -- Where the events land (see src/domain/permissions.ts):
---   meetings / events -> calendarKey 'office', owner = first admin. Only admins see it.
+--   meetings / events -> calendarKey 'contacto', owner = first admin. The whole team sees them.
 --   vacations         -> all-day, calendarKey 'personal' owned by the person named in
 --                        the title; if that person is not a member, it falls back to
---                        'office' with the legacy title preserved.
+--                        'contacto' with the legacy title preserved.
 --
 -- Two things to know after the import:
 --   1. "Vacation · ines" matches no member today, so those two rows land on the admin
---      'office' calendar. Create the member (id 'ines') and re-run this script: they
+--      'contacto' calendar. Create the member (id 'ines') and re-run this script: they
 --      move to a personal calendar on their own, because the mapping is resolved by
 --      lookup, not hard-coded.
 --   2. Three vacations are longer than the 7-day limit enforced by the app when saving
@@ -72,7 +72,8 @@ with legacy(id, title, kind, tone, starts_at, ends_at, notes, created_at, update
     ('fdc2deb2-852d-4c09-8021-1cd34097f87f', 'Vacation · ines',                           'vacation','blue', '2026-08-06T23:00:00+00', '2026-08-23T23:00:00+00', '',                                                       '2026-07-23T16:51:14.985828+00', '2026-07-23T16:51:14.985828+00'),
     ('ff61f673-a21f-4995-a37b-6deb052f01e9', 'Vacation · miguel',                         'vacation','green','2026-07-11T23:00:00+00', '2026-07-15T23:00:00+00', '',                                                       '2026-07-23T16:52:53.789738+00', '2026-07-23T16:52:53.789738+00')
 ),
--- Legacy rows carry no owner, so meetings and events land on the first admin's calendar.
+-- Legacy rows carry no owner, so meetings and events use Contacto and the first admin
+-- as the calendar owner. Vacations use the resolved personal owner when available.
 params as (
   select coalesce(
     (select row_key from vouga_next.members where data->>'role' = 'admin' order by position, row_key limit 1),
@@ -102,8 +103,8 @@ mapped as (
     r.*,
     case when r.kind = 'vacation' and r.person_member is not null
          then r.person_member else p.fallback_owner end as owner_id,
-    case when r.kind = 'vacation' and r.person_member is not null
-         then 'personal' else 'office' end as calendar_key
+        case when r.kind = 'vacation' and r.person_member is not null
+          then 'personal' else 'contacto' end as calendar_key
   from resolved r
   cross join params p
 )

@@ -461,6 +461,41 @@ html, body, .app-shell { background:var(--color-sidebar); }
 .activity-feed p { margin:0; overflow-wrap:anywhere; }
 .project-repositories { display:flex; gap:var(--space-3); align-items:center; flex-wrap:wrap; }
 
+/* Project activity: source-aware history instead of a flat timestamp list. */
+.activity-feed { display:grid; gap:var(--space-4); min-width:0; }
+.activity-feed > .activity-overview,
+.activity-feed > .activity-list { display:grid; border:0; padding:0; }
+.activity-overview { grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:var(--space-4); }
+.activity-overview > div:first-child { display:grid; gap:var(--space-1); }
+.activity-overview strong { font-size:var(--text-md); font-weight:600; }
+.activity-overview span { color:var(--color-subtle); font-size:var(--text-xs); }
+.activity-filters { display:flex; align-items:center; gap:var(--space-1); padding:var(--space-1); border:var(--border-width) solid var(--color-border); border-radius:var(--radius-pill); background:var(--color-surface); }
+.activity-filters button { display:inline-flex; align-items:center; gap:var(--space-2); min-height:var(--space-7); padding:var(--space-1) var(--space-3); border-radius:var(--radius-pill); color:var(--color-muted); font-size:var(--text-xs); }
+.activity-filters button:hover { background:var(--color-surface-hover); color:var(--color-ink); }
+.activity-filters button.active { background:var(--color-surface-active); color:var(--color-ink); }
+.activity-filters button span { min-width:1.15rem; padding:1px var(--space-1); border-radius:var(--radius-pill); background:var(--color-bg); text-align:center; color:var(--color-subtle); font-size:var(--text-xs); }
+.activity-list { gap:var(--space-2); }
+.activity-card { display:grid; grid-template-columns:var(--space-8) minmax(0,1fr); gap:var(--space-3); padding:var(--space-4); border:var(--border-width) solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); }
+.activity-card-github { border-left:2px solid var(--color-accent-ink); }
+.activity-card-update { border-left:2px solid var(--color-success); }
+.activity-card-icon { display:grid; place-items:center; width:var(--space-8); height:var(--space-8); border-radius:var(--radius-md); background:var(--color-surface-hover); color:var(--color-muted); }
+.activity-card-github .activity-card-icon { color:var(--color-accent-ink); }
+.activity-card-update .activity-card-icon { color:var(--color-success); }
+.activity-card-main { display:grid; gap:var(--space-2); min-width:0; }
+.activity-card-heading { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-3); min-width:0; }
+.activity-card-heading strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--text-meta); font-weight:600; }
+.activity-card-heading time { flex:none; color:var(--color-subtle); font-size:var(--text-xs); }
+.activity-card p { margin:0; color:var(--color-ink); font-size:var(--text-meta); line-height:1.55; overflow-wrap:anywhere; }
+.activity-card-meta { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-2); color:var(--color-subtle); font-size:var(--text-xs); }
+.activity-card-meta > span + span { padding-left:var(--space-2); border-left:var(--border-width) solid var(--color-border-strong); }
+.activity-details { color:var(--color-muted); font-size:var(--text-xs); }
+.activity-details summary { display:inline-block; padding:0; color:var(--color-muted); font-size:var(--text-xs); }
+.activity-details summary:hover { color:var(--color-ink); }
+.activity-details > div { display:flex; flex-wrap:wrap; gap:var(--space-2); margin-top:var(--space-2); }
+.activity-details > div span { padding:var(--space-1) var(--space-2); border:var(--border-width) solid var(--color-border); border-radius:var(--radius-pill); background:var(--color-bg); }
+.activity-action { display:inline-flex; align-items:center; gap:var(--space-2); min-height:var(--control-height-small); padding:var(--space-2) var(--space-3); border:var(--border-width) solid var(--color-border-strong); border-radius:var(--radius-pill); background:var(--color-surface); color:var(--color-ink); font-size:var(--text-xs); }
+.activity-action:hover { background:var(--color-surface-hover); }
+
 /* Calendar composer: readable controls within the side panel. */
 .side-panel-scroll {
   min-height: 0;

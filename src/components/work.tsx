@@ -11,7 +11,9 @@ import { projectStatuses } from "@/domain/model";
 import { relativeDate } from "@/domain/time";
 import { useWorkspace } from "./context";
 import { ActivityFeed } from "./activity";
+import { ProjectUpdateForm } from "./editors";
 import { RepositorySettings } from "./settings";
+import { Dialog } from "./dialog";
 import { TaskSurface } from "./task-surface";
 import { PersonAvatar } from "./person-avatar";
 
@@ -85,6 +87,7 @@ export function ProjectDetail({
 }) {
   const { data, edit, refresh, notify } = useWorkspace();
   const [syncing, setSyncing] = useState(false);
+  const [updateComposerOpen, setUpdateComposerOpen] = useState(false);
   const [tab, setTab] = useState<"board" | "list" | "activity">("board");
   const project = data.projects.find((item) => item.id === id);
   if (!project) return null;
@@ -135,6 +138,13 @@ export function ProjectDetail({
       {tab === "activity" ? (
         <>
           <div className="compact-toolbar">
+            <button
+              className="activity-action"
+              onClick={() => setUpdateComposerOpen(true)}
+            >
+              <Plus size={14} />
+              Log update
+            </button>
             {data.me.role === "admin" && !!project.repositories?.length && (
               <button
                 disabled={syncing}
@@ -168,6 +178,17 @@ export function ProjectDetail({
             )}
           </div>
           <ActivityFeed projectId={id} />
+          {updateComposerOpen && (
+            <Dialog
+              title="Log project update"
+              onClose={() => setUpdateComposerOpen(false)}
+            >
+              <ProjectUpdateForm
+                id={id}
+                onDone={() => setUpdateComposerOpen(false)}
+              />
+            </Dialog>
+          )}
         </>
       ) : (
         <TaskSurface projectId={id} mode={tab} onModeChange={setTab} />
