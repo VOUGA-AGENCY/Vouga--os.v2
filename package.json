@@ -18,6 +18,10 @@
     "integrations:worker": "bun --conditions=react-server scripts/integration-worker.ts",
     "db:preview": "bun --conditions=react-server scripts/migrate-supabase.ts",
     "db:migrate": "bun --conditions=react-server scripts/migrate-supabase.ts --apply",
+    "meetings:preview": "bun --conditions=react-server scripts/import-meetings.ts",
+    "meetings:migrate": "bun --conditions=react-server scripts/import-meetings.ts --apply",
+    "meetings:supabase": "bun --conditions=react-server scripts/import-meetings-supabase.ts",
+    "meetings:supabase:apply": "bun --conditions=react-server scripts/import-meetings-supabase.ts --apply",
     "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts"
   },
   "dependencies": {

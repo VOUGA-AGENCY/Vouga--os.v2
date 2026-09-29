@@ -188,14 +188,26 @@ function executeCore(
         (calendarKey === "personal" && calendarOwnerId === me.id),
     );
     const allDay = boolean(values.allDay, existing?.allDay ?? false);
-    const startsAt = instant(
-      allDay ? `${dateKey(instant(values.startsAt))}T00:00` : values.startsAt,
-    );
-    const endsAt = instant(
-      allDay ? `${dateKey(instant(values.endsAt))}T00:00` : values.endsAt,
-    );
-    if (endsAt <= startsAt)
-      throw new AppError("O fim tem de ser depois do início.");
+    let startsAt: string;
+    let endsAt: string;
+    if (allDay) {
+      // All-day ranges are stored with an exclusive end: the agenda reads the last
+      // covered day as `endsAt - 1ms`. A range that begins and ends on the same day
+      // therefore still covers that whole day, so it must stop at the next midnight.
+      const firstDay = dateKey(instant(values.startsAt));
+      const lastDay = dateKey(instant(values.endsAt));
+      if (lastDay < firstDay)
+        throw new AppError("O fim tem de ser depois do início.");
+      startsAt = instant(`${firstDay}T00:00`);
+      endsAt = instant(
+        `${lastDay === firstDay ? addDays(firstDay, 1) : lastDay}T00:00`,
+      );
+    } else {
+      startsAt = instant(values.startsAt);
+      endsAt = instant(values.endsAt);
+      if (endsAt <= startsAt)
+        throw new AppError("O fim tem de ser depois do início.");
+    }
     if (Date.parse(endsAt) - Date.parse(startsAt) > 7 * 86400000)
       throw new AppError("O compromisso não pode exceder sete dias.");
     const participants = stringList(
