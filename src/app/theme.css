@@ -13,6 +13,13 @@
   --color-border: rgb(30 30 30 / 8%);
   --color-border-strong: rgb(30 30 30 / 17%);
   --color-focus: #555555;
+  --color-star: #e06a05;
+  --stage-new: #75573a;
+  --stage-contacted: #8a5a0c;
+  --stage-meeting: #b23a18;
+  --stage-proposal: #a82210;
+  --stage-client: var(--vouga-blue);
+  --stage-dormant: #5b6270;
   --color-accent: #383838;
   --color-accent-hover: #222222;
   --color-accent-ink: #333333;
@@ -23,6 +30,11 @@
   --color-panel: #fdfdfd;
 }
 :root[data-theme="light"] .workspace-mark { filter: invert(1); }
+:root[data-theme="light"] .company-map { background: #e9ecef; }
+:root[data-theme="light"] .company-map .maplibregl-ctrl-icon, :root[data-theme="light"] .company-map .maplibregl-ctrl-attrib-button { filter: none; }
+:root[data-theme="light"] .company-map-pin { border-color: #fff; }
+:root[data-theme="light"] .company-map-pin::after { background: #fff; }
+:root[data-theme="light"] .company-card { background: linear-gradient(180deg, var(--color-panel) 40%, color-mix(in srgb, var(--vouga-blue) 6%, var(--color-panel)) 100%); }
 :root[data-theme="light"] .side-panel-backdrop,
 :root[data-theme="light"] .dialog::backdrop,
 :root[data-theme="light"] .note-composer-dialog::backdrop { background: var(--color-backdrop); }

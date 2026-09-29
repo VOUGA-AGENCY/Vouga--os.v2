@@ -191,6 +191,81 @@ describe("ordinary work", () => {
       body: "Reunião com a direção",
     });
   });
+  it("pins and unpins a company without touching its status history", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const interactions = data.interactions.length;
+    run("organization.pin", {
+      id: organization.id,
+      version: organization.version,
+    });
+    expect(organization.pinned).toBe(true);
+    run("organization.pin", {
+      id: organization.id,
+      version: organization.version,
+    });
+    expect(organization.pinned).toBe(false);
+    expect(data.interactions).toHaveLength(interactions);
+    expect(
+      data.activity.some(
+        (event) => event.companyId === "norte" && event.type !== "company.created",
+      ),
+    ).toBe(false);
+  });
+  it("saves a company location and keeps it when a save omits it", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const details = {
+      id: organization.id,
+      name: organization.name,
+      stage: organization.stage,
+      ownerId: organization.ownerId,
+    };
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      location: "  Águeda, Aveiro ",
+    });
+    expect(organization.location).toBe("Águeda, Aveiro");
+    run("organization.save", { ...details, version: organization.version });
+    expect(organization.location).toBe("Águeda, Aveiro");
+  });
+  it("keeps coordinates with their address and drops them when it moves", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const details = {
+      id: organization.id,
+      name: organization.name,
+      stage: organization.stage,
+      ownerId: organization.ownerId,
+    };
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      location: "Maia",
+      address: "Rua Engenheiro Frederico Ulrich, 4470-605 Maia",
+      coordinates: { lat: 41.2566, lng: -8.6481 },
+    });
+    expect(organization.coordinates).toEqual({ lat: 41.2566, lng: -8.6481 });
+    run("organization.save", { ...details, version: organization.version });
+    expect(organization.coordinates).toEqual({ lat: 41.2566, lng: -8.6481 });
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      address: "Outra morada, 4470-001 Maia",
+    });
+    expect(organization.coordinates).toBeUndefined();
+    expect(() =>
+      run("organization.save", {
+        ...details,
+        version: organization.version,
+        coordinates: { lat: 51.5, lng: -0.12 },
+      }),
+    ).toThrow("Coordenadas inválidas");
+  });
   it("links a company event to its calendar and timeline", () => {
     run("meeting.save", {
       title: "Reunião Santosom",

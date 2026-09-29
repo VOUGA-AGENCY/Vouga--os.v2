@@ -108,10 +108,16 @@ export interface Organization extends Entity {
   person: string;
   email: string;
   phone: string;
+  location?: string;
+  /** Street address with postal code, when known. */
+  address?: string;
+  /** Precise position of the address; without it the map uses the municipality centroid. */
+  coordinates?: { lat: number; lng: number };
   stage: Stage;
   ownerId: string;
   nextStep: string;
   followUpOn: string | null;
+  pinned?: boolean;
   archived: boolean;
 }
 export interface Interaction extends Entity {

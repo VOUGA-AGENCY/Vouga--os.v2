@@ -263,6 +263,14 @@ function executeCore(
     }
     return meeting.id;
   };
+  const coordinates = (value: unknown) => {
+    if (value === null) return undefined;
+    const { lat, lng } = (value ?? {}) as { lat?: unknown; lng?: unknown };
+    // Mainland Portugal, Madeira and the Azores.
+    if (typeof lat !== "number" || typeof lng !== "number" || lat < 29 || lat > 43 || lng < -32 || lng > -6)
+      throw new AppError("Coordenadas inválidas.");
+    return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) };
+  };
   const saveOrganization = (values: Values) => {
     const existing = values.id ? find(data.organizations, values.id) : null;
     if (existing) version(existing, values.version);
@@ -270,6 +278,10 @@ function executeCore(
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       throw new AppError("Email inválido.");
     const name = text(values.name, "Organização", 160);
+    const location = text(values.location ?? existing?.location, "Localização", 160, false);
+    const address = text(values.address ?? existing?.address, "Morada", 300, false);
+    // Coordinates follow the address: when either text changes without new coordinates, drop the stale pin.
+    const moved = !!existing && (location !== (existing.location ?? "") || address !== (existing.address ?? ""));
     if (
       !existing &&
       data.organizations.some(
@@ -285,6 +297,14 @@ function executeCore(
       person: text(values.person, "Pessoa", 160, false),
       email,
       phone: text(values.phone, "Telefone", 50, false),
+      location,
+      address,
+      coordinates:
+        values.coordinates !== undefined
+          ? coordinates(values.coordinates)
+          : moved
+            ? undefined
+            : existing?.coordinates,
       stage: choice(
         values.stage ?? "new",
         Object.keys(stages),
@@ -293,6 +313,7 @@ function executeCore(
       ownerId: member(values.ownerId ?? me.id),
       nextStep: text(values.nextStep, "Próximo passo", 500, false),
       followUpOn: day(values.followUpOn),
+      pinned: boolean(values.pinned, existing?.pinned ?? false),
       archived: boolean(values.archived, existing?.archived ?? false),
     };
     if (existing && item.stage !== existing.stage) {
@@ -619,6 +640,17 @@ function executeCore(
       organization.stage = stage;
       touch(organization);
       return { message: "Estado e nota guardados." };
+    }
+    case "organization.pin": {
+      const organization = find(data.organizations, v.id);
+      version(organization, v.version);
+      organization.pinned = !organization.pinned;
+      touch(organization);
+      return {
+        message: organization.pinned
+          ? "Empresa destacada no topo do CRM."
+          : "Empresa retirada dos destaques.",
+      };
     }
     case "organization.note": {
       const organization = find(data.organizations, v.id);
