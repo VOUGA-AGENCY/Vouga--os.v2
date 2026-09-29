@@ -66,7 +66,7 @@ describe("team access", () => {
     const account = state.data.accounts.find((a) => a.memberId === "miguel")!;
     delete account.lockedUntil;
     account.temporaryExpiresAt = "2000-01-01";
-    await expect(login("miguel", "miguel123")).rejects.toThrow("expirou");
+    await expect(login("miguel", "miguel123")).rejects.toThrow("expired");
     state.data.accounts.find(a => a.memberId === "miguel")!.disabled = true;
     await expect(login("miguel", "miguel123")).rejects.toThrow("incorretos");
   });
@@ -92,7 +92,7 @@ describe("team access", () => {
         }),
         true,
       ),
-    ).toThrow("Host");
+    ).toThrow("Invalid host");
     expect(() =>
       assertLocalRequest(
         new Request("http://localhost/api/session", {
@@ -100,6 +100,6 @@ describe("team access", () => {
         }),
         true,
       ),
-    ).toThrow("Origem");
+    ).toThrow("Invalid request origin");
   });
 });

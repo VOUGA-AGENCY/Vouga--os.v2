@@ -34,7 +34,7 @@ export class LocalWorkspaceRepository implements WorkspaceRepository {
         if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
         if (Date.now() >= until)
           throw new Error(
-            "O armazenamento local está ocupado. Consulta docs/LOCAL-DATA.md se persistir.",
+            "Local storage is busy. Check docs/LOCAL-DATA.md if the problem persists.",
           );
         await new Promise((resolve) => setTimeout(resolve, 30));
       }
@@ -104,7 +104,7 @@ export class LocalWorkspaceRepository implements WorkspaceRepository {
       !Array.isArray(data.tasks)
     )
       throw new Error(
-        "Formato de dados local incompatível. Os dados não foram alterados.",
+        "Incompatible local data format. Data was not changed.",
       );
     return data;
   }
@@ -151,9 +151,9 @@ export class LocalWorkspaceRepository implements WorkspaceRepository {
 
 export function repository(): WorkspaceRepository {
   if (process.env.VOUGA_STORAGE === "supabase") return new SupabaseWorkspaceRepository(supabaseOptions());
-  if (process.env.VOUGA_STORAGE && process.env.VOUGA_STORAGE !== "local") throw new Error("VOUGA_STORAGE inválido.");
+  if (process.env.VOUGA_STORAGE && process.env.VOUGA_STORAGE !== "local") throw new Error("Invalid VOUGA_STORAGE.");
   if (process.env.VOUGA_LOCAL_MODE !== "1")
-    throw new Error("Executa bun run setup para configurar esta edição local.");
+    throw new Error("Run bun run setup to configure this local edition.");
   return new LocalWorkspaceRepository(
     path.resolve(process.env.VOUGA_DATA_DIR || ".local"),
     () => {

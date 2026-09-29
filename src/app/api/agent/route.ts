@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         await decideAction(
           ctx,
           me,
-          text(body.pendingId, "Ação", 100),
+          text(body.pendingId, "Action", 100),
           body.confirm === true,
         ),
       );

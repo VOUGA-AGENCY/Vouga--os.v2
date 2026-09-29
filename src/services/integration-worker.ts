@@ -63,7 +63,7 @@ export async function processJobs(ctx: ServiceContext, limit = 10) {
       });
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Falha de integração";
+        error instanceof Error ? error.message : "Integration failed";
       console.error(
         JSON.stringify({
           job: job.id,

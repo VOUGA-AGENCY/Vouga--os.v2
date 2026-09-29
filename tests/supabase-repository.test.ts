@@ -12,6 +12,23 @@ describe("Supabase persistence",()=>{
   expect(diff.upserts[0].collection).toBe("tasks");
   next.tasks.pop();expect(delta(seed,next).deletes).toHaveLength(1);
  });
+ it("persists task size, priority, and issue fields in Supabase upsert payload",async()=>{
+  const fetcher=vi.fn().mockResolvedValueOnce(response(seed)).mockResolvedValueOnce(response({status:"ok",revision:seed.revision+1}));
+  const repo=new SupabaseWorkspaceRepository(options(fetcher));
+  await repo.transact(s=>{
+    s.tasks[0].size="xl";
+    s.tasks[0].priority="urgent";
+    s.tasks[0].issueNumber=142;
+    s.tasks[0].issueUrl="https://github.com/example/repo/issues/142";
+  });
+  const body=JSON.parse(fetcher.mock.calls[1][1].body);
+  expect(body.p_upserts).toHaveLength(1);
+  expect(body.p_upserts[0].collection).toBe("tasks");
+  expect(body.p_upserts[0].data.size).toBe("xl");
+  expect(body.p_upserts[0].data.priority).toBe("urgent");
+  expect(body.p_upserts[0].data.issueNumber).toBe(142);
+  expect(body.p_upserts[0].data.issueUrl).toBe("https://github.com/example/repo/issues/142");
+ });
  it("retries a confirmed revision conflict against fresh data",async()=>{
   const fresh=structuredClone(seed);fresh.revision++;fresh.tasks[1].title="Other person's change";
   const fetcher=vi.fn().mockResolvedValueOnce(response(seed)).mockResolvedValueOnce(response({status:"conflict",revision:fresh.revision})).mockResolvedValueOnce(response(fresh)).mockResolvedValueOnce(response({status:"ok",revision:fresh.revision+1}));
@@ -28,7 +45,7 @@ describe("Supabase persistence",()=>{
  });
  it("does not expose provider error bodies or fall back to local data",async()=>{
   const fetcher=vi.fn().mockResolvedValue(response({message:"secret-data"},401));
-  await expect(new SupabaseWorkspaceRepository(options(fetcher)).read()).rejects.toThrow("recusou");
+    await expect(new SupabaseWorkspaceRepository(options(fetcher)).read()).rejects.toThrow("rejected");
   expect(fetcher).toHaveBeenCalledTimes(1);
  });
  it("rejects public credentials and malformed store collections",()=>{
@@ -37,7 +54,7 @@ describe("Supabase persistence",()=>{
  });
  it("cannot replace an already initialized workspace",async()=>{
   const fetcher=vi.fn().mockResolvedValue(response({status:"conflict",revision:90}));
-  await expect(new SupabaseWorkspaceRepository(options(fetcher)).initialize(seed)).rejects.toThrow("já tem dados");
+    await expect(new SupabaseWorkspaceRepository(options(fetcher)).initialize(seed)).rejects.toThrow("already has data");
  });
  it("keeps per-user receipts distinct",()=>{
   const data=structuredClone(seed);

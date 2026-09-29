@@ -14,7 +14,7 @@ export function Today() {
   const tasks = data.tasks
     .filter(
       (task) =>
-        task.ownerId === data.me.id &&
+        (task.ownerId === data.me.id || (task.assigneeIds?.includes(data.me.id) ?? false)) &&
         task.status !== "done" &&
         task.dueOn &&
         task.dueOn <= today,
@@ -35,7 +35,7 @@ export function Today() {
         <div>
           <h1>Home</h1>
           <span>
-            {new Intl.DateTimeFormat("pt-PT", {
+            {new Intl.DateTimeFormat("en-GB", {
               weekday: "long",
               day: "numeric",
               month: "long",
@@ -56,19 +56,19 @@ export function Today() {
               const result = await response.json();
               if (!response.ok)
                 throw new Error(
-                  result.error || "Não foi possível obter o resumo.",
+                  result.error || "Could not get the summary.",
                 );
               setSummary(result.text);
             } catch (error) {
               notify(
-                error instanceof Error ? error.message : "Resumo indisponível.",
+                error instanceof Error ? error.message : "Summary unavailable.",
               );
             } finally {
               setSummarizing(false);
             }
           }}
         >
-          {summarizing ? "A preparar…" : "Pedir resumo"}
+          {summarizing ? "Preparing…" : "Get summary"}
         </button>
         <button onClick={() => capture()}>
           <Plus size={15} />

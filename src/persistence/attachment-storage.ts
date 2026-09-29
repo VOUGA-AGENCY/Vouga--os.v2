@@ -5,7 +5,7 @@ import { SupabaseClient, supabaseOptions } from "./supabase/client";
 import { AppError } from "@/domain/validation";
 const bucket = "vouga-next-attachments";
 function validate(name: string) {
-  if (!/^[a-f0-9-]{36}$/.test(name)) throw new AppError("Identificador de ficheiro inválido.",400);
+  if (!/^[a-f0-9-]{36}$/.test(name)) throw new AppError("Invalid file identifier.",400);
 }
 export interface AttachmentStorage {
   put(name:string,bytes:Uint8Array,mime:string):Promise<void>;
@@ -17,18 +17,18 @@ export class SupabaseAttachmentStorage implements AttachmentStorage {
   async put(name:string, bytes:Uint8Array, mime:string) {
     validate(name);
     const response=await this.client.request(`/storage/v1/object/${bucket}/${name}`, {method:"POST",headers:{"Content-Type":mime,"x-upsert":"false"},body:new Blob([Buffer.from(bytes)],{type:mime})});
-    if (!response.ok) throw new AppError(`Não foi possível guardar o anexo no Supabase (${response.status}).`,503);
+    if (!response.ok) throw new AppError(`Could not save the attachment to Supabase (${response.status}).`,503);
   }
   async get(name:string) {
     validate(name);
     const response=await this.client.request(`/storage/v1/object/authenticated/${bucket}/${name}`);
-    if(!response.ok) throw new AppError("Anexo indisponível.",response.status===404?404:503);
+    if(!response.ok) throw new AppError("Attachment unavailable.",response.status===404?404:503);
     return new Uint8Array(await response.arrayBuffer());
   }
   async remove(name:string) {
     validate(name);
     const response=await this.client.request(`/storage/v1/object/${bucket}`,{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({prefixes:[name]})});
-    if(!response.ok) throw new AppError("Não foi possível remover o anexo.",503);
+    if(!response.ok) throw new AppError("Could not remove the attachment.",503);
   }
 }
 export function attachmentStorage(): AttachmentStorage {

@@ -67,10 +67,10 @@ describe("Google OAuth completion", () => {
     ).searchParams.get("state")!;
     await expect(
       completeGoogleOAuth(ctx, { ...me, id: "other" }, state, "code"),
-    ).rejects.toThrow("inválido");
+    ).rejects.toThrow("Invalid");
     data.oauthStates[0].expiresAt = "2000-01-01T00:00:00Z";
     await expect(completeGoogleOAuth(ctx, me, state, "code")).rejects.toThrow(
-      "expirado",
+      "expired",
     );
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -88,7 +88,7 @@ describe("Google OAuth completion", () => {
       verifier: "",
     });
     await expect(completeGoogleOAuth(ctx, me, state, "code")).rejects.toThrow(
-      "nova ligação",
+      "new connection",
     );
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -112,7 +112,7 @@ describe("Google OAuth completion", () => {
     const first = completeGoogleOAuth(ctx, me, state, "code");
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     await expect(completeGoogleOAuth(ctx, me, state, "code")).rejects.toThrow(
-      "já está",
+      "already being completed",
     );
     release(
       new Response(

@@ -13,9 +13,10 @@ export const canSeeProject = (me: Member, project: Project) =>
   project.memberIds.includes(me.id);
 export const canSeeTask = (me: Member, task: Task, data: WorkspaceData) =>
   task.visibility === "private"
-    ? task.ownerId === me.id
+    ? task.ownerId === me.id || (task.assigneeIds?.includes(me.id) ?? false)
     : me.role === "admin" ||
       task.ownerId === me.id ||
+      (task.assigneeIds?.includes(me.id) ?? false) ||
       !!data.projects.find(
         (p) => p.id === task.projectId && canSeeProject(me, p),
       );
@@ -39,5 +40,5 @@ export const canSeeNote = (me: Member, note: Note, data: WorkspaceData) =>
           (p) => p.id === note.projectId && canSeeProject(me, p),
         ));
 export function allow(condition: boolean) {
-  if (!condition) throw new AppError("Não tens acesso a este registo.", 403);
+  if (!condition) throw new AppError("You do not have access to this record.", 403);
 }

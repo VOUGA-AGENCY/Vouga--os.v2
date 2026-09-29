@@ -19,18 +19,18 @@ export async function POST(request: Request) {
     const form = await request.formData();
     const taskId = form.get("taskId");
     const file = form.get("file");
-    if (typeof taskId !== "string" || !(file instanceof File)) throw new AppError("Escolhe a tarefa e o ficheiro.");
-    if (!file.size || file.size > 20 * 1024 * 1024) throw new AppError("O ficheiro deve ter até 20 MB.");
-    if (!allowedTypes.has(file.type)) throw new AppError("Formato de ficheiro não suportado.");
+    if (typeof taskId !== "string" || !(file instanceof File)) throw new AppError("Select the task and file.");
+    if (!file.size || file.size > 20 * 1024 * 1024) throw new AppError("The file must be no larger than 20 MB.");
+    if (!allowedTypes.has(file.type)) throw new AppError("Unsupported file format.");
     const data = await repository().read();
     const task = data.tasks.find((item) => item.id === taskId);
-    if (!task || !canSeeTask(me, task, data)) throw new AppError("Tarefa não encontrada.", 404);
+    if (!task || !canSeeTask(me, task, data)) throw new AppError("Task not found.", 404);
     const storageName = randomUUID();
     await attachmentStorage().put(storageName, new Uint8Array(await file.arrayBuffer()), file.type);
     const now = new Date().toISOString();
     await repository().transact((store) => {
       const current = store.tasks.find((item) => item.id === taskId);
-      if (!current || !canSeeTask(me, current, store)) throw new AppError("Tarefa não encontrada.", 404);
+      if (!current || !canSeeTask(me, current, store)) throw new AppError("Task not found.", 404);
       store.taskAttachments.push({ id: randomUUID(), version: 1, createdAt: now,
         updatedAt: now, createdBy: me.id, taskId, name: file.name.slice(0, 200),
         mimeType: file.type, size: file.size, storageName });
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
     const data = await repository().read();
     const attachment = data.taskAttachments.find((item) => item.id === id);
     const task = data.tasks.find((item) => item.id === attachment?.taskId);
-    if (!attachment || !task || !canSeeTask(me, task, data)) throw new AppError("Ficheiro não encontrado.", 404);
+    if (!attachment || !task || !canSeeTask(me, task, data)) throw new AppError("File not found.", 404);
     const bytes = await attachmentStorage().get(attachment.storageName);
     const safeName = attachment.name.replace(/[\r\n"\\]/g, "_");
     return new Response(Buffer.from(bytes), { headers: {

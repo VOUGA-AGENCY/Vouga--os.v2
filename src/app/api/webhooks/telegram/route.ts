@@ -11,10 +11,10 @@ export async function POST(request: Request) {
         request.headers.get("X-Telegram-Bot-Api-Secret-Token") || "",
       )
     )
-      throw new AppError("Webhook inválido.", 403);
+      throw new AppError("Invalid webhook.", 403);
     const body = record(await jsonBody(request));
     if (!Number.isSafeInteger(body.update_id))
-      throw new AppError("Update inválido.");
+      throw new AppError("Invalid update.");
     const message = record(body.message ?? {}),
       callback = record(body.callback_query ?? {}),
       callbackMessage = record(callback.message ?? {}),

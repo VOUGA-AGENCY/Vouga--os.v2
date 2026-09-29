@@ -86,7 +86,7 @@ export function Workspace({
   }, []);
   const command = useCallback(
     async (action: string, values: Record<string, unknown>) => {
-      if (inFlight.current) throw new Error("Aguarda a gravação em curso.");
+      if (inFlight.current) throw new Error("Please wait for the current save to finish.");
       inFlight.current = true;
       setBusy(true);
       try {
@@ -99,11 +99,11 @@ export function Workspace({
           window.location.assign(
             view === "painel" ? "/login?next=painel" : "/login",
           );
-          throw new Error("Volta a entrar.");
+          throw new Error("Please sign in again.");
         }
         const result = await response.json();
         if (!response.ok)
-          throw new Error(result.error ?? "Não foi possível guardar.");
+          throw new Error(result.error ?? "Could not save.");
         accept(result.snapshot);
         setToast(result.message);
         setConnection("");
@@ -134,7 +134,7 @@ export function Workspace({
           );
           return;
         }
-        if (!response.ok) throw new Error("indisponível");
+        if (!response.ok) throw new Error("Unavailable");
         const next = await response.json();
         if (!cancelled) {
           accept(next);
@@ -143,7 +143,7 @@ export function Workspace({
       } catch {
         if (!cancelled)
           setConnection(
-            "Sem ligação ao servidor. Os registos já guardados estão seguros. A tentar novamente…",
+            "No connection to the server. Saved records are safe. Retrying…",
           );
       }
     }
@@ -200,7 +200,7 @@ export function Workspace({
         id: t.id,
         type: "task" as const,
         title: t.title,
-        meta: "Tarefa",
+        meta: "Task",
       })),
     ...data.organizations
       .filter((o) => matching(`${o.name} ${o.person}`))
@@ -208,7 +208,7 @@ export function Workspace({
         id: o.id,
         type: "organization" as const,
         title: o.name,
-        meta: "Contacto",
+        meta: "Contact",
       })),
     ...data.projects
       .filter((p) => matching(p.name))
@@ -216,7 +216,7 @@ export function Workspace({
         id: p.id,
         type: "project" as const,
         title: p.name,
-        meta: "Projeto",
+        meta: "Project",
       })),
     ...data.notes
       .filter((n) => matching(`${n.title} ${n.body}`))
@@ -224,7 +224,7 @@ export function Workspace({
         id: n.id,
         type: "note" as const,
         title: n.title,
-        meta: "Nota",
+        meta: "Note",
       })),
     ...data.meetings
       .filter((m) => matching(m.title))
@@ -232,7 +232,7 @@ export function Workspace({
         id: m.id,
         type: "meeting" as const,
         title: m.title,
-        meta: "Compromisso",
+        meta: "Event",
       })),
   ].slice(0, 15);
   return (
@@ -295,10 +295,10 @@ export function Workspace({
           }}
         >
           <a className="skip-link" href="#main">
-            Saltar para o conteúdo
+            Skip to content
           </a>
           <aside className="sidebar">
-            <Link href="/" aria-label="Vouga OS — Hoje" className="brand">
+            <Link href="/" aria-label="Vouga OS — Today" className="brand">
               <Image
                 src="/vouga-mark-white.png"
                 alt="Vouga"
@@ -308,7 +308,7 @@ export function Workspace({
                 priority
               />
             </Link>
-            <nav aria-label="Navegação principal" className="sidebar-nav">
+            <nav aria-label="Main navigation" className="sidebar-nav">
               {links}
             </nav>
             <div className="sidebar-projects">
@@ -345,7 +345,7 @@ export function Workspace({
                 </span>
                 <button
                   className="icon-button logout-button"
-                  aria-label="Terminar sessão"
+                  aria-label="Sign out"
                   onClick={async () => {
                     try {
                       const response = await fetch("/api/session", {
@@ -355,7 +355,7 @@ export function Workspace({
                       window.location.assign("/login");
                     } catch {
                       setToast(
-                        "Não foi possível terminar sessão. Tenta novamente.",
+                        "Could not sign out. Try again.",
                       );
                     }
                   }}
@@ -380,7 +380,7 @@ export function Workspace({
               <div className="header-actions">
                 <button
                   className="icon-button"
-                  aria-label="Pesquisar no workspace"
+                  aria-label="Search workspace"
                   onClick={() => {
                     setSearch(true);
                     setQuery("");
@@ -427,7 +427,7 @@ export function Workspace({
               <span>Local workspace</span>
             </footer>
           </div>
-          <nav className="bottom-navigation" aria-label="Navegação móvel">
+          <nav className="bottom-navigation" aria-label="Mobile navigation">
             {links}
           </nav>
         </div>
@@ -484,7 +484,7 @@ export function Workspace({
           <span>{toast}</span>
           <button
             className="icon-button"
-            aria-label="Fechar mensagem"
+            aria-label="Dismiss message"
             onClick={() => setToast("")}
           >
             <X size={14} />
@@ -492,16 +492,16 @@ export function Workspace({
         </div>
       )}
       {search && (
-        <Dialog title="Encontrar no workspace" onClose={() => setSearch(false)}>
+        <Dialog title="Find in workspace" onClose={() => setSearch(false)}>
           <div className="dialog-body">
             <label className="search-field global-search">
               <Search size={18} />
               <input
-                aria-label="Pesquisar"
+                aria-label="Search"
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Tarefa, pessoa, projeto ou nota…"
+                placeholder="Task, person, project, or note…"
               />
             </label>
             <div className="search-results">
@@ -520,7 +520,7 @@ export function Workspace({
               ))}
               {!results.length && (
                 <p className="quiet-empty">
-                  Sem resultados para esta pesquisa.
+                  No results for this search.
                 </p>
               )}
             </div>
@@ -528,46 +528,46 @@ export function Workspace({
         </Dialog>
       )}
       {help && (
-        <Dialog title="Vouga OS · versão local" onClose={() => setHelp(false)}>
+        <Dialog title="Vouga OS · local version" onClose={() => setHelp(false)}>
           <div className="dialog-body form-stack">
             <p>
-              Tarefas, projetos, relações e calendário da Vouga num só
+              Vouga tasks, projects, relationships, and calendar in one
               workspace.
             </p>
             <dl className="about-list">
               <div>
-                <dt>Dados do workspace</dt>
+                <dt>Workspace data</dt>
                 <dd>
-                  Guardados na base configurada no servidor. A aplicação está a
-                  correr neste computador.
+                  Stored in the database configured on the server. The app is
+                  running on this computer.
                 </dd>
               </div>
               <div>
-                <dt>Texto e voz</dt>
+                <dt>Text and voice</dt>
                 <dd>
-                  Texto e áudio usam o mesmo Agent. A ligação pode ser
-                  verificada em Settings.
+                  Text and audio use the same Agent. The connection can be
+                  checked in Settings.
                 </dd>
               </div>
               <div>
-                <dt>Integrações</dt>
+                <dt>Integrations</dt>
                 <dd>
-                  Consulta o estado de Google Calendar, GitHub, Telegram e AI em
-                  Settings.
+                  Check the status of Google Calendar, GitHub, Telegram, and AI
+                  in Settings.
                 </dd>
               </div>
               <div>
-                <dt>Painel compacto</dt>
+                <dt>Compact panel</dt>
                 <dd>
-                  Disponível dentro do browser e numa janela própria. Inclui um
-                  companion macOS na pasta desktop/macos para abrir o painel na
-                  barra de menus.
+                  Available in the browser and in its own window. Includes a
+                  macOS companion in desktop/macos for opening the panel from
+                  the menu bar.
                 </dd>
               </div>
             </dl>
             {data.me.role === "admin" && (
               <a className="button-secondary" href="/api/backup" download>
-                Exportar dados visíveis em JSON
+                Export visible data as JSON
               </a>
             )}
             <button
@@ -577,10 +577,10 @@ export function Workspace({
                   method: "DELETE",
                 });
                 if (response.ok) window.location.assign("/login");
-                else setToast("Não foi possível terminar sessão.");
+                else setToast("Could not sign out.");
               }}
             >
-              Terminar sessão
+              Sign out
               <LogOut size={15} />
             </button>
           </div>

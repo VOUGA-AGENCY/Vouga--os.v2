@@ -142,14 +142,14 @@ export function RelationSelect({
           <input
             ref={search}
             role="combobox"
-            aria-label={`Pesquisar ${label.toLocaleLowerCase("pt")}`}
+            aria-label={`Search ${label.toLocaleLowerCase("en-GB")}`}
             aria-expanded={open}
             aria-controls={`${id}-options`}
             aria-autocomplete="list"
             aria-activedescendant={
               choices[active] ? `${id}-option-${active}` : undefined
             }
-            placeholder="Pesquisar por nome…"
+            placeholder="Search by name…"
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -181,7 +181,7 @@ export function RelationSelect({
               {option.id === value && <Check size={14} aria-hidden="true" />}
             </button>
           ))}
-          {!choices.length && <p role="status">Sem resultados.</p>}
+          {!choices.length && <p role="status">No results found.</p>}
         </div>
       </div>
     </div>

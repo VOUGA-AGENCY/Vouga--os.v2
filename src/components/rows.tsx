@@ -36,7 +36,10 @@ export function TaskRow({
 }) {
   const { data, edit, command, busy, notify } = useWorkspace();
   const project = data.projects.find((p) => p.id === task.projectId);
-  const member = data.members.find((m) => m.id === task.ownerId);
+  const assigneeNames = (task.assigneeIds?.length ? task.assigneeIds : [task.ownerId])
+    .map((id) => data.members.find((m) => m.id === id)?.name)
+    .filter(Boolean)
+    .join(", ");
   const overdue =
     task.dueOn && task.dueOn < dateKey(data.now) && task.status !== "done";
   return (
@@ -45,7 +48,7 @@ export function TaskRow({
     >
       <button
         className={`task-check ${task.status === "done" ? "task-check-done" : ""}`}
-        aria-label={`${task.status === "done" ? "Reabrir" : "Concluir"} ${task.title}`}
+        aria-label={`${task.status === "done" ? "Reopen" : "Complete"} ${task.title}`}
         disabled={busy}
         onClick={() =>
           void command("task.status", {
@@ -63,12 +66,12 @@ export function TaskRow({
       >
         <span className="row-title">{task.title}</span>
         <span className="row-meta">
-          {project?.name ?? "Sem projeto"}
-          {!compact && ` · ${member?.name}`}
+          {project?.name ?? "No project"}
+          {!compact && assigneeNames && ` · ${assigneeNames}`}
           {task.status === "blocked" && (
             <span className="danger"> · Blocked</span>
           )}
-          {task.status === "doing" && " · Em curso"}
+          {task.status === "doing" && " · In progress"}
         </span>
       </button>
       <span
@@ -106,7 +109,7 @@ export function MeetingRow({
             ? "Cancelado"
             : meeting.kind === "event"
               ? "Evento"
-              : "Reunião"}{" "}
+              : "Meeting"}{" "}
           · {owner?.name}
           {meeting.createdBy !== meeting.calendarOwnerId && " · Delegada"}
         </span>
@@ -132,7 +135,7 @@ export function OrganizationRow({
       <span className="row-main">
         <span className="row-title">{o.name}</span>
         <span className="row-meta">
-          {o.person || "Pessoa por identificar"} ·{" "}
+          {o.person || "Person to identify"} ·{" "}
           {data.members.find((m) => m.id === o.ownerId)?.name}
           <span className="organization-stage-mobile">
             {" "}
@@ -145,11 +148,11 @@ export function OrganizationRow({
         {stages[o.stage]}
       </span>
       <span className="organization-next">
-        <span>{o.nextStep || "Definir próximo passo"}</span>
+        <span>{o.nextStep || "Define next step"}</span>
         <small>
           {o.followUpOn
             ? relativeDate(o.followUpOn, dateKey(data.now))
-            : "Sem data"}
+            : "No date"}
         </small>
       </span>
       <ChevronRight size={15} />
@@ -165,10 +168,10 @@ export function ProjectRow({ project: p }: { project: Project }) {
   return (
     <button className="project-row" onClick={() => openProject(p.id)}>
       <span className="row-main">
-        <span className="row-eyebrow">{org?.name ?? "Projeto interno"}</span>
+        <span className="row-eyebrow">{org?.name ?? "Internal project"}</span>
         <span className="project-name">{p.name}</span>
         <span className="row-meta">
-          {p.nextStep || "Próximo passo por definir"}
+          {p.nextStep || "Next step to define"}
         </span>
         <span className="project-mobile-meta">
           {projectStatuses[p.status]} ·{" "}
@@ -206,7 +209,7 @@ export function StatusSelect({
 }) {
   return (
     <select
-      aria-label="Estado da tarefa"
+              aria-label="Task status"
       value={value}
       onChange={(e) => onChange(e.target.value as Task["status"])}
       disabled={disabled}

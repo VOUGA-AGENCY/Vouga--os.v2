@@ -17,7 +17,7 @@ export type CreationNotice = {
   actorId: string;
 };
 const dateTime = (value: string) =>
-  new Intl.DateTimeFormat("pt-PT", {
+  new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Lisbon",
     day: "2-digit",
     month: "2-digit",
@@ -38,18 +38,21 @@ export function creationNotice(data: Store, notice: CreationNotice) {
   )
     return null;
   const actor =
-    data.members.find((item) => item.id === notice.actorId)?.name ?? "Alguém";
+    data.members.find((item) => item.id === notice.actorId)?.name ?? "Someone";
   let text: string;
   switch (notice.entityType) {
     case "task": {
       const item = data.tasks.find((task) => task.id === notice.entityId);
+      const assignedIds = item?.assigneeIds && item.assigneeIds.includes(item.ownerId)
+        ? item.assigneeIds
+        : item ? [item.ownerId] : [];
       if (
         !item ||
-        item.ownerId !== member.id ||
+        !assignedIds.includes(member.id) ||
         !canSeeTask(member, item, data)
       )
         return null;
-      text = `Nova tarefa · ${item.title}\n${actor} criou uma tarefa para ti.${item.dueOn ? `\nPrazo: ${shortDate(item.dueOn)}` : ""}`;
+      text = `New task · ${item.title}\n${actor} created a task for you.${item.dueOn ? `\nDeadline: ${shortDate(item.dueOn)}` : ""}`;
       break;
     }
     case "calendar": {
@@ -61,7 +64,7 @@ export function creationNotice(data: Store, notice: CreationNotice) {
           canSeeMeeting(member, event),
       );
       if (!item) return null;
-      text = `Novo evento · ${item.title}\n${actor} incluiu-te nos participantes.\n${item.allDay ? `${shortDate(item.startsAt)} · Todo o dia` : dateTime(item.startsAt)}`;
+      text = `New event · ${item.title}\n${actor} added you as a participant.\n${item.allDay ? `${shortDate(item.startsAt)} · All day` : dateTime(item.startsAt)}`;
       break;
     }
     case "project": {
@@ -75,7 +78,7 @@ export function creationNotice(data: Store, notice: CreationNotice) {
         !canSeeProject(member, item)
       )
         return null;
-      text = `Novo projeto · ${item.name}\n${actor} incluiu-te na equipa.`;
+      text = `New project · ${item.name}\n${actor} added you to the team.`;
       break;
     }
     case "note": {
@@ -89,7 +92,7 @@ export function creationNotice(data: Store, notice: CreationNotice) {
         !canSeeNote(member, item, data)
       )
         return null;
-      text = `Nova nota · ${item.title}\n${actor} criou uma nota para ti.`;
+      text = `New note · ${item.title}\n${actor} created a note for you.`;
       break;
     }
     case "company": {
@@ -97,7 +100,7 @@ export function creationNotice(data: Store, notice: CreationNotice) {
         (company) => company.id === notice.entityId,
       );
       if (!item || item.archived || item.ownerId !== member.id) return null;
-      text = `Nova organização · ${item.name}\n${actor} definiu-te como responsável.`;
+      text = `New organization · ${item.name}\n${actor} assigned you as the owner.`;
       break;
     }
     case "reminder": {
@@ -105,7 +108,7 @@ export function creationNotice(data: Store, notice: CreationNotice) {
         (reminder) => reminder.id === notice.entityId,
       );
       if (!item || item.done || item.ownerId !== member.id) return null;
-      text = `Novo lembrete · ${item.title}\n${actor} criou um lembrete para ti.\n${dateTime(item.at)}`;
+      text = `New reminder · ${item.title}\n${actor} created a reminder for you.\n${dateTime(item.at)}`;
       break;
     }
     default:
@@ -141,7 +144,7 @@ export function queueCreationNotices(
   };
   for (const task of data.tasks)
     if (!before.tasks.some((old) => old.id === task.id))
-      queue("task", task.id, [task.ownerId]);
+      queue("task", task.id, task.assigneeIds?.length ? task.assigneeIds : [task.ownerId]);
   const existingGroups = new Set(
     before.meetings.map((event) => event.groupId ?? event.id),
   );

@@ -46,7 +46,7 @@ describe("role boundaries and projections", () => {
         { id: "proposal", version: 1, status: "done" },
         { ...engineer, role: "admin" },
       ),
-    ).toThrow("Não tens acesso");
+    ).toThrow("do not have access");
   });
   it("denies reading via writes to an unrelated project", () => {
     expect(() =>
@@ -55,10 +55,10 @@ describe("role boundaries and projections", () => {
         { projectId: "discovery", body: "forged" },
         engineer,
       ),
-    ).toThrow("Não tens acesso");
+    ).toThrow("do not have access");
     expect(() =>
       run("task.save", { title: "x", projectId: "discovery" }, engineer),
-    ).toThrow("Não tens acesso");
+    ).toThrow("do not have access");
   });
   it("allows an engineer to book Contacto for an administrator", () => {
     run(
@@ -112,24 +112,24 @@ describe("role boundaries and projections", () => {
       workspaceFor(data, admin, now).notes.some((n) => n.id === note.id),
     ).toBe(false);
     expect(() => run("note.pin", { id: note.id, version: 1 })).toThrow(
-      "Não tens acesso",
+      "do not have access",
     );
   });
   it("prevents a reader from making somebody else's shared note private", () => {
     expect(() =>
       run("note.save", { ...data.notes[0], visibility: "private" }, engineer),
-    ).toThrow("Não tens acesso");
+    ).toThrow("do not have access");
   });
   it("rejects invalid foreign keys and personal task assignment by an engineer", () => {
     expect(() => run("task.save", { title: "x", ownerId: "missing" })).toThrow(
-      "pessoa da equipa",
+      "Select a team member",
     );
     expect(() =>
       run("task.save", { title: "x", ownerId: "miguel" }, engineer),
-    ).toThrow("Não tens acesso");
+    ).toThrow("do not have access");
     expect(() =>
       run("organization.save", { name: "x", ownerId: "unknown" }),
-    ).toThrow("pessoa da equipa");
+    ).toThrow("Select a team member");
   });
 });
 
@@ -141,6 +141,171 @@ describe("ordinary work", () => {
     expect(task.dueOn).toBeNull();
     run("task.status", { id: task.id, version: 1, status: "done" }, engineer);
     expect(task.status).toBe("done");
+  });
+  it("persists task size (xs, s, m, l, xl) and priority, rejecting invalid sizes", () => {
+    run(
+      "task.save",
+      { title: "Refactor API", size: "m", priority: "high" },
+      engineer,
+    );
+    const task = data.tasks.at(-1)!;
+    expect(task.size).toBe("m");
+    expect(task.priority).toBe("high");
+
+    run(
+      "task.save",
+      { id: task.id, version: task.version, title: "Refactor API", size: "xl" },
+      engineer,
+    );
+    expect(task.size).toBe("xl");
+
+    run(
+      "task.save",
+      { id: task.id, version: task.version, title: "Refactor API", size: "" },
+      engineer,
+    );
+    expect(task.size).toBeNull();
+
+    expect(() =>
+      run("task.save", { title: "Invalid size", size: "huge" }, engineer),
+    ).toThrow("Size");
+  });
+  it("enforces issue linking in todo/backlog and PR linking only when in progress", () => {
+    run("pr.save", {
+      projectId: "operations",
+      title: "Flow PR",
+      url: "https://github.com/example/repo/pull/99",
+    });
+    const pr = data.pullRequests.find((item) => item.number === 99)!;
+    const task = data.tasks.find((item) => item.id === "flow")!;
+
+    run("task.status", { id: task.id, version: task.version, status: "todo" }, engineer);
+    expect(() =>
+      run("task.linkPR", { id: task.id, version: task.version, pullRequestId: pr.id }, engineer),
+    ).toThrow("in progress");
+
+    run(
+      "task.linkIssue",
+      {
+        id: task.id,
+        version: task.version,
+        issueNumber: 42,
+        issueUrl: "https://github.com/example/repo/issues/42",
+      },
+      engineer,
+    );
+    expect(task.issueNumber).toBe(42);
+    expect(task.issueUrl).toBe("https://github.com/example/repo/issues/42");
+
+    run("task.status", { id: task.id, version: task.version, status: "doing" }, engineer);
+    run("task.linkPR", { id: task.id, version: task.version, pullRequestId: pr.id }, engineer);
+    expect(task.pullRequestId).toBe(pr.id);
+
+    // Unlink PR
+    run("task.linkPR", { id: task.id, version: task.version, pullRequestId: null }, engineer);
+    expect(task.pullRequestId).toBeNull();
+
+    // Link via URL
+    run(
+      "task.linkPR",
+      {
+        id: task.id,
+        version: task.version,
+        pullRequestUrl: "https://github.com/example/repo/pull/101",
+      },
+      engineer,
+    );
+    expect(task.pullRequestId).toBeTruthy();
+    const createdPr = data.pullRequests.find((p) => p.number === 101);
+    expect(createdPr).toBeDefined();
+    expect(task.pullRequestId).toBe(createdPr?.id);
+  });
+  it("supports assigning multiple people to a task and enforces project permissions", () => {
+    // Engineer cannot assign a non-project member (afonso is not in operations)
+    expect(() =>
+      run(
+        "task.save",
+        {
+          title: "Invalid assignment",
+          projectId: "operations",
+          assigneeIds: ["vasco", "afonso"],
+        },
+        engineer,
+      ),
+    ).toThrow("do not have access");
+
+    // Admin cannot assign someone who is not on the project team
+    expect(() =>
+      run(
+        "task.save",
+        {
+          title: "Invalid assignment by admin",
+          projectId: "operations",
+          assigneeIds: ["vasco", "afonso"],
+        },
+        admin,
+      ),
+    ).toThrow("Add the assignee to the project team");
+
+    // Engineer can assign members in operations (vasco and miguel)
+    run(
+      "task.save",
+      {
+        title: "Multi-assignee feature",
+        projectId: "operations",
+        assigneeIds: ["vasco", "miguel"],
+      },
+      engineer,
+    );
+    const task = data.tasks.find((t) => t.title === "Multi-assignee feature")!;
+    expect(task.ownerId).toBe("vasco");
+    expect(task.assigneeIds).toEqual(["vasco", "miguel"]);
+
+    // Saving with invalid URL for PR should fail
+    expect(() =>
+      run(
+        "task.save",
+        {
+          id: task.id,
+          version: task.version,
+          title: "Multi-assignee feature",
+          pullRequestUrl: "not-a-pr-url",
+        },
+        engineer,
+      ),
+    ).toThrow("GitHub link");
+
+    // Saving with PR url while backlog should fail
+    expect(() =>
+      run(
+        "task.save",
+        {
+          id: task.id,
+          version: task.version,
+          title: "Multi-assignee feature",
+          status: "backlog",
+          pullRequestUrl: "https://github.com/example/repo/pull/102",
+        },
+        engineer,
+      ),
+    ).toThrow("in progress");
+
+    // Saving with PR url when doing should succeed and link the PR
+    run(
+      "task.save",
+      {
+        id: task.id,
+        version: task.version,
+        title: "Multi-assignee feature",
+        status: "doing",
+        pullRequestUrl: "https://github.com/example/repo/pull/102",
+      },
+      engineer,
+    );
+    expect(task.status).toBe("doing");
+    const pr102 = data.pullRequests.find((p) => p.number === 102);
+    expect(pr102).toBeDefined();
+    expect(task.pullRequestId).toBe(pr102?.id);
   });
   it("keeps task comments and status changes in one visible timeline", () => {
     run(
@@ -177,7 +342,7 @@ describe("ordinary work", () => {
         version: organization.version,
         stage: "meeting",
       }),
-    ).toThrow("Nota de estado");
+    ).toThrow("Status note");
     run("organization.stage", {
       id: organization.id,
       version: organization.version,
@@ -212,7 +377,7 @@ describe("ordinary work", () => {
     run("task.status", { id: "proposal", version: 1, status: "doing" });
     expect(() =>
       run("task.save", { id: "proposal", version: 1, title: "old" }),
-    ).toThrow("alterado entretanto");
+    ).toThrow("changed in the meantime");
     expect(data.tasks[0].status).toBe("doing");
   });
   it("retains history while setting a CRM next step and follow-up", () => {
@@ -238,14 +403,14 @@ describe("ordinary work", () => {
         startsAt: "2026-09-25T10:00",
         endsAt: "2026-09-25T10:00",
       }),
-    ).toThrow("depois do início");
+    ).toThrow("end must be after the start");
     expect(() =>
       run("meeting.save", {
         title: "x",
         startsAt: "2026-02-30T10:00",
         endsAt: "2026-03-01T11:00",
       }),
-    ).toThrow("inválida");
+    ).toThrow("Invalid date or time");
   });
   it("accepts only GitHub PR URLs and avoids duplicate links", () => {
     expect(() =>
@@ -254,7 +419,7 @@ describe("ordinary work", () => {
         title: "x",
         url: "javascript:alert(1)",
       }),
-    ).toThrow("link GitHub");
+    ).toThrow("GitHub link");
     run("pr.save", {
       projectId: "operations",
       title: "Fluxo",
@@ -267,7 +432,7 @@ describe("ordinary work", () => {
         title: "Fluxo",
         url: "https://github.com/example/repo/pull/12/",
       }),
-    ).toThrow("já está ligado");
+    ).toThrow("already linked");
   });
 });
 
@@ -471,7 +636,7 @@ describe("Home notes and personal calendars", () => {
     expect(workspaceFor(data, ana, now).notes).toContainEqual(shared);
     expect(workspaceFor(data, admin, now).notes).not.toContainEqual(shared);
     expect(() => run("note.save", { ...shared, body: "Changed" }, ana)).toThrow(
-      "Não tens acesso",
+      "do not have access",
     );
     run("note.save", { ...shared, visibility: "private" }, vasco);
     expect(
@@ -485,7 +650,7 @@ describe("Home notes and personal calendars", () => {
         visibility: "shared",
         recipientIds: [],
       }),
-    ).toThrow("Escolhe pelo menos");
+    ).toThrow("Select at least");
     expect(() =>
       run("note.save", {
         title: "Invalid recipient",

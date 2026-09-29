@@ -98,15 +98,15 @@ export async function linkRepository(
   repositoryId: number,
 ) {
   if (me.role !== "admin")
-    throw new AppError("Só administradores podem ligar repositórios.", 403);
+    throw new AppError("Only administrators can link repositories.", 403);
   const repo = (await listRepositories(ctx)).find(
     (item) => item.id === repositoryId,
   );
   if (!repo)
-    throw new AppError("Repositório fora da instalação autorizada.", 403);
+    throw new AppError("Repository is outside the authorized installation.", 403);
   await ctx.repo.transact((data) => {
     const project = data.projects.find((item) => item.id === projectId);
-    if (!project) throw new AppError("Projeto não encontrado.", 404);
+    if (!project) throw new AppError("Project not found.", 404);
     project.repositories ??= [];
     if (!project.repositories.some((item) => item.id === repo.id))
       project.repositories.push({
@@ -194,7 +194,7 @@ export async function applyGithubEvent(
   payload: GithubPayload,
 ) {
   if (String(payload.installation?.id) !== ctx.env.GITHUB_INSTALLATION_ID)
-    throw new AppError("Instalação GitHub não autorizada.", 403);
+    throw new AppError("Unauthorized GitHub installation.", 403);
   if (!payload.repository) return;
   await ctx.repo.transact((data) => {
     for (const project of data.projects.filter((item) =>
@@ -295,7 +295,7 @@ async function importRecentCommits(
           p.id === projectId && p.repositories?.some((r) => r.id === repo.id),
       )
     )
-      throw new AppError("Repositório já não está associado ao projeto.", 409);
+      throw new AppError("Repository is no longer linked to the project.", 409);
     for (const commit of commits)
       recordActivity(data, {
         type: "github.commit_pushed",
@@ -324,13 +324,13 @@ export async function syncProjectGithub(
 ) {
   if (me.role !== "admin")
     throw new AppError(
-      "Só administradores podem sincronizar repositórios.",
+      "Only administrators can synchronize repositories.",
       403,
     );
   const project = (await ctx.repo.read()).projects.find(
     (p) => p.id === projectId,
   );
-  if (!project) throw new AppError("Projeto não encontrado.", 404);
+  if (!project) throw new AppError("Project not found.", 404);
   for (const repo of project.repositories ?? [])
     await linkRepository(ctx, me, projectId, repo.id);
 }

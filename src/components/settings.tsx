@@ -36,7 +36,7 @@ function AppearanceSettings() {
     setTheme(value);
     try { localStorage.setItem("vouga-theme", value); } catch { /* Theme still works without storage. */ }
   }
-  return <section className="appearance-settings"><h2>Aparência</h2><div className="integration-row"><div><strong>Tema</strong><small>Guardado neste browser.</small></div><div className="theme-options" role="group" aria-label="Tema"><button aria-pressed={theme === "light"} onClick={() => choose("light")}>Claro</button><button aria-pressed={theme === "dark"} onClick={() => choose("dark")}>Escuro</button></div></div></section>;
+  return <section className="appearance-settings"><h2>Appearance</h2><div className="integration-row"><div><strong>Theme</strong><small>Saved in this browser.</small></div><div className="theme-options" role="group" aria-label="Theme"><button aria-pressed={theme === "light"} onClick={() => choose("light")}>Light</button><button aria-pressed={theme === "dark"} onClick={() => choose("dark")}>Dark</button></div></div></section>;
 }
 export function IntegrationSettings() {
   const { data } = useWorkspace();
@@ -90,7 +90,7 @@ export function IntegrationSettings() {
       }
       await load();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Falha de ligação.");
+      setError(error instanceof Error ? error.message : "Connection failed.");
     } finally {
       setBusy(false);
     }
@@ -114,13 +114,13 @@ export function IntegrationSettings() {
       </header>
       <AppearanceSettings />
       {!status ? (
-        <p>{error || "A carregar…"}</p>
+        <p>{error || "Loading…"}</p>
       ) : (
         <>
           <p className="muted">
             {status.configuration.publicEndpoint
-              ? "Endpoint público configurado. Confirma que backend e worker estão ativos."
-              : "Backend local. Webhooks e lembretes com o Mac fechado precisam de alojamento público."}
+              ? "Public endpoint configured. Confirm that the backend and worker are active."
+              : "Local backend. Webhooks and reminders with the Mac closed require public hosting."}
           </p>
           <section>
             <h2>Google Calendar</h2>
@@ -184,7 +184,7 @@ export function IntegrationSettings() {
               )}
             </div>
             <p className="muted">
-              Liga os repositórios dentro de cada projeto.
+              Link repositories within each project.
             </p>
           </section>
           <section>
@@ -207,8 +207,8 @@ export function IntegrationSettings() {
             </div>
             {link && (
               <p role="status">
-                <a className="button-secondary" href={link} target="_blank" rel="noreferrer">Abrir Telegram</a>{" "}
-                Carrega em Start no bot para concluir. Link válido durante 10 minutos.
+                <a className="button-secondary" href={link} target="_blank" rel="noreferrer">Open Telegram</a>{" "}
+                Press Start in the bot to finish. The link is valid for 10 minutes.
               </p>
             )}
             {status.members.map((member) => (
@@ -234,7 +234,7 @@ export function IntegrationSettings() {
               </div>
             ))}
             <p className="muted">
-              08:00 · resumo do dia. Uma hora antes · lembrete individual.
+              08:00 · daily summary. One hour before · individual reminder.
             </p>
           </section>
           <section>
@@ -288,8 +288,8 @@ export function IntegrationSettings() {
           )}
           {status.uncertainDeliveries > 0 && (
             <p className="muted">
-              {status.uncertainDeliveries} envios Telegram sem confirmação. Sem
-              reenvio automático para evitar duplicados.
+              {status.uncertainDeliveries} Telegram deliveries without confirmation. No
+              automatic retry to avoid duplicates.
             </p>
           )}
           {error && (
@@ -298,8 +298,8 @@ export function IntegrationSettings() {
             </p>
           )}
           <p className="muted">
-            Credenciais configuradas apenas no servidor. Nunca são devolvidas à
-            aplicação.
+            Credentials are configured only on the server. They are never returned to
+            the application.
           </p>
         </>
       )}
@@ -323,7 +323,7 @@ export function RepositorySettings({ projectId }: { projectId: string }) {
             setRepos(result.repositories);
           } catch (error) {
             setError(
-              error instanceof Error ? error.message : "GitHub indisponível.",
+              error instanceof Error ? error.message : "GitHub unavailable.",
             );
           }
         }}
@@ -353,7 +353,7 @@ export function RepositorySettings({ projectId }: { projectId: string }) {
               setError(
                 error instanceof Error
                   ? error.message
-                  : "Não foi possível ligar.",
+                  : "Could not connect.",
               );
             }
           }}

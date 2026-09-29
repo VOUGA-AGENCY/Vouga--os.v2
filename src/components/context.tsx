@@ -25,6 +25,6 @@ export const WorkspaceContext = createContext<WorkspaceContextValue | null>(
 );
 export function useWorkspace() {
   const value = useContext(WorkspaceContext);
-  if (!value) throw new Error("Workspace indisponível.");
+  if (!value) throw new Error("Workspace unavailable.");
   return value;
 }

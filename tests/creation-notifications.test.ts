@@ -65,8 +65,8 @@ describe("creation notifications without AI", () => {
     );
     const message = JSON.parse(String(options?.body));
     expect(message.chat_id).toBe("chat-miguel");
-    expect(message.text).toContain("Nova tarefa · Preparar proposta");
-    expect(message.text).toContain("Prazo:");
+    expect(message.text).toContain("New task · Preparar proposta");
+    expect(message.text).toContain("Deadline:");
     expect(data.notificationDeliveries[0].state).toBe("sent");
   });
   it("notifies only the assigned owner, including tasks created by the shared Agent tools", async () => {

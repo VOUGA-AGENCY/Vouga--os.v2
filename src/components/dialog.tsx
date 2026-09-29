@@ -52,7 +52,7 @@ export function Dialog({
         <button
           type="button"
           className="icon-button"
-          aria-label="Fechar"
+          aria-label="Close"
           onClick={onClose}
         >
           <X size={18} />

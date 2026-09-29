@@ -166,7 +166,7 @@ export function ProjectDetail({
                     notify(
                       error instanceof Error
                         ? error.message
-                        : "Sincronização falhou.",
+                        : "Synchronization failed.",
                     );
                   } finally {
                     setSyncing(false);

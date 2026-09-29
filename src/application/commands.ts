@@ -2,11 +2,12 @@ import { queueCreationNotices } from "@/services/creation-notifications";
 import { captureChanges } from "@/services/activity-service";
 import type { ActivityEvent } from "@/domain/integration-model";
 import { randomUUID } from "node:crypto";
-import type { Entity, Member, Store } from "@/domain/model";
+import type { Entity, Member, PullRequest, Store } from "@/domain/model";
 import {
   captureKinds,
   projectStatuses,
   stages,
+  taskSizes,
   taskStatuses,
 } from "@/domain/model";
 import {
@@ -36,9 +37,9 @@ function executeCore(
   now = new Date().toISOString(),
 ): { message: string; ids?: string[] } {
   const command = record(input);
-  const action = text(command.action, "Ação", 50);
+  const action = text(command.action, "Action", 50);
   const me = data.members.find((m) => m.id === actor.id);
-  if (!me || me.archived) throw new AppError("Sessão inválida.", 401);
+  if (!me || me.archived) throw new AppError("Invalid session.", 401);
   const v = record(command.values ?? {});
   const base = (): Entity => ({
     id: randomUUID(),
@@ -53,13 +54,13 @@ function executeCore(
   };
   const find = <T extends Entity>(items: T[], id: unknown): T => {
     const item = items.find((x) => x.id === id);
-    if (!item) throw new AppError("Registo não encontrado.", 404);
+    if (!item) throw new AppError("Record not found.", 404);
     return item;
   };
   const member = (value: unknown) => {
-    const id = text(value, "Pessoa", 100);
+    const id = text(value, "Person", 100);
     if (!data.members.some((m) => m.id === id && !m.archived))
-      throw new AppError("Seleciona uma pessoa da equipa.");
+      throw new AppError("Select a team member.");
     return id;
   };
   const projectId = (value: unknown) => {
@@ -72,14 +73,14 @@ function executeCore(
     value ? find(data.organizations, value).id : null;
   const day = (value: unknown) => {
     if (!value) return null;
-    const s = text(value, "Data", 10);
-    if (!isDateKey(s)) throw new AppError("Data inválida.");
+    const s = text(value, "Date", 10);
+    if (!isDateKey(s)) throw new AppError("Invalid date.");
     return s;
   };
   const instant = (value: unknown) => {
-    const s = text(value, "Data e hora", 40);
+    const s = text(value, "Date and time", 40);
     const parsed = toInstant(s);
-    if (!parsed) throw new AppError("Data ou hora inválida em Lisboa.");
+    if (!parsed) throw new AppError("Invalid date or time in Lisbon.");
     return parsed;
   };
   const body = (value: unknown) => text(value, "Contexto", 10000, false);
@@ -106,49 +107,126 @@ function executeCore(
     const visibility = choice(
       values.visibility ?? existing?.visibility ?? "team",
       ["private", "team"] as const,
-      "Visibilidade",
+      "Visibility",
     );
     const project =
-      visibility === "private" ? null : projectId(values.projectId);
-    const ownerId = owner(values.ownerId ?? me.id, project);
-    if (visibility === "private" && ownerId !== me.id)
-      throw new AppError("Uma tarefa privada tem de estar atribuída a ti.");
+      visibility === "private"
+        ? null
+        : values.projectId !== undefined
+        ? projectId(values.projectId)
+        : existing?.projectId ?? null;
+
+    const rawAssignees: string[] = Array.isArray(values.assigneeIds)
+      ? values.assigneeIds.map(String).filter(Boolean)
+      : typeof values.assigneeIds === "string"
+      ? values.assigneeIds.split(",").map((s) => s.trim()).filter(Boolean)
+      : values.ownerId
+      ? [String(values.ownerId)]
+      : existing?.assigneeIds?.length
+      ? existing.assigneeIds
+      : existing?.ownerId
+      ? [existing.ownerId]
+      : [me.id];
+
+    const assigneeIds = rawAssignees.length ? [...new Set(rawAssignees)] : [me.id];
+    assigneeIds.forEach((id) => owner(id, project));
+
+    if (visibility === "private" && (assigneeIds.length !== 1 || assigneeIds[0] !== me.id))
+      throw new AppError("A private task must be assigned to you.");
+
     if (project) {
       const linkedProject = find(data.projects, project);
-      if (
-        ownerId !== linkedProject.ownerId &&
-        !linkedProject.memberIds.includes(ownerId)
-      )
-        throw new AppError(
-          "Adiciona o responsável à equipa do projeto antes de lhe atribuir a tarefa.",
-        );
+      for (const aId of assigneeIds) {
+        if (aId !== linkedProject.ownerId && !linkedProject.memberIds.includes(aId))
+          throw new AppError("Add the assignee to the project team before assigning this task.");
+      }
     }
+    const ownerId = assigneeIds[0];
+
+    const taskStatus = choice(
+      values.status ?? "todo",
+      Object.keys(taskStatuses),
+      "Status",
+    ) as keyof typeof taskStatuses;
+
+    let pullRequestId = values.pullRequestId !== undefined
+      ? (values.pullRequestId ? String(values.pullRequestId) : null)
+      : existing?.pullRequestId ?? null;
+
+    if (values.pullRequestUrl && typeof values.pullRequestUrl === "string") {
+      const url = values.pullRequestUrl.trim();
+      if (url) {
+        const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(url);
+        if (!match) {
+          throw new AppError("Use a GitHub link in the format https://github.com/team/repo/pull/123.");
+        }
+        let pr = data.pullRequests.find((p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, ""));
+        if (!pr) {
+          pr = {
+            ...base(),
+            projectId: project ?? existing?.projectId ?? "",
+            number: Number(match[3]),
+            title: `PR #${match[3]}`,
+            url,
+            state: "open",
+            author: me.name,
+            branch: "main",
+          };
+          data.pullRequests.push(pr);
+        }
+        pullRequestId = pr.id;
+      }
+    }
+
+    if (pullRequestId && (taskStatus === "todo" || taskStatus === "backlog")) {
+      throw new AppError("Pull requests can only be linked when the task is in progress.");
+    }
+
     const task = {
       ...(existing ?? base()),
       visibility,
-      title: text(values.title, "Título", 160),
+      title: text(values.title, "Title", 160),
       body: body(values.body),
-      status: choice(
-        values.status ?? "todo",
-        Object.keys(taskStatuses),
-        "Estado",
-      ) as keyof typeof taskStatuses,
+      status: taskStatus,
       ownerId,
+      assigneeIds,
       dueOn: day(values.dueOn),
       projectId: project,
       organizationId: organizationId(values.organizationId),
       priority: choice(
         values.priority ?? existing?.priority ?? "none",
         ["none", "low", "medium", "high", "urgent"] as const,
-        "Prioridade",
+        "Priority",
       ),
+      size: (() => {
+        const raw = values.size !== undefined ? values.size : existing?.size;
+        if (!raw || raw === "" || raw === "none") return null;
+        return choice(
+          String(raw).toLowerCase(),
+          Object.keys(taskSizes) as (keyof typeof taskSizes)[],
+          "Size",
+        );
+      })(),
+      pullRequestId,
+      issueNumber: values.issueNumber !== undefined
+        ? (values.issueNumber ? Number(values.issueNumber) : null)
+        : existing?.issueNumber ?? null,
+      issueUrl: values.issueUrl !== undefined
+        ? (values.issueUrl ? String(values.issueUrl).trim() : null)
+        : existing?.issueUrl ?? null,
     };
     if (existing) {
       if (existing.status !== task.status)
         data.taskActivity.push({
           ...base(),
           taskId: existing.id,
-          body: `Estado: ${taskStatuses[existing.status]} → ${taskStatuses[task.status]}`,
+          body: `Status: ${taskStatuses[existing.status]} → ${taskStatuses[task.status]}`,
+        });
+      if (existing.size !== task.size && (task.size || existing.size))
+        data.taskActivity.push({
+          ...base(),
+          taskId: existing.id,
+          body: `Size: ${existing.size ? existing.size.toUpperCase() : "none"} → ${task.size ? task.size.toUpperCase() : "none"}`,
         });
       Object.assign(existing, task);
       touch(existing);
@@ -157,7 +235,7 @@ function executeCore(
       data.taskActivity.push({
         ...base(),
         taskId: task.id,
-        body: "Tarefa criada",
+        body: "Task created",
       });
     }
     return task.id;
@@ -180,7 +258,7 @@ function executeCore(
             ? "office"
             : "personal"),
       ["office", "contacto", "personal"] as const,
-      "Calendário",
+      "Calendar",
     );
     allow(
       me.role === "admin" ||
@@ -197,7 +275,7 @@ function executeCore(
       const firstDay = dateKey(instant(values.startsAt));
       const lastDay = dateKey(instant(values.endsAt));
       if (lastDay < firstDay)
-        throw new AppError("O fim tem de ser depois do início.");
+        throw new AppError("The end must be after the start.");
       startsAt = instant(`${firstDay}T00:00`);
       endsAt = instant(
         `${lastDay === firstDay ? addDays(firstDay, 1) : lastDay}T00:00`,
@@ -206,10 +284,10 @@ function executeCore(
       startsAt = instant(values.startsAt);
       endsAt = instant(values.endsAt);
       if (endsAt <= startsAt)
-        throw new AppError("O fim tem de ser depois do início.");
+        throw new AppError("The end must be after the start.");
     }
     if (Date.parse(endsAt) - Date.parse(startsAt) > 7 * 86400000)
-      throw new AppError("O compromisso não pode exceder sete dias.");
+      throw new AppError("The event cannot exceed seven days.");
     const participants = stringList(
       values.participantIds ?? existing?.participantIds ?? [calendarOwnerId],
     );
@@ -218,12 +296,12 @@ function executeCore(
     participants.forEach(member);
     const meeting = {
       ...(existing ?? base()),
-      title: text(values.title, "Título", 160),
+      title: text(values.title, "Title", 160),
       body: body(values.body),
       kind: choice(
         values.kind ?? "meeting",
         ["meeting", "event"] as const,
-        "Tipo",
+        "Type",
       ),
       startsAt,
       endsAt,
@@ -244,7 +322,7 @@ function executeCore(
           emails.length > 50 ||
           emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         )
-          throw new AppError("Participantes externos inválidos.");
+          throw new AppError("Invalid external participants.");
         return [...new Set(emails)];
       })(),
       organizationId: organizationId(values.organizationId),
@@ -256,7 +334,7 @@ function executeCore(
       visibility: choice(
         values.visibility ?? existing?.visibility ?? "team",
         ["private", "team"] as const,
-        "Visibilidade",
+        "Visibility",
       ),
     };
     if (existing) {
@@ -269,7 +347,7 @@ function executeCore(
           ...base(),
           organizationId: meeting.organizationId,
           channel: "meeting",
-          body: `Evento marcado: ${meeting.title}`,
+          body: `Event scheduled: ${meeting.title}`,
           meetingId: meeting.id,
         });
     }
@@ -280,8 +358,8 @@ function executeCore(
     if (existing) version(existing, values.version);
     const email = text(values.email, "Email", 200, false);
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      throw new AppError("Email inválido.");
-    const name = text(values.name, "Organização", 160);
+      throw new AppError("Invalid email.");
+    const name = text(values.name, "Organization", 160);
     if (
       !existing &&
       data.organizations.some(
@@ -289,26 +367,26 @@ function executeCore(
       )
     )
       throw new AppError(
-        "Esta organização já existe. Abre-a para registar a conversa.",
+        "This organization already exists. Open it to record the conversation.",
       );
     const item = {
       ...(existing ?? base()),
       name,
-      person: text(values.person, "Pessoa", 160, false),
+      person: text(values.person, "Person", 160, false),
       email,
-      phone: text(values.phone, "Telefone", 50, false),
+      phone: text(values.phone, "Phone", 50, false),
       stage: choice(
         values.stage ?? "new",
         Object.keys(stages),
-        "Estado",
+        "Status",
       ) as keyof typeof stages,
       ownerId: member(values.ownerId ?? me.id),
-      nextStep: text(values.nextStep, "Próximo passo", 500, false),
+      nextStep: text(values.nextStep, "Next step", 500, false),
       followUpOn: day(values.followUpOn),
       archived: boolean(values.archived, existing?.archived ?? false),
     };
     if (existing && item.stage !== existing.stage) {
-      const statusNote = text(values.statusNote, "Nota de estado", 10000);
+      const statusNote = text(values.statusNote, "Status note", 10000);
       data.interactions.push({
         ...base(),
         organizationId: existing.id,
@@ -333,7 +411,7 @@ function executeCore(
     const visibility = choice(
       values.visibility ?? existing?.visibility ?? "private",
       ["team", "private", "shared"] as const,
-      "Visibilidade",
+      "Visibility",
     );
     if (visibility === "private" && existing)
       allow(existing.createdBy === me.id);
@@ -343,10 +421,10 @@ function executeCore(
         : [];
     recipientIds.forEach(member);
     if (visibility === "shared" && !recipientIds.length)
-      throw new AppError("Escolhe pelo menos uma pessoa para a nota.");
+      throw new AppError("Select at least one person for the note.");
     const item = {
       ...(existing ?? base()),
-      title: text(values.title, "Título", 160),
+      title: text(values.title, "Title", 160),
       body: body(values.body),
       projectId: projectId(values.projectId),
       organizationId: organizationId(values.organizationId),
@@ -381,37 +459,70 @@ function executeCore(
         participants.push(event.calendarOwnerId);
       event.participantIds = participants;
       touch(event);
-      return { message: "Participantes associados." };
+      return { message: "Participants linked." };
     }
 
     case "inbox.save": {
       data.inbox.push({
         ...base(),
         ownerId: me.id,
-        body: text(v.body, "Captura", 10000),
+        body: text(v.body, "Capture", 10000),
         resolved: false,
       });
-      return { message: "Guardado na Inbox." };
+      return { message: "Saved to Inbox." };
     }
     case "task.linkPR": {
       const task = find(data.tasks, v.id);
       allow(canSeeTask(me, task, data));
       version(task, v.version);
-      const pr = v.pullRequestId
-        ? find(data.pullRequests, v.pullRequestId)
-        : null;
-      if (pr) {
-        allow(pr.projectId === task.projectId);
-        projectId(pr.projectId);
+      if ((v.pullRequestId || v.pullRequestUrl) && (task.status === "todo" || task.status === "backlog")) {
+        throw new AppError("Pull requests can only be linked when the task is in progress.");
+      }
+      let pr = null;
+      if (v.pullRequestUrl && typeof v.pullRequestUrl === "string") {
+        const url = text(v.pullRequestUrl, "Pull request link", 500);
+        const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(url);
+        if (!match) {
+          throw new AppError("Use a GitHub link in the format https://github.com/team/repo/pull/123.");
+        }
+        pr = data.pullRequests.find((p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, "")) ?? null;
+        if (!pr) {
+          const newPr: PullRequest = {
+            ...base(),
+            projectId: task.projectId ?? "",
+            number: Number(match[3]),
+            title: `PR #${match[3]}`,
+            url,
+            state: "open",
+            author: me.name,
+            branch: "main",
+          };
+          data.pullRequests.push(newPr);
+          pr = newPr;
+        }
+      } else if (v.pullRequestId) {
+        pr = find(data.pullRequests, v.pullRequestId);
+      }
+      if (pr && task.projectId && pr.projectId && pr.projectId !== task.projectId) {
+        throw new AppError("The pull request belongs to another project.");
       }
       task.pullRequestId = pr?.id ?? null;
       touch(task);
-      return { message: "Pull request associada." };
+      return { message: "Pull request linked." };
+    }
+    case "task.linkIssue": {
+      const task = find(data.tasks, v.id);
+      allow(canSeeTask(me, task, data));
+      version(task, v.version);
+      task.issueNumber = v.issueNumber ? Number(v.issueNumber) : null;
+      task.issueUrl = v.issueUrl ? String(v.issueUrl).trim() : null;
+      touch(task);
+      return { message: "Issue linked." };
     }
 
     case "task.save":
       saveTask(v);
-      return { message: "Tarefa guardada." };
+      return { message: "Task saved." };
     case "task.delete": {
       const task = find(data.tasks, v.id);
       allow(canSeeTask(me, task, data));
@@ -429,7 +540,7 @@ function executeCore(
       data.activity = data.activity.filter(
         (item) => !(item.entityType === "task" && item.entityId === task.id),
       );
-      return { message: "Tarefa eliminada." };
+      return { message: "Task deleted." };
     }
     case "task.status": {
       const task = find(data.tasks, v.id);
@@ -439,18 +550,18 @@ function executeCore(
       task.status = choice(
         v.status,
         Object.keys(taskStatuses),
-        "Estado",
+        "Status",
       ) as keyof typeof taskStatuses;
       touch(task);
       if (previous !== task.status)
         data.taskActivity.push({
           ...base(),
           taskId: task.id,
-          body: `Estado: ${taskStatuses[previous]} → ${taskStatuses[task.status]}`,
+          body: `Status: ${taskStatuses[previous]} → ${taskStatuses[task.status]}`,
         });
       return {
         message:
-          task.status === "done" ? "Tarefa concluída." : "Estado atualizado.",
+          task.status === "done" ? "Task completed." : "Status updated.",
       };
     }
     case "task.comment": {
@@ -459,11 +570,11 @@ function executeCore(
       const comment = {
         ...base(),
         taskId: task.id,
-        body: text(v.body, "Comentário", 10000),
+        body: text(v.body, "Comment", 10000),
       };
       data.taskComments.push(comment);
       touch(task);
-      return { message: "Comentário adicionado.", ids: [comment.id] };
+      return { message: "Comment added.", ids: [comment.id] };
     }
     case "task.tomorrow": {
       const task = find(data.tasks, v.id);
@@ -471,7 +582,7 @@ function executeCore(
       version(task, v.version);
       task.dueOn = addDays(dateKey(now), 1);
       touch(task);
-      return { message: "Tarefa adiada para amanhã." };
+      return { message: "Task postponed until tomorrow." };
     }
     case "meeting.save": {
       if (!Array.isArray(v.calendarTargets)) {
@@ -502,12 +613,12 @@ function executeCore(
             ];
         } else {
           saveMeeting(v);
-          return { message: "Evento guardado." };
+          return { message: "Event saved." };
         }
       }
       const targets = [...new Set(stringList(v.calendarTargets))];
       if (!targets.length)
-        throw new AppError("Escolhe pelo menos um calendário.");
+        throw new AppError("Select at least one calendar.");
       const original = v.id ? find(data.meetings, v.id) : null;
       if (original) {
         allow(canEditMeeting(me, original));
@@ -552,7 +663,7 @@ function executeCore(
         sibling.groupId = groupId;
         touch(sibling);
       }
-      return { message: "Evento guardado nos calendários selecionados." };
+      return { message: "Event saved to the selected calendars." };
     }
     case "meeting.cancel": {
       const item = find(data.meetings, v.id);
@@ -560,7 +671,7 @@ function executeCore(
       version(item, v.version);
       if (item.cancelled && item.googleEventId)
         throw new AppError(
-          "Cria um novo evento para substituir o compromisso cancelado no Google.",
+          "Create a new event to replace the canceled Google event.",
         );
       const allSiblings = item.groupId
         ? data.meetings.filter((m) => m.groupId === item.groupId)
@@ -576,13 +687,13 @@ function executeCore(
       }
       return {
         message: item.cancelled
-          ? "Compromisso cancelado."
-          : "Compromisso recuperado.",
+          ? "Event canceled."
+          : "Event restored.",
       };
     }
     case "organization.save":
       saveOrganization(v);
-      return { message: "Contacto guardado." };
+      return { message: "Contact saved." };
     case "organization.delete": {
       const organization = find(data.organizations, v.id);
       version(organization, v.version);
@@ -607,7 +718,7 @@ function executeCore(
       data.activity = data.activity.filter(
         (item) => item.companyId !== organization.id,
       );
-      return { message: "Empresa eliminada." };
+      return { message: "Company deleted." };
     }
     case "organization.stage": {
       const organization = find(data.organizations, v.id);
@@ -615,11 +726,11 @@ function executeCore(
       const stage = choice(
         v.stage,
         Object.keys(stages),
-        "Estado",
+        "Status",
       ) as keyof typeof stages;
       if (stage === organization.stage)
-        return { message: "Estado sem alterações." };
-      const note = text(v.note, "Nota de estado", 10000);
+        return { message: "Status unchanged." };
+      const note = text(v.note, "Status note", 10000);
       data.interactions.push({
         ...base(),
         organizationId: organization.id,
@@ -630,7 +741,7 @@ function executeCore(
       });
       organization.stage = stage;
       touch(organization);
-      return { message: "Estado e nota guardados." };
+      return { message: "Status and note saved." };
     }
     case "organization.note": {
       const organization = find(data.organizations, v.id);
@@ -641,26 +752,26 @@ function executeCore(
         body: text(v.body, "Nota", 10000),
       });
       touch(organization);
-      return { message: "Nota adicionada à timeline." };
+      return { message: "Note added to the timeline." };
     }
     case "contact.add": {
       const organizationId = find(data.organizations, v.organizationId).id;
       const contact = {
         ...base(),
         organizationId,
-        name: text(v.name, "Nome", 160),
+        name: text(v.name, "Name", 160),
         email: text(v.email, "Email", 200, false),
-        phone: text(v.phone, "Telefone", 50, false),
+        phone: text(v.phone, "Phone", 50, false),
       };
       data.contacts.push(contact);
-      return { message: "Pessoa adicionada à organização.", ids: [contact.id] };
+      return { message: "Person added to the organization.", ids: [contact.id] };
     }
     case "inbox.resolve": {
       const item = find(data.inbox, v.id);
       allow(item.ownerId === me.id);
       item.resolved = true;
       touch(item);
-      return { message: "Item tratado." };
+      return { message: "Item handled." };
     }
     case "interaction.add": {
       const organization = find(data.organizations, v.organizationId);
@@ -668,25 +779,25 @@ function executeCore(
       const nextStage = choice(
         v.stage ?? organization.stage,
         Object.keys(stages),
-        "Estado",
+        "Status",
       ) as keyof typeof stages;
       data.interactions.push({
         ...base(),
         organizationId: organization.id,
-        body: text(v.body, "Conversa", 10000),
+        body: text(v.body, "Conversation", 10000),
         channel: choice(
           v.channel ?? "note",
           ["note", "call", "email", "meeting"] as const,
-          "Canal",
+          "Channel",
         ),
         stageFrom: nextStage !== organization.stage ? organization.stage : null,
         stageTo: nextStage !== organization.stage ? nextStage : null,
       });
-      organization.nextStep = text(v.nextStep, "Próximo passo", 500, false);
+      organization.nextStep = text(v.nextStep, "Next step", 500, false);
       organization.followUpOn = day(v.followUpOn);
       organization.stage = nextStage;
       touch(organization);
-      return { message: "Conversa e próximo passo guardados." };
+      return { message: "Conversation and next step saved." };
     }
     case "project.save": {
       const existing = v.id ? find(data.projects, v.id) : null;
@@ -700,21 +811,21 @@ function executeCore(
       memberIds.forEach(member);
       if (me.role === "engineer")
         allow(ownerId === me.id || memberIds.includes(me.id));
-      const repositoryUrl = text(v.repositoryUrl, "Repositório", 500, false);
+      const repositoryUrl = text(v.repositoryUrl, "Repository", 500, false);
       if (
         repositoryUrl &&
         !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/.test(repositoryUrl)
       )
-        throw new AppError("Usa o endereço HTTPS do repositório no GitHub.");
+        throw new AppError("Use the repository's HTTPS address on GitHub.");
       const item = {
         ...(existing ?? base()),
         name: text(v.name, "Nome", 160),
         objective: body(v.objective),
-        nextStep: text(v.nextStep, "Próximo passo", 500, false),
+        nextStep: text(v.nextStep, "Next step", 500, false),
         status: choice(
           v.status ?? "active",
           Object.keys(projectStatuses),
-          "Estado",
+          "Status",
         ) as keyof typeof projectStatuses,
         ownerId,
         memberIds,
@@ -726,7 +837,7 @@ function executeCore(
         Object.assign(existing, item);
         touch(existing);
       } else data.projects.push(item);
-      return { message: "Projeto guardado." };
+      return { message: "Project saved." };
     }
     case "project.delete": {
       const project = find(data.projects, v.id);
@@ -760,27 +871,27 @@ function executeCore(
           !(item.projectId === project.id ||
             (item.entityType === "task" && taskIds.has(item.entityId))),
       );
-      return { message: "Projeto e respetivas tarefas eliminados." };
+      return { message: "Project and its tasks deleted." };
     }
     case "project.update": {
       const id = projectId(v.projectId);
-      if (!id) throw new AppError("Escolhe o projeto.");
+      if (!id) throw new AppError("Select the project.");
       data.updates.push({
         ...base(),
         projectId: id,
-        body: text(v.body, "Atualização", 10000),
+        body: text(v.body, "Update", 10000),
       });
-      return { message: "Atualização registada." };
+      return { message: "Update recorded." };
     }
     case "note.save":
       saveNote(v);
-      return { message: "Nota guardada." };
+      return { message: "Note saved." };
     case "note.delete": {
       const note = find(data.notes, v.id);
       allow(note.createdBy === me.id || me.role === "admin");
       version(note, v.version);
       data.notes = data.notes.filter((item) => item.id !== note.id);
-      return { message: "Nota eliminada." };
+      return { message: "Note deleted." };
     }
     case "note.pin": {
       const note = find(data.notes, v.id);
@@ -790,8 +901,8 @@ function executeCore(
       touch(note);
       return {
         message: note.pinned
-          ? "Nota destacada em Hoje."
-          : "Nota retirada dos destaques.",
+          ? "Note pinned to Today."
+          : "Note unpinned.",
       };
     }
     case "pr.save": {
@@ -801,15 +912,15 @@ function executeCore(
         version(existing, v.version);
       }
       const id = projectId(v.projectId);
-      if (!id) throw new AppError("Escolhe o projeto.");
-      const url = text(v.url, "Link do pull request", 500);
+      if (!id) throw new AppError("Select the project.");
+      const url = text(v.url, "Pull request link", 500);
       const match =
         /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(
           url,
         );
       if (!match)
         throw new AppError(
-          "Usa um link GitHub no formato https://github.com/equipa/repo/pull/123.",
+          "Use a GitHub link in the format https://github.com/team/repo/pull/123.",
         );
       if (
         data.pullRequests.some(
@@ -818,17 +929,17 @@ function executeCore(
             pr.url.replace(/\/$/, "") === url.replace(/\/$/, ""),
         )
       )
-        throw new AppError("Este pull request já está ligado.");
+        throw new AppError("This pull request is already linked.");
       const item = {
         ...(existing ?? base()),
         projectId: id,
-        title: text(v.title, "Título", 160),
+        title: text(v.title, "Title", 160),
         url,
         number: Number(match[3]),
         state: choice(
           v.state ?? "open",
           ["open", "draft", "merged", "closed"] as const,
-          "Estado",
+          "Status",
         ),
       };
       if (existing) {
@@ -836,7 +947,7 @@ function executeCore(
         touch(existing);
       } else data.pullRequests.push(item);
       return {
-        message: "Pull request guardado. Estado atualizado manualmente.",
+        message: "Pull request saved. Status updated manually.",
       };
     }
     case "pr.delete": {
@@ -847,7 +958,7 @@ function executeCore(
       data.tasks.forEach((task) => {
         if (task.pullRequestId === pr.id) task.pullRequestId = null;
       });
-      return { message: "Pull request removido do projeto." };
+      return { message: "Pull request removed from the project." };
     }
     case "reminder.done": {
       const reminder = find(data.reminders, v.id);
@@ -855,17 +966,17 @@ function executeCore(
       version(reminder, v.version);
       reminder.done = true;
       touch(reminder);
-      return { message: "Lembrete dispensado." };
+      return { message: "Reminder dismissed." };
     }
     case "reminder.ack": {
-      const key = text(v.key, "Lembrete", 300);
+      const key = text(v.key, "Reminder", 300);
       const available = alertsFor(
         { ...data, reminderReceipts: [] },
         me,
         now,
       ).some((a) => a.key === key);
       if (!available)
-        throw new AppError("Este lembrete já não está ativo.", 409);
+        throw new AppError("This reminder is no longer active.", 409);
       data.reminderReceipts = data.reminderReceipts.filter(
         (r) => !(r.key === key && r.memberId === me.id),
       );
@@ -889,19 +1000,19 @@ function executeCore(
       }
       return {
         message: snooze
-          ? "Lembrar novamente daqui a uma hora."
-          : "Lembrete tratado.",
+          ? "Remind me again in one hour."
+          : "Reminder handled.",
       };
     }
     case "capture.commit": {
-      const key = text(v.key, "Identificador de captura", 100);
+      const key = text(v.key, "Capture identifier", 100);
       const previous = data.captureReceipts.find(
         (r) => r.memberId === me.id && r.key === key,
       );
       if (previous)
-        return { message: "Captura já guardada.", ids: previous.ids };
+        return { message: "Capture already saved.", ids: previous.ids };
       if (!Array.isArray(v.drafts) || !v.drafts.length || v.drafts.length > 10)
-        throw new AppError("Revê os registos antes de guardar (máximo 10).");
+        throw new AppError("Review the records before saving (maximum 10).");
       const ids: string[] = [];
       for (const value of v.drafts) {
         const d = record(value);
@@ -912,7 +1023,7 @@ function executeCore(
           kind !== "inbox" &&
           kind !== "crm"
         ) {
-          const name = text(d.organizationName, "Organização", 160);
+          const name = text(d.organizationName, "Organization", 160);
           const existing = data.organizations.find(
             (organization) =>
               organization.name.toLocaleLowerCase("pt") ===
@@ -935,11 +1046,11 @@ function executeCore(
         else if (kind === "note") ids.push(saveNote(d));
         else if (kind === "meeting" || kind === "event") {
           const start = instant(
-            `${text(d.date, "Data", 10)}T${text(d.time, "Hora", 5)}`,
+            `${text(d.date, "Date", 10)}T${text(d.time, "Time", 5)}`,
           );
           const duration = Number(d.duration);
           if (!Number.isInteger(duration) || duration < 5 || duration > 1440)
-            throw new AppError("Escolhe uma duração entre 5 e 1440 minutos.");
+            throw new AppError("Choose a duration between 5 and 1440 minutes.");
           const end = new Date(
             Date.parse(start) + duration * 60000,
           ).toISOString();
@@ -962,10 +1073,10 @@ function executeCore(
               ...base(),
               organizationId: id,
               channel: "note",
-              body: text(d.body || d.title, "Conversa", 10000),
+              body: text(d.body || d.title, "Conversation", 10000),
             });
             if (d.nextStep)
-              org.nextStep = text(d.nextStep, "Próximo passo", 500);
+              org.nextStep = text(d.nextStep, "Next step", 500);
             if (d.date) org.followUpOn = day(d.date);
             if (
               d.person &&
@@ -979,7 +1090,7 @@ function executeCore(
               const contact = {
                 ...base(),
                 organizationId: id,
-                name: text(d.person, "Pessoa", 160),
+                name: text(d.person, "Person", 160),
                 email: "",
                 phone: "",
               };
@@ -996,15 +1107,15 @@ function executeCore(
           const id = organizationId(d.organizationId);
           if (!id)
             throw new AppError(
-              "Escolhe uma organização existente para atualizar o CRM.",
+              "Choose an existing organization to update the CRM.",
             );
           const org = find(data.organizations, id);
           const stage = choice(
             d.stage,
             Object.keys(stages),
-            "Estado",
+            "Status",
           ) as keyof typeof stages;
-          const note = text(d.body, "Nota de estado", 10000);
+          const note = text(d.body, "Status note", 10000);
           if (stage !== org.stage) {
             data.interactions.push({
               ...base(),
@@ -1026,21 +1137,21 @@ function executeCore(
           ids.push(id);
         } else if (kind === "update") {
           const id = projectId(d.projectId);
-          if (!id) throw new AppError("Escolhe o projeto da atualização.");
+          if (!id) throw new AppError("Choose the project for the update.");
           const update = {
             ...base(),
             projectId: id,
-            body: text(d.body || d.title, "Atualização", 10000),
+            body: text(d.body || d.title, "Update", 10000),
           };
           data.updates.push(update);
           ids.push(update.id);
         } else if (kind === "reminder") {
           const reminder = {
             ...base(),
-            title: text(d.title, "Lembrete", 160),
+            title: text(d.title, "Reminder", 160),
             ownerId: owner(d.ownerId, null),
             at: instant(
-              `${text(d.date, "Data", 10)}T${text(d.time, "Hora", 5)}`,
+              `${text(d.date, "Date", 10)}T${text(d.time, "Time", 5)}`,
             ),
             done: false,
           };
@@ -1049,7 +1160,7 @@ function executeCore(
         } else if (kind === "inbox") {
           const item = {
             ...base(),
-            body: text(d.body || d.title, "Captura", 10000),
+            body: text(d.body || d.title, "Capture", 10000),
             ownerId: me.id,
             resolved: false,
           };
@@ -1061,13 +1172,13 @@ function executeCore(
       return {
         message:
           ids.length === 1
-            ? "Registo guardado."
-            : `${ids.length} registos guardados.`,
+            ? "Record saved."
+            : `${ids.length} records saved.`,
         ids,
       };
     }
     default:
-      throw new AppError("Ação desconhecida.");
+      throw new AppError("Unknown action.");
   }
 }
 

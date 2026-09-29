@@ -16,10 +16,10 @@ export default async function Page() {
           <div className="login-brand">
             <strong>Vouga OS</strong>
           </div>
-          <h1>Define a tua password</h1>
+          <h1>Set your password</h1>
           <p className="muted">
-            Olá, {identity.member.name}. Escolhe uma password pessoal com pelo
-            menos 12 caracteres para entrar no workspace.
+            Hello, {identity.member.name}. Choose a personal password with at least
+            12 characters to enter the workspace.
           </p>
           <PasswordForm />
         </div>

@@ -50,7 +50,7 @@ export function AgentPanel({
           JSON.stringify({ text: input, key: crypto.randomUUID(), context }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Agent indisponível.");
+      if (!response.ok) throw new Error(result.error || "Agent unavailable.");
       setLines((old) => [
         ...old,
         { input: result.transcript || input, output: result.text },
@@ -58,7 +58,7 @@ export function AgentPanel({
       setInput("");
       await refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Agent indisponível.");
+      setError(error instanceof Error ? error.message : "Agent unavailable.");
     } finally {
       setBusy(false);
     }
@@ -70,7 +70,7 @@ export function AgentPanel({
     }
     try {
       if (!navigator.mediaDevices || !window.MediaRecorder)
-        throw new Error("Gravação não suportada neste browser.");
+        throw new Error("Recording is not supported in this browser.");
       cancelled.current = false;
       stream.current = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -99,7 +99,7 @@ export function AgentPanel({
       setError(
         error instanceof Error
           ? error.message
-          : "Não foi possível usar o microfone.",
+          : "Could not use the microphone.",
       );
     }
   }
@@ -115,7 +115,7 @@ export function AgentPanel({
       if (!response.ok) throw new Error(result.error);
       await refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Ação falhou.");
+      setError(error instanceof Error ? error.message : "Action failed.");
     } finally {
       setBusy(false);
     }
@@ -146,7 +146,7 @@ export function AgentPanel({
         </small>
         <div className="agent-results">
           {!lines.length && (
-            <p className="muted">Pergunta, regista ou pede uma ação.</p>
+            <p className="muted">Ask a question, record something, or request an action.</p>
           )}
           {lines.map((line, index) => (
             <article key={index}>
@@ -199,7 +199,7 @@ export function AgentPanel({
               aria-label="Send to Agent"
             >
               <ArrowUp size={16} />
-              {busy ? "A processar…" : "Enviar"}
+              {busy ? "Processing…" : "Send"}
             </button>
           </div>
         </form>
@@ -219,12 +219,12 @@ export function AgentPanel({
               setError(
                 error instanceof Error
                   ? error.message
-                  : "Não foi possível guardar.",
+                  : "Could not save.",
               );
             }
           }}
         >
-          Guardar na Inbox para tratar depois
+          Save to Inbox for later
         </button>
       </div>
     </dialog>

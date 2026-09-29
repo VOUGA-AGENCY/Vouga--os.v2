@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         request.headers.get("Authorization") || "",
       )
     )
-      throw new AppError("Sem autorização.", 403);
+      throw new AppError("Unauthorized.", 403);
     await runIntegrationTick(ctx);
     return Response.json({ ok: true });
   } catch (error) {

@@ -22,7 +22,7 @@ export const runtime = (): ServiceContext => ({
 });
 export function required(env: Record<string, string | undefined>, key: string) {
   const value = env[key];
-  if (!value) throw new AppError(`Configura ${key} no servidor.`, 503);
+  if (!value) throw new AppError(`Configure ${key} on the server.`, 503);
   return value;
 }
 export const hash = (value: string) =>
@@ -39,7 +39,7 @@ export function seal(value: unknown, env: Record<string, string | undefined>) {
   );
   if (key.length !== 32)
     throw new AppError(
-      "INTEGRATION_ENCRYPTION_KEY deve conter 32 bytes em base64.",
+      "INTEGRATION_ENCRYPTION_KEY must contain 32 bytes in base64.",
       503,
     );
   const iv = randomBytes(12),
@@ -100,12 +100,12 @@ export async function api<T>(
 }
 
 export function providerFailure(error: ProviderError) {
-  const name = ({groq:"Groq",google:"Google",github:"GitHub",telegram:"Telegram"} as Record<string,string>)[error.provider] || "Serviço externo";
-  if(error.status===429) return new AppError(`${name} atingiu o limite temporário de pedidos ou tokens. ${error.retryAfter ? `Tenta novamente dentro de ${error.retryAfter} segundos.` : "Aguarda um pouco antes de tentar novamente."}`,429);
-  if([401,403].includes(error.status)) return new AppError(`${name} recusou a autorização. Verifica a ligação e as credenciais em Settings.`,502);
-  if(error.status===504) return new AppError(`${name} demorou demasiado a responder. Se pediste uma alteração, consulta Activity antes de repetir.`,504);
-  if(error.status===400) return new AppError(`${name} não conseguiu processar este pedido. Reformula a mensagem; se persistir, verifica o modelo configurado.`,502);
-  return new AppError(`${name} está temporariamente indisponível. Se pediste uma alteração, consulta Activity antes de repetir.`,502);
+  const name = ({groq:"Groq",google:"Google",github:"GitHub",telegram:"Telegram"} as Record<string,string>)[error.provider] || "External service";
+  if(error.status===429) return new AppError(`${name} has reached the temporary request or token limit. ${error.retryAfter ? `Try again in ${error.retryAfter} seconds.` : "Please wait a moment before trying again."}`,429);
+  if([401,403].includes(error.status)) return new AppError(`${name} rejected authorization. Check the connection and credentials in Settings.`,502);
+  if(error.status===504) return new AppError(`${name} took too long to respond. If you requested a change, check Activity before trying again.`,504);
+  if(error.status===400) return new AppError(`${name} could not process this request. Rephrase the message; if the problem persists, check the configured model.`,502);
+  return new AppError(`${name} is temporarily unavailable. If you requested a change, check Activity before trying again.`,502);
 }
 
 export async function connectionError(
@@ -116,7 +116,7 @@ export async function connectionError(
   const message =
     error instanceof ProviderError
       ? error.message
-      : "Falha de ligação. Tenta novamente.";
+      : "Connection failed. Try again.";
   console.error(JSON.stringify({ service: id, error: message, at: ctx.now() }));
   await ctx.repo.transact((data) => {
     const connection = data.externalConnections.find((item) => item.id === id);
@@ -131,7 +131,7 @@ export function publicOrigin(env: Record<string, string | undefined>) {
   const url = new URL(origin);
   if (url.protocol !== "https:" || url.pathname !== "/")
     throw new AppError(
-      "VOUGA_PUBLIC_URL precisa de uma origem HTTPS pública.",
+      "VOUGA_PUBLIC_URL must be a public HTTPS origin.",
       503,
     );
   return url.origin;

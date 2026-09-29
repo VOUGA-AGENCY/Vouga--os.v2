@@ -71,24 +71,24 @@ export function toInstant(value: string): string | null {
   return localDateTime(iso) === value ? iso : null;
 }
 export function shortDate(value: string) {
-  return new Intl.DateTimeFormat("pt-PT", {
+  return new Intl.DateTimeFormat("en-GB", {
     timeZone: TIME_ZONE,
     day: "numeric",
     month: "short",
   }).format(new Date(value.length === 10 ? `${value}T12:00Z` : value));
 }
 export function timeLabel(value: string) {
-  return new Intl.DateTimeFormat("pt-PT", {
+  return new Intl.DateTimeFormat("en-GB", {
     timeZone: TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
 }
 export function relativeDate(value: string | null, today = dateKey()) {
-  if (!value) return "Sem prazo";
-  if (value === today) return "Hoje";
-  if (value === addDays(today, 1)) return "Amanhã";
-  if (value < today) return `Em atraso · ${shortDate(value)}`;
+  if (!value) return "No deadline";
+  if (value === today) return "Today";
+  if (value === addDays(today, 1)) return "Tomorrow";
+  if (value < today) return `Overdue · ${shortDate(value)}`;
   return shortDate(value);
 }
 export function weekDays(day: string) {

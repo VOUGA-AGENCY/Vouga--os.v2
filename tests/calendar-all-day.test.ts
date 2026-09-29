@@ -103,6 +103,6 @@ describe("meeting.save date handling", () => {
           calendarTargets: ["personal:miguel"],
         },
       }),
-    ).toThrowError(/fim tem de ser depois do início/);
+    ).toThrowError(/end must be after the start/);
   });
 });

@@ -21,7 +21,7 @@ export function appOrigin(env = process.env) {
     origin.search ||
     origin.hash
   )
-    throw new AppError("Configura a origem HTTPS da aplicação.", 503);
+    throw new AppError("Configure the application's HTTPS origin.", 503);
   return origin.origin;
 }
 export function assertLocalRequest(request: Request, mutation = false) {
@@ -31,7 +31,7 @@ export function assertLocalRequest(request: Request, mutation = false) {
   let expected: string;
   if (publicOrigin) {
     if (host !== new URL(publicOrigin).host)
-      throw new AppError("Host inválido.", 403);
+      throw new AppError("Invalid host.", 403);
     expected = publicOrigin;
   } else {
     if (
@@ -39,11 +39,11 @@ export function assertLocalRequest(request: Request, mutation = false) {
       !["localhost", "127.0.0.1"].includes(host.split(":")[0]) ||
       !["localhost", "127.0.0.1"].includes(url.hostname)
     )
-      throw new AppError("Host local inválido.", 403);
+      throw new AppError("Invalid local host.", 403);
     expected = `${url.protocol}//${host}`;
   }
   if (mutation && request.headers.get("origin") !== expected)
-    throw new AppError("Origem do pedido inválida.", 403);
+    throw new AppError("Invalid request origin.", 403);
 }
 export function secureSessionCookie() {
   return appOrigin() !== null;
@@ -90,7 +90,7 @@ export async function authenticatedMember(
 export async function requireMember(request: Request) {
   assertLocalRequest(request, request.method !== "GET");
   const identity = await sessionIdentity(tokenFrom(request));
-  if (!identity) throw new AppError("A sessão terminou. Volta a entrar.", 401);
+  if (!identity) throw new AppError("The session ended. Please sign in again.", 401);
   if (identity.mustChangePassword)
     throw new AppError(
       "Altera a palavra-passe antes de aceder ao workspace.",
@@ -141,7 +141,7 @@ export async function login(identifier: string, password: string) {
     )
       return {
         error:
-          "A password temporária expirou. Pede um novo acesso ao administrador.",
+          "The temporary password has expired. Ask an administrator for new access.",
         status: 401,
       };
     account.failedAttempts = 0;
@@ -184,9 +184,9 @@ export async function changePassword(token: string, password: string) {
       !account.mustChangePassword ||
       (account.temporaryExpiresAt && account.temporaryExpiresAt <= now)
     )
-      throw new AppError("Pedido inválido. Volta a entrar.", 401);
+      throw new AppError("Invalid request. Please sign in again.", 401);
     if (verifyPassword(password, account.passwordHash))
-      throw new AppError("Escolhe uma password diferente da temporária.");
+      throw new AppError("Choose a password different from the temporary one.");
     account.passwordHash = passwordHash;
     account.mustChangePassword = false;
     account.failedAttempts = 0;

@@ -48,7 +48,7 @@ async function telegram<T>(
       body: JSON.stringify(body),
     },
   );
-  if (!result.ok) throw new AppError("Telegram recusou o pedido.", 502);
+  if (!result.ok) throw new AppError("Telegram rejected the request.", 502);
   return result.result;
 }
 export async function connectBot(ctx: ServiceContext) {
@@ -124,7 +124,7 @@ export async function applyTelegramUpdate(
       const link = data.telegramLinks.find(
         (item) => item.hash === hash(start[1]) && item.expiresAt > ctx.now(),
       );
-      if (!link) throw new AppError("Código de ligação inválido.", 403);
+      if (!link) throw new AppError("Invalid link code.", 403);
       if (
         data.members.some(
           (member) =>
@@ -132,7 +132,7 @@ export async function applyTelegramUpdate(
             member.id !== link.memberId,
         )
       )
-        throw new AppError("Esta conta Telegram já está ligada.", 409);
+        throw new AppError("This Telegram account is already linked.", 409);
       const member = data.members.find(
         (member) => member.id === link.memberId,
       )!;
@@ -190,13 +190,13 @@ export async function applyTelegramUpdate(
       !/^[\w/-]+\.[\w]+$/.test(file.file_path) ||
       file.file_path.includes("..")
     )
-      throw new AppError("Ficheiro Telegram inválido.");
+      throw new AppError("Invalid Telegram file.");
     const response = await ctx.fetch(
       `https://api.telegram.org/file/bot${required(ctx.env, "TELEGRAM_BOT_TOKEN")}/${file.file_path}`,
       { signal: AbortSignal.timeout(25000) },
     );
     if (!response.ok)
-      throw new AppError("Não foi possível obter o áudio.", 502);
+      throw new AppError("Could not retrieve the audio.", 502);
     const bytes = await boundedBody(
       new Request("https://local.invalid", {
         method: "POST",
@@ -317,7 +317,7 @@ export function meetingReminders(data: Store, now: string) {
           key: `hour:${member.id}:${event.groupId ?? event.id}:${event.startsAt}`,
           memberId: member.id,
           chatId: member.telegramChatId,
-          text: `${event.title} começa dentro de 1 hora\n${timeLabel(event.startsAt)} · ${calendarLabel(event, data.members)}`,
+          text: `${event.title} starts within 1 hour\n${timeLabel(event.startsAt)} · ${calendarLabel(event, data.members)}`,
         });
     }
   }

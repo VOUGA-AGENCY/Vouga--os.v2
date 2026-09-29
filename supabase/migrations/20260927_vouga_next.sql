@@ -252,6 +252,8 @@ alter table vouga_next.tasks add column if not exists company_id text generated 
 create index if not exists tasks_company_id_idx on vouga_next.tasks(company_id);
 alter table vouga_next.tasks add column if not exists project_id text generated always as (data->>'projectId') stored;
 create index if not exists tasks_project_id_idx on vouga_next.tasks(project_id);
+alter table vouga_next.tasks add column if not exists priority text generated always as (data->>'priority') stored;
+alter table vouga_next.tasks add column if not exists size text generated always as (data->>'size') stored;
 alter table vouga_next.projects add column if not exists name text generated always as (data->>'name') stored;
 alter table vouga_next.projects add column if not exists owner_id text generated always as (data->>'ownerId') stored;
 create index if not exists projects_owner_id_idx on vouga_next.projects(owner_id);

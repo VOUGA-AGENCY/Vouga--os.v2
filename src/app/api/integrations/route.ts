@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       ctx = runtime(),
       data = await ctx.repo.read();
     if (new URL(request.url).searchParams.get("repositories") === "1") {
-      if (me.role !== "admin") throw new AppError("Sem autorização.", 403);
+      if (me.role !== "admin") throw new AppError("Unauthorized.", 403);
       return Response.json({ repositories: await listRepositories(ctx) });
     }
     return Response.json({
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     }
     if (body.action === "calendar.resolve") {
       if (!["google", "os"].includes(String(body.keep)))
-        throw new AppError("Escolha inválida.");
+        throw new AppError("Invalid choice.");
       await resolveGoogleConflict(
         ctx,
         me,
@@ -112,16 +112,16 @@ export async function POST(request: Request) {
     }
     if (me.role !== "admin")
       throw new AppError(
-        "Só administradores podem configurar integrações.",
+        "Only administrators can configure integrations.",
         403,
       );
     if (body.action === "github.sync")
-      await syncProjectGithub(ctx, me, text(body.projectId, "Projeto", 100));
+      await syncProjectGithub(ctx, me, text(body.projectId, "Project", 100));
     else if (body.action === "github.link")
       await linkRepository(
         ctx,
         me,
-        text(body.projectId, "Projeto", 100),
+        text(body.projectId, "Project", 100),
         Number(body.repositoryId),
       );
     else if (body.action === "github.check") {
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
       });
     } else if (body.action === "google.sync") {
       if (!["office", "contacto"].includes(String(body.calendarKey)))
-        throw new AppError("Calendário inválido.");
+        throw new AppError("Invalid calendar.");
       await ctx.repo.transact((data) =>
         enqueue(data, `manual:${crypto.randomUUID()}`, "calendar.pull", {
           calendarKey: body.calendarKey,
@@ -176,12 +176,12 @@ export async function POST(request: Request) {
         const job = data.integrationJobs.find(
           (item) => item.id === body.id && item.state === "failed",
         );
-        if (!job) throw new AppError("Job não encontrado.");
+        if (!job) throw new AppError("Job not found.");
         job.state = "pending";
         job.attempts = 0;
         job.availableAt = ctx.now();
       });
-    else throw new AppError("Ação desconhecida.");
+    else throw new AppError("Unknown action.");
     return Response.json({ ok: true });
   } catch (error) {
     return errorResponse(error);

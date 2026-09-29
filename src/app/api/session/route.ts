@@ -50,7 +50,7 @@ export async function PATCH(request: Request) {
     const input = record(await jsonBody(request));
     const password = text(input.password, "Palavra-passe", 200);
     if (password !== input.confirmation)
-      throw new AppError("As passwords não coincidem.");
+      throw new AppError("Passwords do not match.");
     const token = await changePassword(tokenFrom(request), password);
     const response = NextResponse.json({ ok: true });
     response.cookies.set(SESSION_COOKIE, token, {
