@@ -6,7 +6,7 @@
 //   3. the company's own website: the municipality of the addresses it publishes;
 //   4. closed or disused companies are dropped and duplicates (same name within 500 m) merged.
 // Each prospect gets check.status "verificado" | "provavel" | "a-confirmar" with the evidence.
-// Replaces the OSM part of .local/prospects.json; CSV imports stay.
+// Replaces the OSM part of data/prospects.json (tracked in Git, shared with the team); CSV imports stay.
 // Usage: bun run prospects:sync [district ...]   (default: Porto Aveiro Braga)
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -147,7 +147,9 @@ for (const draft of merged) {
 await mkdir(dataDir, { recursive: true });
 await writeFile(cacheFile, JSON.stringify(cache));
 
-const file = path.join(dataDir, "prospects.json");
+// Shared through Git so every computer has the same prospect base.
+const file = path.resolve("data", "prospects.json");
+await mkdir(path.dirname(file), { recursive: true });
 let kept: Prospect[] = [];
 try { kept = (JSON.parse(await readFile(file, "utf8")).items as Prospect[]).filter((p) => p.source !== "osm"); } catch { /* first run */ }
 await writeFile(file, JSON.stringify({ updatedAt: new Date().toISOString(), attribution: "© OpenStreetMap contributors (ODbL)", items: [...kept, ...prospects] }, null, 1));

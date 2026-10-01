@@ -80,7 +80,8 @@ const clock = (total: number) => `${String(Math.floor(total / 60) % 24).padStart
  */
 export function planRoute(candidates: RouteCandidate[], matrix: TravelMatrix, request: RouteRequest, forced: string[] = []): RoutePlan {
   const visit = request.visitMinutes * 60;
-  const lunchSeconds = request.lunch ? 90 * 60 : 0;
+  // Lunch only matters when the day starts before it; an afternoon round has no lunch break.
+  const lunchSeconds = request.lunch && minutes(request.start) < 13 * 60 ? 60 * 60 : 0;
   const budget = (minutes(request.end) - minutes(request.start)) * 60 - lunchSeconds;
   const d = matrix.durations;
   const cost = (order: number[]) => {
@@ -132,7 +133,7 @@ export function planRoute(candidates: RouteCandidate[], matrix: TravelMatrix, re
     driveSeconds += leg;
     metres += matrix.distances[route[i - 1]][route[i]];
     now += leg;
-    if (request.lunch && !lunchAt && now >= 12.5 * 3600) { lunchAt = clock(now / 60); now += lunchSeconds; }
+    if (lunchSeconds && !lunchAt && now >= 12.5 * 3600) { lunchAt = clock(now / 60); now += lunchSeconds; }
     const arrival = now;
     now += visit;
     stops.push({ ...candidates[route[i] - 1], arrival: clock(arrival / 60), departure: clock(now / 60), driveMinutes: Math.round(leg / 60), km: Math.round(matrix.distances[route[i - 1]][route[i]] / 100) / 10 });

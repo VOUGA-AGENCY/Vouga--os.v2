@@ -14,7 +14,7 @@ type PlanInput = RouteRequest & { sectors: CaeGroup[]; crm: boolean; prospects: 
 
 async function loadProspects(): Promise<Prospect[]> {
   try {
-    return (JSON.parse(await readFile(path.resolve(process.env.VOUGA_DATA_DIR || ".local", "prospects.json"), "utf8")).items as Prospect[]) ?? [];
+    return (JSON.parse(await readFile(path.resolve("data", "prospects.json"), "utf8")).items as Prospect[]) ?? [];
   } catch {
     return [];
   }
@@ -100,12 +100,28 @@ async function plan(input: PlanInput) {
   const result = planRoute(candidates, matrix, input, input.include);
   const chosen = new Set(result.stops.map((s) => s.id));
   const alternatives = candidates.filter((c) => !chosen.has(c.id)).slice(0, 25);
+  // When the day runs late, try swapping each stop for a nearby alternative and keep the swaps that save time.
+  const suggestions: { remove: string; removeName: string; add: string; addName: string; saves: number }[] = [];
+  if (result.overtime > 0) {
+    const ids = result.stops.map((stop) => stop.id);
+    const near = (c: RouteCandidate) => Math.min(...result.stops.map((stop) => haversineKm(stop, c)));
+    for (const stop of result.stops) {
+      for (const alt of [...alternatives].sort((x, y) => near(x) - near(y)).slice(0, 10)) {
+        const trial = planRoute(candidates, matrix, input, [...ids.filter((id) => id !== stop.id), alt.id]);
+        const saves = result.overtime - trial.overtime;
+        if (saves >= 5) suggestions.push({ remove: stop.id, removeName: stop.name, add: alt.id, addName: alt.name, saves });
+      }
+    }
+    suggestions.sort((x, y) => y.saves - x.saves);
+  }
+  const bestSwaps = suggestions.filter((s, i, all) => all.findIndex((o) => o.remove === s.remove) === i).slice(0, 3);
   const geometry = await routeGeometry([base, ...result.stops, base]);
   return {
     ...result,
     geometry,
     considered: candidates.length,
     alternatives,
+    suggestions: bestSwaps,
     unknownSector,
     sectors: input.sectors.map((s) => caeGroups[s].replace(/ \(CAE \d+\)/, "")),
     base: vougaBase,

@@ -32,14 +32,27 @@ describe("route planning", () => {
     expect(plan.estimated).toBe(true);
   });
 
-  it("never plans beyond the working day and schedules lunch", () => {
+  it("always gives the requested number of visits and reports the overtime", () => {
     const far = Array.from({ length: 12 }, (_, i) => candidate(`c${i}`, 40.6 + i * 0.01, -8.6));
     const plan = planRoute(far, estimateMatrix([base, ...far]), { ...request, count: 12 });
-    const [h, m] = plan.returnAt.split(":").map(Number);
-    expect(h * 60 + m).toBeLessThanOrEqual(18 * 60 + 30);
-    expect(plan.left).toBeGreaterThan(0);
+    expect(plan.stops).toHaveLength(12);
+    expect(plan.overtime).toBeGreaterThan(0);
     const times = plan.stops.map((s) => s.arrival);
     expect([...times].sort()).toEqual(times);
+  });
+
+  it("does not add a lunch break to an afternoon round", () => {
+    const pool = [candidate("a", 41.24, -8.60), candidate("b", 41.30, -8.57)];
+    const plan = planRoute(pool, estimateMatrix([base, ...pool]), { ...request, start: "14:30", end: "18:00", count: 2, visitMinutes: 20 });
+    expect(plan.lunchAt).toBeUndefined();
+    expect(plan.overtime).toBe(0);
+  });
+
+  it("keeps the companies the user chose and fills the rest", () => {
+    const pool = [candidate("a", 41.24, -8.60, 5), candidate("b", 41.30, -8.57, 5), candidate("escolhida", 40.62, -8.61, 1)];
+    const plan = planRoute(pool, estimateMatrix([base, ...pool]), { ...request, count: 2 }, ["escolhida"]);
+    expect(plan.stops.map((s) => s.id)).toContain("escolhida");
+    expect(plan.stops).toHaveLength(2);
   });
 
   it("orders stops to avoid crossing back and forth", () => {

@@ -137,7 +137,7 @@ for (const row of rows) {
   });
 }
 
-const file = path.resolve(process.env.VOUGA_DATA_DIR || ".local", "prospects.json");
+const file = path.resolve("data", "prospects.json");
 await mkdir(path.dirname(file), { recursive: true });
 let existing: { items: Prospect[]; attribution?: string } = { items: [] };
 try { existing = JSON.parse(await readFile(file, "utf8")); } catch { /* first import */ }

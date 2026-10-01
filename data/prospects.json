@@ -1,0 +1,6581 @@
+{
+ "updatedAt": "2026-09-29T15:36:46.898Z",
+ "attribution": "© OpenStreetMap contributors (ODbL)",
+ "items": [
+  {
+   "id": "osm:node/14191507442",
+   "name": "Adega Centenária Malápio",
+   "source": "osm",
+   "category": "winery",
+   "group": "alimentar",
+   "address": "Rua Principal do Vidoeiro, 9, 3750-035 Aguada de Baixo",
+   "location": "Águeda",
+   "parish": "Aguada de Baixo",
+   "lat": 40.505806,
+   "lng": -8.438469,
+   "website": "https://www.malapio.pt",
+   "phone": "+351963353686",
+   "email": "geral@malapio.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Aguada de Baixo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Águeda."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1198135747",
+   "name": "Chaviarte",
+   "source": "osm",
+   "category": "key_cutter",
+   "group": "calcado",
+   "address": "EN 14, 4475-045 Castêlo da Maia",
+   "location": "Maia",
+   "parish": "Barca",
+   "lat": 41.248885,
+   "lng": -8.621781,
+   "website": "https://www.chaviarte.pt/",
+   "phone": "+351 229 485 702",
+   "email": "jumbodamaia@chaviarte.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Barca), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/473999558",
+   "name": "Gneisse - Indústria de Cozinhas Lda.",
+   "source": "osm",
+   "category": "furniture",
+   "group": "madeira",
+   "address": "Rua Manuel Assunção Falcão, 46;62, 4475-041 Avioso (Santa Maria)",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.275854,
+   "lng": -8.605484,
+   "website": "https://www.gneisse.pt/",
+   "phone": "+351 229 865 150",
+   "email": "geral@gneisse.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Maia."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1547915397",
+   "name": "Zanancho Hidráulico",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "Rua Manuel Assunção Falcão, 4475-041 Avioso (Santa Maria)",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.275608,
+   "lng": -8.605267,
+   "website": "https://www.zanancho.pt/",
+   "phone": "+351 229 828 130",
+   "email": "zanancho.porto@zanancho.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Maia."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/407100906",
+   "name": "Portital - Artigos de Cortiça",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "Rua Alto da Torre, 72, 3886-909 Esmoriz",
+   "location": "Aveiro",
+   "parish": "Gondesende",
+   "lat": 40.962625,
+   "lng": -8.61121,
+   "website": "https://www.portital.pt/",
+   "phone": "+351 256 750 250",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Gondesende), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/430526465",
+   "name": "Bi-Silque",
+   "source": "osm",
+   "category": "wood",
+   "group": "madeira",
+   "address": "Rua Cais da Estação, 340, 3885-528 Esmoriz",
+   "location": "Aveiro",
+   "lat": 40.966497,
+   "lng": -8.633715,
+   "website": "www.bisilque.com",
+   "phone": "+351 256 750 120",
+   "email": "info@bisilque.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/776950950",
+   "name": "Prismafer - Moldes para Plásticos",
+   "source": "osm",
+   "category": "mold",
+   "group": "borracha",
+   "address": "Arruamento Q, 3850-186 Albergaria-a-Velha",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.71279,
+   "lng": -8.484877,
+   "website": "https://www.prismafer.pt",
+   "phone": "+351 234 525 371",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084443684",
+   "name": "JFCC",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua do Sol Poente, 36, 4760-725 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.35262,
+   "lng": -8.580373,
+   "website": "http://www.jfcc.pt/",
+   "phone": "+351 252 492581",
+   "email": "geral@jfcc.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1461318474",
+   "name": "Zollern & Comandita",
+   "source": "osm",
+   "category": "steel_mill",
+   "group": "metal",
+   "address": "Rua Jorge Ferreirinha, 1095, 4470-314 Vermoim",
+   "location": "Maia",
+   "parish": "Gueifães",
+   "lat": 41.226449,
+   "lng": -8.598612,
+   "website": "https://www.zollern.com/en/company/about-zollern/investment-casting/",
+   "phone": "+351 229414681",
+   "email": "zcp@zollern.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Gueifães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10158281380",
+   "name": "Moobo",
+   "source": "osm",
+   "category": "machinery",
+   "group": "maquinas",
+   "address": "Rua Amândio Ferreira da Silva, 149, 4785-420 Trofa",
+   "location": "Trofa",
+   "parish": "Bougado (São Martinho e Santiago)",
+   "lat": 41.337909,
+   "lng": -8.523599,
+   "website": "https://moobo.pt",
+   "phone": "+351 252 418 185; +351 965 110 405",
+   "email": "info@moobo.pt;sales@moobo.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Bougado (São Martinho e Santiago)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Trofa."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11167611609",
+   "name": "Quatrotorres - Cervejeira Feirense",
+   "source": "osm",
+   "category": "brewery",
+   "group": "alimentar",
+   "address": "Praça Professor Leão, 13, 4520-173 Santa Maria da Feira",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria da Feira, Travanca, Sanfins e Espargo",
+   "lat": 40.926908,
+   "lng": -8.54453,
+   "website": "https://www.quatrotorres.pt/",
+   "phone": "+351 913 782 444",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria da Feira, Travanca, Sanfins e Espargo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13289533326",
+   "name": "Futuro Esbelto",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Alameda José António da Costa Araújo, 140, 4760-514 Vila Nova de Famalicao",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Abade de Vermoim",
+   "lat": 41.403778,
+   "lng": -8.518538,
+   "phone": "+351 911 077 228",
+   "email": "futuroesbelto2@gmail.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Abade de Vermoim), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13313690823",
+   "name": "Casa Soleiro",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Rua Chã, 104-108, 4000-165 Porto",
+   "location": "Porto",
+   "parish": "Cedofeita",
+   "lat": 41.144001,
+   "lng": -8.609753,
+   "website": "https://casasoleiro.wixsite.com/casasoleiro",
+   "phone": "+351222002570",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Cedofeita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/132533465",
+   "name": "Prifer - Metals",
+   "source": "osm",
+   "category": "Metal_parts;Metal_structures;Assemblies",
+   "group": "metal",
+   "address": "Rua do Brejo, 12, 3750-866 Águeda e Borralha",
+   "location": "Águeda",
+   "parish": "Borralha",
+   "lat": 40.550692,
+   "lng": -8.446695,
+   "phone": "+351 234 244 270",
+   "email": "geral.pms@prifergroup.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Borralha), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/151266925",
+   "name": "Siderurgia Nacional Maia",
+   "source": "osm",
+   "category": "steel_mill",
+   "group": "metal",
+   "address": "",
+   "location": "Maia",
+   "parish": "São Pedro Fins",
+   "lat": 41.253625,
+   "lng": -8.554862,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (São Pedro Fins), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/378235234",
+   "name": "Moldes F. Cunha",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua do Campo Grande, 281, 3885-530 Esmoriz",
+   "location": "Aveiro",
+   "parish": "Gondesende",
+   "lat": 40.957279,
+   "lng": -8.606071,
+   "website": "www.moldesfcunha.com",
+   "phone": "+351 256 794 269",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Gondesende), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/415255449",
+   "name": "M. Oliveira - Perfis Metálicos",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua da Ilha, 311, 3886-909 Esmoriz",
+   "location": "Aveiro",
+   "parish": "Gondesende",
+   "lat": 40.963671,
+   "lng": -8.611359,
+   "phone": "+351 256 783 683",
+   "email": "m.oliveira.perfis@sapo.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Gondesende), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/690493478",
+   "name": "CRUZ - Ferramentas e Moldes",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Avenida da Indústria, 526, 4760-725 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.350443,
+   "lng": -8.581111,
+   "website": "https://www.cruzferramentas.com/",
+   "phone": "+351 252 415247",
+   "email": "cruz.ferramentas@gmail.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/843980055",
+   "name": "Prifer - Fundição, S.A.",
+   "source": "osm",
+   "category": "Die_Casting;Chroming;Painting",
+   "group": "metal",
+   "address": "Lugar Almas da Areosa, 1, 3750-043 Águeda",
+   "location": "Águeda",
+   "parish": "Aguada de Baixo",
+   "lat": 40.509391,
+   "lng": -8.439265,
+   "phone": "+351234666433",
+   "email": "geral.pdc@prifergroup.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Aguada de Baixo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1442327839",
+   "name": "A Eléctrica",
+   "source": "osm",
+   "category": "machinery",
+   "group": "eletrico",
+   "address": "Avenida 25 de Abril, 364, 4760-101 yes",
+   "location": "Vila Nova de Famalicão",
+   "lat": 41.408069,
+   "lng": -8.524577,
+   "website": "https://www.aelectrica.pt/",
+   "phone": "+351 252 303440",
+   "email": "geral@aelectrica.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Vila Nova de Famalicão."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976884",
+   "name": "Newcomp - Componentes para Calçado",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Rua Bartolomeu Dias, 120, 3700-057 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.884397,
+   "lng": -8.492013,
+   "website": "https://newcomp.pt/",
+   "phone": "+351 256 880 090",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12720276915",
+   "name": "Alfa Calçados",
+   "source": "osm",
+   "category": "shoes",
+   "group": "calcado",
+   "address": "Rua Bartolomeu Dias, 28, 3700-211 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.883644,
+   "lng": -8.491843,
+   "website": "https://www.alfacalcados.pt/",
+   "phone": "+351 256 880 580",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12720276917",
+   "name": "Silase",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua Bartolomeu Dias, 283, 3701-911 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.885841,
+   "lng": -8.492895,
+   "website": "https://silase.pt/",
+   "phone": "+351 256 815 090",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13272505998",
+   "name": "Manuel Alves",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Avenida Narciso Ferreira, 68, 4760-105 Vila Nova de Famalicao",
+   "location": "Vila Nova de Famalicão",
+   "lat": 41.408993,
+   "lng": -8.518242,
+   "website": "https://www.manuelalves.pt/",
+   "phone": "+351 933 628 315",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13753042009",
+   "name": "Casa Brandão",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Rua Professor Doutor Augusto Pires de Lima, 27;29, 4780-449 Santo Tirso",
+   "location": "Santo Tirso",
+   "parish": "Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães",
+   "lat": 41.33953,
+   "lng": -8.475871,
+   "phone": "+351 252 852 235",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13791005047",
+   "name": "Memoteka - Mecânica de Precisão, Lda.",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Alto da Cruz, 584, 4780-584 Santo Tirso",
+   "location": "Santo Tirso",
+   "parish": "Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães",
+   "lat": 41.341057,
+   "lng": -8.505183,
+   "website": "https://memoteka.pt",
+   "phone": "+351 252 862 373",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13813300206",
+   "name": "Plásticos Duarte Andrade, Lda.",
+   "source": "osm",
+   "category": "plastic",
+   "group": "borracha",
+   "address": "Rua do Professor Doutor António Faria Carneiro Pacheco, 4780-549 Santo Tirso",
+   "location": "Santo Tirso",
+   "parish": "Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães",
+   "lat": 41.343124,
+   "lng": -8.478739,
+   "website": "https://pda.pt",
+   "phone": "+351 252 808 790",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Santo Tirso."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/151705484",
+   "name": "AAPICO Maia, S. A.",
+   "source": "osm",
+   "category": "steel_mill",
+   "group": "metal",
+   "address": "Rua Jorge Ferreirinha, 679, 4470-314 Vermoim",
+   "location": "Maia",
+   "parish": "Vermoim",
+   "lat": 41.228686,
+   "lng": -8.598709,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Vermoim), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/345635991",
+   "name": "Soprem-Norte",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "Rua da Estação, 668, 4760-084 Vila Nova de Famalicão",
+   "location": "Vila Nova de Famalicão",
+   "lat": 41.408642,
+   "lng": -8.527171,
+   "website": "https://www.sopremnortemadeiras.pt/",
+   "phone": "+351 252 322051",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/377934397",
+   "name": "Exporplás",
+   "source": "osm",
+   "category": "plastics",
+   "group": "borracha",
+   "address": "Rua dos Sobrais, 89, 3885-307 Cortegaça",
+   "location": "Ovar",
+   "parish": "Cortegaça",
+   "lat": 40.938204,
+   "lng": -8.620667,
+   "website": "https://exporplas.pt/",
+   "phone": "+351 256 790 340",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (Cortegaça), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Ovar."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/585342019",
+   "name": "Palmitex - Componentes para Calçado",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Rua Belmiro Ferreira, 502, 4610-278 Felgueiras",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.364438,
+   "lng": -8.217878,
+   "website": "https://palmitex.com/",
+   "phone": "+351 255 318 820",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Felgueiras."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/690493734",
+   "name": "Caixiave",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua do Sol Poente, 125, Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.355346,
+   "lng": -8.581345,
+   "website": "https://www.caixiave.pt/?lang=en",
+   "phone": "+351 252 490670",
+   "email": "caixiave@caixiave.pt",
+   "check": {
+    "status": "a-confirmar",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa indica Covilhã / Lagoa."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/692208530",
+   "name": "Granorte - Revestimentos de Cortiça",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "Avenida de Santiago, 68, 4520-470 Rio Meão",
+   "location": "Santa Maria da Feira",
+   "parish": "Rio Meão",
+   "lat": 40.95924,
+   "lng": -8.597257,
+   "website": "https://www.granorte.pt/",
+   "phone": "+351 256 783 026",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Rio Meão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/751052785",
+   "name": "Joaquim & Manuel Barros",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Rua 1 Zona Industrial, 4535 Paços de Brandão",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.965077,
+   "lng": -8.596562,
+   "phone": "+351 964 722 641; +351 916 927 834",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/843981539",
+   "name": "Prifer - Technical Molds, S.A.",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Zona Industrial da Bela Vista, Arruamento E, Lote, 3850-184 Albergaria-A-Velha",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.705728,
+   "lng": -8.496886,
+   "phone": "+351234315035",
+   "email": "prifer.ptm@prifergroup.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084478590",
+   "name": "Miraze",
+   "source": "osm",
+   "category": "factory",
+   "group": "calcado",
+   "address": "Avenida da Indústria, 562, 4760-706 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.351799,
+   "lng": -8.584322,
+   "website": "https://miraze.pt/homepage-en/",
+   "phone": "+351 252 491703",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1091268651",
+   "name": "Famikron",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua de Santo António, 285, 4760-485 Fradelos",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Fradelos",
+   "lat": 41.379879,
+   "lng": -8.593307,
+   "website": "https://www.famikron.pt/",
+   "phone": "+351 252 458359",
+   "email": "famikron@famikron.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Fradelos), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1186050589",
+   "name": "Velanum",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua Combatentes do Ultramar, 29, 4760-702 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.36362,
+   "lng": -8.568431,
+   "website": "https://www.venalum.pt/",
+   "phone": "+351 252 418054",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1189247884",
+   "name": "Fresaminho",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Zona Industrial do Socorro, Lote 14, 4820-570 Quinchães",
+   "location": "Fafe",
+   "parish": "São Gens",
+   "lat": 41.453966,
+   "lng": -8.142543,
+   "website": "https://metalinvictus.pt/",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Fafe (São Gens), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Fafe."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1376586169",
+   "name": "Macro Group",
+   "source": "osm",
+   "category": "plastics",
+   "group": "borracha",
+   "address": "Rua da Indústria, 114, 3720-917 Oliveira de Azeméis",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.849737,
+   "lng": -8.479383,
+   "website": "https://www.macrogroup.eu/",
+   "phone": "+351 256 660 650",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10977010338",
+   "name": "TUBISTEEL",
+   "source": "osm",
+   "category": "metal_processing",
+   "group": "metal",
+   "address": "R. Antero de Quental, 4455-586 Perafita",
+   "location": "Matosinhos",
+   "parish": "Perafita",
+   "lat": 41.222115,
+   "lng": -8.682889,
+   "website": "https://tubisteel.pt/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Perafita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11162010428",
+   "name": "Tecnogravura - Gravuras Metálicas",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Avenida Vasco da Gama, 2285, 4431-961",
+   "location": "Vila Nova de Gaia",
+   "parish": "Oliveira do Douro",
+   "lat": 41.113507,
+   "lng": -8.583074,
+   "website": "http://www.tecnogravura.com",
+   "phone": "+351 227 860 060",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Oliveira do Douro), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12660136189",
+   "name": "Service to Shoes",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Avenida do Brasil, 110, 3700-067 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.894663,
+   "lng": -8.506417,
+   "website": "https://s2s.pt/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12736748249",
+   "name": "Amorim Cork",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "Rua dos Corticeiros, 850, 4535-387 Santa Maria de Lamas",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria de Lamas",
+   "lat": 40.983604,
+   "lng": -8.566954,
+   "website": "https://www.amorimcork.com/",
+   "phone": "+351 227 475 500",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria de Lamas), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13482418029",
+   "name": "Salfai - Administração Imobiliária",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Alameda Silva Rocha, 68, 3800-385 Aveiro",
+   "location": "Aveiro",
+   "parish": "Glória e Vera Cruz",
+   "lat": 40.640965,
+   "lng": -8.638255,
+   "website": "https://salfai.com/",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Glória e Vera Cruz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Aveiro."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/92527112",
+   "name": "Mercatus Portugal - Refrigeração e Estruturas Metálicas d’Alagoa",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "3754-909 Águeda",
+   "location": "Águeda",
+   "lat": 40.592133,
+   "lng": -8.462769,
+   "website": "www.mercatus.pt",
+   "phone": "+351 234 630850",
+   "email": "email@mercatus.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/97401659",
+   "name": "Fatal",
+   "source": "osm",
+   "category": "plastic",
+   "group": "borracha",
+   "address": "Rua Doutor Eugénio Ribeiro, 249, 3750-309 Águeda",
+   "location": "Águeda",
+   "lat": 40.587896,
+   "lng": -8.403019,
+   "website": "https://fatal.pt/",
+   "phone": "+351 234 612 450",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Águeda."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/542932300",
+   "name": "MDA - Moldes de Azeméis",
+   "source": "osm",
+   "category": "mold",
+   "group": "metal",
+   "address": "Rua Comendador António da Silva Rodrigues, 285, 3720-502 Santiago de Riba-Ul",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.849344,
+   "lng": -8.480559,
+   "website": "https://www.simoldes.com/en/tools-companies/mda-moldes-de-azemeis-sa/",
+   "phone": "+351 256 660 900",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/682510202",
+   "name": "Hidrauserv, Lda",
+   "source": "osm",
+   "category": "metalworking",
+   "group": "metal",
+   "address": "Rua Manuel Assunção Falcão, 16, 4475-041 Avioso (Santa Maria)",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.272949,
+   "lng": -8.603935,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/698862157",
+   "name": "Polinter Plásticos",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "Avenida Ferreira de Castro, 886, 3720-024 Carregosa",
+   "location": "Oliveira de Azeméis",
+   "parish": "Carregosa",
+   "lat": 40.886781,
+   "lng": -8.428032,
+   "phone": "+351 256 410 310",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Carregosa), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/698862158",
+   "name": "Polisport Plásticos",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "Avenida Ferreira de Castro, 818, 3720-024 Carregosa",
+   "location": "Oliveira de Azeméis",
+   "parish": "Carregosa",
+   "lat": 40.885801,
+   "lng": -8.427682,
+   "phone": "+351 256 410 230",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Carregosa), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084478613",
+   "name": "Metal Distendido",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua da Fervença, 127, 4760-725 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.353164,
+   "lng": -8.583445,
+   "website": "https://metaldistendido.com/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1116252946",
+   "name": "Brestahl Engineering Lda.",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Engenheiro Reinaldo Castilho, Lote 2, 4740-010 Esposende",
+   "location": "Esposende",
+   "parish": "Marinhas",
+   "lat": 41.532532,
+   "lng": -8.764222,
+   "website": "https://www.brestahl.com",
+   "phone": "+351 253 097 675",
+   "email": "brestahl@brestahl.com",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Esposende (Marinhas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Esposende."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1367081952",
+   "name": "Simoldes Tryout Center",
+   "source": "osm",
+   "category": "mold",
+   "group": "metal",
+   "address": "Rua Comendador António da Silva Rodrigues, 535, 3720-502 Santiago de Riba-Ul",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.850708,
+   "lng": -8.480562,
+   "website": "https://www.simoldes.com/en/tools-companies/tryout-centre/",
+   "phone": "+351 256 660 900",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1546560557",
+   "name": "Salpicos D'Glamour",
+   "source": "osm",
+   "category": "furniture_maker",
+   "group": "madeira",
+   "address": "Rua da Alegria, 95, 4765-643 Delães",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Delães",
+   "lat": 41.393976,
+   "lng": -8.415923,
+   "website": "https://salpicosdeglamour.pt",
+   "phone": "+351 253 083 179",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Delães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6562641637",
+   "name": "PJA Molds",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Travessa nº 2, 269, 3730-601 Vale de Cambra",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.898745,
+   "lng": -8.379238,
+   "website": "https://www.pjamoldes.pt/",
+   "phone": "+351 256 400 010",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Vale de Cambra."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8786787928",
+   "name": "Conservas Portugal Norte",
+   "source": "osm",
+   "category": "food;perserves;cann",
+   "group": "alimentar",
+   "address": "Rua Sousa Aroso, 620, 4450-287 Matosinhos",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.17663,
+   "lng": -8.6836,
+   "website": "https://portugalnorte.com/pt/home-portugues/",
+   "phone": "+351 229 380 019",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Matosinhos."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976866",
+   "name": "Jalm - Equipamentos e Automação Industrial",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "Rua Bartolomeu Dias, 3709-057 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.88479,
+   "lng": -8.492751,
+   "website": "https://www.jalm.pt/",
+   "phone": "+351 256 888 273",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12745639501",
+   "name": "Jolyforma - Formas para Calçado",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Rua Comendador António da Silva Rodrigues, Santiago de Riba-Ul",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.850442,
+   "lng": -8.479707,
+   "website": "https://jolyforma.wixsite.com/formasparacalcado",
+   "phone": "+351 256 092 736",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12745639541",
+   "name": "Mecamolde - Moldes para Plásticos",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "Rua Comendador António da Silva Rodrigues, 500, 3720-502 Santiago de Riba-Ul",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.851101,
+   "lng": -8.479831,
+   "website": "https://www.simoldes.com/tools-companies/mecamolde-moldes-para-plasticos-sa/",
+   "phone": "+351 256 660 780",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13393207150",
+   "name": "Ferrokey",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua Professor Doutor Egas Moniz, 100, 3860-078 Avanca",
+   "location": "Estarreja",
+   "parish": "Avanca",
+   "lat": 40.808206,
+   "lng": -8.581561,
+   "website": "https://ferrokey.pt/",
+   "phone": "+351 234 850 210",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Estarreja (Avanca), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13484606064",
+   "name": "OSS Carpintarias",
+   "source": "osm",
+   "category": "furniture",
+   "group": "madeira",
+   "address": "Estrada Nacional 109, 3840-555 Santo André de Vagos",
+   "location": "Vagos",
+   "parish": "Santo André de Vagos",
+   "lat": 40.503282,
+   "lng": -8.681085,
+   "website": "https://osscarpintaria.pt/",
+   "phone": "+351 234 793 781",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vagos (Santo André de Vagos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/329048545",
+   "name": "Indelague - Indústria Elétrica de Águeda",
+   "source": "osm",
+   "category": "works",
+   "group": "eletrico",
+   "address": "Rua da Mina, 465, 3750-792",
+   "location": "Águeda",
+   "parish": "Mourisca do Vouga",
+   "lat": 40.600354,
+   "lng": -8.452462,
+   "phone": "+351 234 612 310",
+   "email": "indelague@indelague.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Mourisca do Vouga), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/483019708",
+   "name": "Componauto - Comércio de Chaparia Auto",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua de Laborim de Baixo, 342, 4430-129",
+   "location": "Vila Nova de Gaia",
+   "parish": "Mafamude",
+   "lat": 41.104695,
+   "lng": -8.606414,
+   "website": "http://www.componauto.pt/",
+   "phone": "+351 227 161 200",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Mafamude), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/558848536",
+   "name": "Fopil - Fábrica Ovarense de Plásticos Industriais",
+   "source": "osm",
+   "category": "plastics",
+   "group": "borracha",
+   "address": "",
+   "location": "Ovar",
+   "parish": "São João",
+   "lat": 40.867168,
+   "lng": -8.613067,
+   "website": "https://fopil.pt/",
+   "phone": "+351 256 579 850",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (São João), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/695838520",
+   "name": "Cerisol S.A.",
+   "source": "osm",
+   "category": "Insulators;Electrical_Power_Components;High_Voltage_Components",
+   "group": "eletrico",
+   "address": "Rua Norton de Matos, 570, 4405-671 Serzedo e Perosinho",
+   "location": "Vila Nova de Gaia",
+   "parish": "Serzedo",
+   "lat": 41.067922,
+   "lng": -8.619067,
+   "website": "https://www.cerisol.com/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Serzedo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084478589",
+   "name": "Espam",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Avenida da Indústria, 558, 4760-706 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.35131,
+   "lng": -8.584231,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084478624",
+   "name": "Mag & Serra",
+   "source": "osm",
+   "category": "factory",
+   "group": "metal",
+   "address": "Rua da Fervença, 4760-725 Ribeirão",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.35242,
+   "lng": -8.583269,
+   "phone": "+351 252 493779",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1207563282",
+   "name": "Faurecia Metal",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua do Orreiro, 128",
+   "location": "São João da Madeira",
+   "lat": 40.882081,
+   "lng": -8.492559,
+   "phone": "+351 256 839 200",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1228669203",
+   "name": "Adira - Metal Forming Solutions",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua das Lages, 67, 4410-272 Vila Nova de Gaia",
+   "location": "Vila Nova de Gaia",
+   "parish": "Canelas",
+   "lat": 41.095361,
+   "lng": -8.607183,
+   "website": "https://adira.pt/",
+   "phone": "+351 226 192 700",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Canelas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Vila Nova de Gaia."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1247293134",
+   "name": "Dias alumínios",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Travessa do Ribeirinho, 4775-444 Nine",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Nine",
+   "lat": 41.458868,
+   "lng": -8.536869,
+   "website": "https://diasaluminios.com/",
+   "phone": "+351 252 967 669",
+   "email": "geral@diasaluminios.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Nine), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1367093600",
+   "name": "Acail Ferro e Aços",
+   "source": "osm",
+   "category": "steel;iron",
+   "group": "metal",
+   "address": "Estrada Nacional 327, 2670, 4520-704 São Miguel do Souto",
+   "location": "Santa Maria da Feira",
+   "parish": "São Miguel de Souto",
+   "lat": 40.881383,
+   "lng": -8.564546,
+   "website": "https://acailferro.pt/",
+   "phone": "+351 256 800 050",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São Miguel de Souto), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:relation/9344385",
+   "name": "Durit - Metalurgia Portuguesa do Tungsténio, Lda.",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Arruamento C, 3850-184 Albergaria-a-Velha",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.708049,
+   "lng": -8.487924,
+   "website": "https://www.durit.com/",
+   "phone": "+351 234 529 810",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Albergaria-a-Velha."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12150581101",
+   "name": "Casa Zé das Solas",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Praça do Município, 53,54, 4700-031",
+   "location": "Braga",
+   "parish": "São João do Souto",
+   "lat": 41.551232,
+   "lng": -8.428528,
+   "phone": "+351 965 123 673",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (São João do Souto), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13265531544",
+   "name": "Casa Fernandes",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Rua Daniel Santos, 104, 4760-133 Vila Nova de Famalicao",
+   "location": "Vila Nova de Famalicão",
+   "lat": 41.407963,
+   "lng": -8.520648,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13532944884",
+   "name": "Calfer - Comércio Aveirense de Ligas de Ferro",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Estrada Nacional 16, Km 3,5, Cacia",
+   "location": "Aveiro",
+   "parish": "Cacia",
+   "lat": 40.667475,
+   "lng": -8.609082,
+   "website": "https://calfer.pt/",
+   "phone": "+351 234 910 590",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Cacia), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/468033426",
+   "name": "ABER - Embraiagens e Comandos Hidráulicos A. B.",
+   "source": "osm",
+   "category": "factory",
+   "group": "maquinas",
+   "address": "Rua Francisco de Almeida, 30, 4470 Vila Nova da Telha",
+   "location": "Maia",
+   "parish": "Vila Nova da Telha",
+   "lat": 41.254132,
+   "lng": -8.66869,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Vila Nova da Telha), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/524889229",
+   "name": "Bynox",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Professor Rogério Couto, 69, 4410-003 Serzedo e Perosinho",
+   "location": "Vila Nova de Gaia",
+   "parish": "Serzedo",
+   "lat": 41.058877,
+   "lng": -8.618161,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Serzedo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/585342021",
+   "name": "Marina Calçados, S.A.",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "EM 562, 306, 4611-909 Felgueiras",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.362024,
+   "lng": -8.218102,
+   "website": "https://marinafootwear.com/",
+   "phone": "+351 255 310 040",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/695840870",
+   "name": "ISQ - Instituto de Soldadura e Qualidade",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua do Mirante, 258, 4415-491 Grijó",
+   "location": "Vila Nova de Gaia",
+   "parish": "Grijó",
+   "lat": 41.043236,
+   "lng": -8.566625,
+   "website": "https://www.isq.pt/",
+   "phone": "+351 227 471 950",
+   "check": {
+    "status": "a-confirmar",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Grijó), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa indica Porto / Castelo Branco / Sines."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/751052805",
+   "name": "Lemos Carvalho & Ferreira",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Rio Meão",
+   "lat": 40.963224,
+   "lng": -8.599772,
+   "website": "www.lcfreciclagem.pt",
+   "phone": "+351 256 794 078;+351 917799570",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Rio Meão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1083469684",
+   "name": "Serração Reis",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "Rua do Sapugal, 1234, 470-485 Fradelos",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Fradelos",
+   "lat": 41.386526,
+   "lng": -8.597444,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Fradelos), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1183373176",
+   "name": "JBrinca Unipessoal Lda.",
+   "source": "osm",
+   "category": "furniture",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Bitarães",
+   "lat": 41.225569,
+   "lng": -8.309378,
+   "website": "https://jbrinca.com",
+   "phone": "+351 912 957 707",
+   "email": "geral@jbrinca.com",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Bitarães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Paredes."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1227906783",
+   "name": "Procalçado, S. A.",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Largo das Alminhas das Barrancas, 97, 4415-343 Pedroso",
+   "location": "Vila Nova de Gaia",
+   "parish": "Pedroso",
+   "lat": 41.04545,
+   "lng": -8.563331,
+   "website": "https://www.procalcado.com/",
+   "phone": "+351 227 470 610",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Pedroso), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1313731611",
+   "name": "LX Precision Portugal",
+   "source": "osm",
+   "category": "machine_shop",
+   "group": "maquinas",
+   "address": "Rua Penedo de El-Rei Garcia, 282, Castelo de Paiva",
+   "location": "Castelo de Paiva",
+   "parish": "Sobrado",
+   "lat": 41.036856,
+   "lng": -8.261082,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Castelo de Paiva (Sobrado), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1374509438",
+   "name": "Lafitte",
+   "source": "osm",
+   "category": "cork stoppers",
+   "group": "madeira",
+   "address": "Travessa da Estação, Paços de Brandão",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.971841,
+   "lng": -8.581372,
+   "website": "https://www.lafittecork.com/",
+   "phone": "+351 227 472 310",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1375907940",
+   "name": "Lusocal",
+   "source": "osm",
+   "category": "shoes",
+   "group": "calcado",
+   "address": "Rua de Romariz, 1100",
+   "location": "Santa Maria da Feira",
+   "parish": "Romariz",
+   "lat": 40.933912,
+   "lng": -8.460388,
+   "website": "https://www.lusocal.com/",
+   "phone": "+351 256 840 090",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Romariz), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1473676570",
+   "name": "Pombo Indústria Metalúrgica, Lda.",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Avenida da Junqueira, 330, 4405-654 Vila Nova de Gaia",
+   "location": "Vila Nova de Gaia",
+   "parish": "Gulpilhares",
+   "lat": 41.082883,
+   "lng": -8.639905,
+   "website": "https://pombo.pt/",
+   "phone": "+351 227 539 024",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Gulpilhares), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4895211749",
+   "name": "Semente Carpintaria",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua da Portelinha, 175, 4835-612 Selho (São Jorge)",
+   "location": "Guimarães",
+   "parish": "Pevidém",
+   "lat": 41.437615,
+   "lng": -8.36965,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Pevidém), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5412073064",
+   "name": "Lusocal – Artigos Para Calçado, S.A.",
+   "source": "osm",
+   "category": "Artigos_Para_Calçado",
+   "group": "calcado",
+   "address": "Rua Padre José Peixoto Dias 793, 4610-285 Felgueiras",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.365779,
+   "lng": -8.208184,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5658587132",
+   "name": "Calçado Coelho",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Calçada da Cascalheira, 54, 4590-657 Raimonda",
+   "location": "Paços de Ferreira",
+   "parish": "Raimonda",
+   "lat": 41.322494,
+   "lng": -8.329339,
+   "email": "ndfc69@gmail.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paços de Ferreira (Raimonda), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6438771587",
+   "name": "Martiforte Imobiliária e Construções",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Rua de São Vicente, 7, 4720-170",
+   "location": "Amares",
+   "parish": "Bico",
+   "lat": 41.644922,
+   "lng": -8.397676,
+   "website": "https://www.martiforte.com/",
+   "phone": "+351253100193",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Amares (Bico), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Amares."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6997377140",
+   "name": "Olicork - Produtos de Cortiça",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Rua da Mata, 27",
+   "location": "Santa Maria da Feira",
+   "parish": "Rio Meão",
+   "lat": 40.968167,
+   "lng": -8.576094,
+   "phone": "+351 227 442 935",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Rio Meão), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8709146505",
+   "name": "Carpintaria Sousa & Silva",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua Vasco da Gama, Braga",
+   "location": "Braga",
+   "parish": "Gualtar",
+   "lat": 41.565612,
+   "lng": -8.385339,
+   "website": "carpintariasousaesilva.com",
+   "phone": "+351 253 677 377",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Gualtar), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10754466429",
+   "name": "Serralharia Pinto - Joquim Pinto & Filhos, Lda.",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua da Amoreira, 6, 4580-594 Mouriz",
+   "location": "Paredes",
+   "parish": "Mouriz",
+   "lat": 41.198588,
+   "lng": -8.354342,
+   "phone": "+351 256 777 217",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Mouriz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12881292446",
+   "name": "Plásticos Bueso",
+   "source": "osm",
+   "category": "plastic",
+   "group": "borracha",
+   "address": "Rua António Alberto de Sousa, 4710-133 Ferreiros e Gondizalves",
+   "location": "Braga",
+   "parish": "Ferreiros e Gondizalves",
+   "lat": 41.527654,
+   "lng": -8.436507,
+   "phone": "+351253694165",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Ferreiros e Gondizalves), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13391298138",
+   "name": "J. O. Leite, Móveis S. Jorge",
+   "source": "osm",
+   "category": "furniture",
+   "group": "madeira",
+   "address": "Rua de Baixo, 1064",
+   "location": "Ovar",
+   "parish": "Maceda",
+   "lat": 40.933672,
+   "lng": -8.625385,
+   "website": "https://www.msjorge.com/",
+   "phone": "+351 256 791 363",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (Maceda), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/308124370",
+   "name": "Ribeiro e Filhos",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua do Gorgulhão, castelões",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Castelões",
+   "lat": 41.40991,
+   "lng": -8.422813,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Castelões), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/671928998",
+   "name": "Polivouga - Indústria de Plásticos, S.A.",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "Arruamento N, 3850-184 Albergaria-a-Velha",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.711855,
+   "lng": -8.492765,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/750275215",
+   "name": "ICM",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "Rua das Meães, 83, 4760-762 Vilarinho das Cambas",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Vilarinho das Cambas",
+   "lat": 41.37644,
+   "lng": -8.544596,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Vilarinho das Cambas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/750948427",
+   "name": "Carplic",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Avenida Santiago de Gavião, 3117, 4760-003 Gavião",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Gavião",
+   "lat": 41.433826,
+   "lng": -8.508568,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Gavião), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/882026910",
+   "name": "MEC-TECH",
+   "source": "osm",
+   "category": "steel_trays",
+   "group": "metal",
+   "address": "Rua João Maia, 65",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.262037,
+   "lng": -8.609066,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1103962619",
+   "name": "Alberto da Silva Barbosa & Filhos",
+   "source": "osm",
+   "category": "steel_mill",
+   "group": "metal",
+   "address": "Rua de Souzanil, 476 Canedo",
+   "location": "Santa Maria da Feira",
+   "parish": "Canedo",
+   "lat": 41.021093,
+   "lng": -8.450447,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Canedo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1263014250",
+   "name": "MAQFORT – Máquinas e Ferramentas",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "Rua Padre Domingos Joaquim Pereira, 1199, 4760-563 Louro",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Louro",
+   "lat": 41.437596,
+   "lng": -8.541827,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Louro), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1367084292",
+   "name": "Jeteprodesign",
+   "source": "osm",
+   "category": "mold",
+   "group": "metal",
+   "address": "Rua Eduardo Paúl, 520",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.849257,
+   "lng": -8.474816,
+   "website": "https://www.jeteprodesign.com/",
+   "phone": "+351 256 098 363",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1499738815",
+   "name": "Serralharia Neves & Alves Lda",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua do Meiral, 281, 4505-101 Argoncilhe",
+   "location": "Santa Maria da Feira",
+   "parish": "Argoncilhe",
+   "lat": 41.031874,
+   "lng": -8.534914,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Argoncilhe), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1531257307",
+   "name": "Carpintaria Santa Cecília Lda",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua de Felgueiras, 79",
+   "location": "Castelo de Paiva",
+   "parish": "Sobrado",
+   "lat": 41.035903,
+   "lng": -8.260796,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Castelo de Paiva (Sobrado), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3386298565",
+   "name": "Serralharia J. M. R. Nogueira",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Professor Faria Lino, 213",
+   "location": "Trofa",
+   "parish": "Santiago",
+   "lat": 41.337709,
+   "lng": -8.593136,
+   "website": "http://www.serralhariajmnogueira.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Santiago), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5433930182",
+   "name": "F & M Indústria de Calçado",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Lugar do Calvário Lote 9,, 4610 Margaride (Santa Eulália), Várzea, Lagares, Varziela e Moure",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.371265,
+   "lng": -8.221334,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5632833425",
+   "name": "Metaloplás",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua de Vale de Pereiras, 3730-415",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.864345,
+   "lng": -8.394997,
+   "website": "https://metaloplas.pt/",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Vale de Cambra."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6562641635",
+   "name": "Polisport Molds",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Travessa nº 2, 3730-601 Vale de Cambra",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.898745,
+   "lng": -8.379521,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7139639442",
+   "name": "Manuel Rocha Lima",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua dos Pedreiros, 4710-553 Braga",
+   "location": "Braga",
+   "parish": "Adaúfe",
+   "lat": 41.575702,
+   "lng": -8.40186,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Adaúfe), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8976617292",
+   "name": "Irmoinox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua do Calvário, 499, 3730 Macieira de Cambra",
+   "location": "Vale de Cambra",
+   "parish": "Macieira de Cambra",
+   "lat": 40.85866,
+   "lng": -8.373567,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Macieira de Cambra), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10659597267",
+   "name": "Sucri Shoes",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Avenida 5 de Outubro, 12, Santa Maria da Feira",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria da Feira, Travanca, Sanfins e Espargo",
+   "lat": 40.93143,
+   "lng": -8.544023,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria da Feira, Travanca, Sanfins e Espargo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11059974216",
+   "name": "Forvia Faurecia Moldados",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua de Cucujães, 44, 3701-953 São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.881181,
+   "lng": -8.489739,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976885",
+   "name": "Sideral - Fábrica de Calçado",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Rua Bartolomeu Dias, 130, São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.884505,
+   "lng": -8.492031,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976992",
+   "name": "Artepekik - Calcado de Criança",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "Rua do Orreiro, 189 B, São João da Madeira",
+   "location": "São João da Madeira",
+   "lat": 40.883563,
+   "lng": -8.490934,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12339014510",
+   "name": "Macom",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "",
+   "location": "Amarante",
+   "parish": "Travanca",
+   "lat": 41.266525,
+   "lng": -8.208161,
+   "website": "https://www.macom.pt/",
+   "phone": "+351 255 147 791",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Amarante (Travanca), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Amarante."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12668343292",
+   "name": "António Moreira - Metalomecânica",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua Central Senhor Reis do Fidalgo, 356, São Miguel do Souto",
+   "location": "Santa Maria da Feira",
+   "parish": "São Miguel de Souto",
+   "lat": 40.889832,
+   "lng": -8.582476,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São Miguel de Souto), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12668343353",
+   "name": "Serralharia Civil Moreira & Andrade, Lda. - Coberturas, Caleiras, Serviço de Torno, Fabrico de Pecas Metálicas",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua Melos e Cunha, 1644",
+   "location": "Ovar",
+   "parish": "São João",
+   "lat": 40.887929,
+   "lng": -8.589354,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (São João), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13401678332",
+   "name": "Carpintaria Jaime Félix",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "Rua de Vila Boa, 23, 4535-457 São Paio de Oleiros",
+   "location": "Santa Maria da Feira",
+   "parish": "São Paio de Oleiros",
+   "lat": 40.986775,
+   "lng": -8.586564,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São Paio de Oleiros), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13647098167",
+   "name": "Móveis Douro",
+   "source": "osm",
+   "category": "furniture",
+   "group": "madeira",
+   "address": "Rua Pinheiro, 225",
+   "location": "Vila Nova de Gaia",
+   "parish": "Serzedo",
+   "lat": 41.050866,
+   "lng": -8.60754,
+   "phone": "+351914485170",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Serzedo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/25569975",
+   "name": "Super Bock Group",
+   "source": "osm",
+   "category": "food_industry",
+   "group": "alimentar",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Leça do Balio",
+   "lat": 41.21416,
+   "lng": -8.625424,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Leça do Balio), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/462774127",
+   "name": "Serralharia Costa Pereira - Alumínios \"Cardeal\"",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Aveiro",
+   "lat": 40.962723,
+   "lng": -8.615496,
+   "phone": "+351 256 752 507; +351 256 753 412",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/474261897",
+   "name": "Deibar, Máquinas - Ferramentas;Deibar",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "Rua da Zona Industrial, 4520-115",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria da Feira, Travanca, Sanfins e Espargo",
+   "lat": 40.917917,
+   "lng": -8.569014,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria da Feira, Travanca, Sanfins e Espargo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/700434057",
+   "name": "Carlos Leandro & Melo, Lda.",
+   "source": "osm",
+   "category": "cork",
+   "group": "madeira",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, São João de Ver",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.958457,
+   "lng": -8.563246,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/751052716",
+   "name": "Lafitte Cork Portugal",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.96879,
+   "lng": -8.596244,
+   "website": "https://www.lafittecork.com",
+   "phone": "+351 227 472 310",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1218126756",
+   "name": "Pedro Maia - Serralharia, Metalúrgica",
+   "source": "osm",
+   "category": "metal_processing",
+   "group": "metal",
+   "address": "Rua de Avioso, 338",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.265346,
+   "lng": -8.60771,
+   "website": "https://www.pedromaiaserralhariametalurgica.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1560115475",
+   "name": "Sá & Irmão, S.A.",
+   "source": "osm",
+   "category": "cork",
+   "group": "madeira",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, 208",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.959535,
+   "lng": -8.561316,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1560115476",
+   "name": "Bernardino Pais - Cortiças",
+   "source": "osm",
+   "category": "cork",
+   "group": "madeira",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, São João de Ver",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.961002,
+   "lng": -8.563247,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1560115477",
+   "name": "Ricardo Lopes",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, 587, São João de Ver",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.960808,
+   "lng": -8.56333,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1560115480",
+   "name": "José Fernando Neves Lima Lda",
+   "source": "osm",
+   "category": "cork",
+   "group": "madeira",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, 525, São João de Ver",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.960217,
+   "lng": -8.563293,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2965890346",
+   "name": "Serralharia São Bento",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Largo da Aldeia, 17",
+   "location": "Barcelos",
+   "parish": "Galegos (Santa Maria)",
+   "lat": 41.559233,
+   "lng": -8.582789,
+   "phone": "+351 253 843 304",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Barcelos (Galegos (Santa Maria)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3075890813",
+   "name": "Neves & Neves Metalomecânica",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "37",
+   "location": "Trofa",
+   "parish": "Coronado (São Romão e São Mamede)",
+   "lat": 41.284724,
+   "lng": -8.586026,
+   "phone": "+351 229 811 727",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Coronado (São Romão e São Mamede)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4831008816",
+   "name": "Alprometal Serralharia",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua Campo de Futebol",
+   "location": "Braga",
+   "parish": "Vilaça",
+   "lat": 41.517101,
+   "lng": -8.493549,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Vilaça), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5674914868",
+   "name": "TelaMetal",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua da Longa",
+   "location": "Vila do Conde",
+   "parish": "Modivas",
+   "lat": 41.300654,
+   "lng": -8.692871,
+   "website": "http://www.telametal.pt",
+   "phone": "+351 229 286 170",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila do Conde (Modivas), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6647824003",
+   "name": "Boiler Studio",
+   "source": "osm",
+   "category": "handicraft",
+   "group": "metal",
+   "address": "Rua Chã, 81; 79, Porto",
+   "location": "Porto",
+   "parish": "Cedofeita",
+   "lat": 41.143974,
+   "lng": -8.610073,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Cedofeita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7031799454",
+   "name": "Serralharia José O. Gomes",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua dos Loureiros, 109",
+   "location": "Aveiro",
+   "lat": 40.953528,
+   "lng": -8.617407,
+   "phone": "+351 227 313 934",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7070729268",
+   "name": "Sr. Filipe",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Rua de São Gens, 4460-082 Custóias, Leça do Balio e Guifões",
+   "location": "Matosinhos",
+   "parish": "Custóias",
+   "lat": 41.1912,
+   "lng": -8.638172,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Custóias), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8832200255",
+   "name": "Pinhais & C.",
+   "source": "osm",
+   "category": "food;perserves;cann",
+   "group": "alimentar",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.178689,
+   "lng": -8.684049,
+   "website": "https://www.conservaspinhais.com",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa confirma Matosinhos."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10046683206",
+   "name": "Moldoplástico",
+   "source": "osm",
+   "category": "mold",
+   "group": "borracha",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.847434,
+   "lng": -8.47398,
+   "website": "https://www.moldoplastico.com/",
+   "phone": "+351 256 600 530",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11014102399",
+   "name": "Consertos de calçado",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Avenida 5 de Outubro, 72B",
+   "location": "Santa Maria da Feira",
+   "parish": "Sanfins",
+   "lat": 40.935834,
+   "lng": -8.54308,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Sanfins), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11078917826",
+   "name": "Vitor Hugo Dias",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Avenida 25 de Abril, 42",
+   "location": "Santa Maria da Feira",
+   "parish": "Sanfins",
+   "lat": 40.93007,
+   "lng": -8.540278,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Sanfins), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11281505169",
+   "name": "Carpintaria Mecânica de Pinho & Matos, Lda.",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua Doutor Benjamim de Brito, 11, Santa Maria da Feira",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria da Feira, Travanca, Sanfins e Espargo",
+   "lat": 40.91468,
+   "lng": -8.561143,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria da Feira, Travanca, Sanfins e Espargo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12670262627",
+   "name": "Serralharia",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "Rua da Quintã de Baixo, 65 serralharia",
+   "location": "Santa Maria da Feira",
+   "parish": "Fornos",
+   "lat": 40.91101,
+   "lng": -8.532419,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Fornos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13228096657",
+   "name": "Clínica do Calçado",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Avenida Narciso Ferreira, 4765-202 Riba de Ave",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Riba de Ave",
+   "lat": 41.391365,
+   "lng": -8.397354,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Riba de Ave), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13418620131",
+   "name": "Líder do Calçado",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Avenida da República, 1337, Vila Nova de Gaia",
+   "location": "Vila Nova de Gaia",
+   "parish": "Laborim",
+   "lat": 41.126687,
+   "lng": -8.605406,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Laborim), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/293441618",
+   "name": "Panike",
+   "source": "osm",
+   "category": "factory",
+   "group": "alimentar",
+   "address": "",
+   "location": "Santo Tirso",
+   "parish": "Água Longa",
+   "lat": 41.257699,
+   "lng": -8.512441,
+   "website": "https://panike.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Água Longa), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Santo Tirso."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/299738159",
+   "name": "Invescorte",
+   "source": "osm",
+   "category": "machinery",
+   "group": "maquinas",
+   "address": "",
+   "location": "Maia",
+   "parish": "Gueifães",
+   "lat": 41.226697,
+   "lng": -8.602182,
+   "website": "https://www.invescorte.pt",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Gueifães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Maia."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/440506102",
+   "name": "PerfiChapa - Comércio de Produtos Siderúrgicos",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Águeda",
+   "parish": "Macinhata do Vouga",
+   "lat": 40.665591,
+   "lng": -8.476222,
+   "website": "www.perfichapa.com",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Macinhata do Vouga), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/614760951",
+   "name": "Cires",
+   "source": "osm",
+   "category": "plastic",
+   "group": "borracha",
+   "address": "",
+   "location": "Estarreja",
+   "parish": "Avanca",
+   "lat": 40.781022,
+   "lng": -8.573319,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Estarreja (Avanca), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/750292259",
+   "name": "Matadouro Central de Entre Douro e Minho",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "Lousado",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Lousado",
+   "lat": 41.373531,
+   "lng": -8.538627,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Lousado), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/751052792",
+   "name": "Fábrica Visão",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Rio Meão",
+   "lat": 40.964025,
+   "lng": -8.596524,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Rio Meão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/751052801",
+   "name": "Sociglobal Químicos",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Rio Meão",
+   "lat": 40.963358,
+   "lng": -8.599214,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Rio Meão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1080304534",
+   "name": "Sanbru Sapatos",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Rua Monte Redondo, 278",
+   "location": "Oliveira de Azeméis",
+   "parish": "Nogueira do Cravo",
+   "lat": 40.886772,
+   "lng": -8.441669,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Nogueira do Cravo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1080304536",
+   "name": "Sola de Ouro - Pré-Fabricados para Calçado, Lda",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "Rua Monte Redondo, 205",
+   "location": "Oliveira de Azeméis",
+   "parish": "Nogueira do Cravo",
+   "lat": 40.887202,
+   "lng": -8.442029,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Nogueira do Cravo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1198135725",
+   "name": "Manuel Alves",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Maia",
+   "parish": "Barca",
+   "lat": 41.249213,
+   "lng": -8.621424,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Barca), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1376585746",
+   "name": "Unimadeiras",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.711396,
+   "lng": -8.484486,
+   "website": "https://unimadeiras.pt/",
+   "phone": "+351 234 521 864",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Albergaria-a-Velha."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1415390600",
+   "name": "SOS Consertos",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Gondomar",
+   "parish": "Rio Tinto",
+   "lat": 41.175007,
+   "lng": -8.564281,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Gondomar (Rio Tinto), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1560115478",
+   "name": "e+metal",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua 1 da Zona Industrial da Silveirinha, São João de Ver",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.960681,
+   "lng": -8.563727,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/1481413578",
+   "name": "Caiminox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Carregosa",
+   "lat": 40.869182,
+   "lng": -8.414943,
+   "website": "http://www.caiminox.pt",
+   "phone": "+351 256 460 030",
+   "check": {
+    "status": "a-confirmar",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Carregosa), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa indica Vale de Cambra / Porto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2585697580",
+   "name": "Horainox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Urbanização Industrial da Carriça",
+   "location": "Trofa",
+   "parish": "Muro",
+   "lat": 41.285272,
+   "lng": -8.594806,
+   "phone": "+351 229 866 440",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Muro), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2587264999",
+   "name": "Serralharia Gomes",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Urbanização Industrial do Soeiro",
+   "location": "Trofa",
+   "parish": "Coronado (São Romão e São Mamede)",
+   "lat": 41.284997,
+   "lng": -8.586806,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Coronado (São Romão e São Mamede)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3278394733",
+   "name": "Tractorave - Máquinas Agrícolas",
+   "source": "osm",
+   "category": "works",
+   "group": "maquinas",
+   "address": "",
+   "location": "Vila do Conde",
+   "parish": "Macieira da Maia",
+   "lat": 41.335947,
+   "lng": -8.681884,
+   "website": "https://www.tractorave.pt/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila do Conde (Macieira da Maia), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6486761776",
+   "name": "Conserto Rápido",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "Rua dos Bombeiros Voluntários, Esmoriz",
+   "location": "Aveiro",
+   "lat": 40.957348,
+   "lng": -8.625602,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7656098689",
+   "name": "Proadec SA",
+   "source": "osm",
+   "category": "plastic",
+   "group": "borracha",
+   "address": "",
+   "location": "Vila do Conde",
+   "parish": "Mindelo",
+   "lat": 41.307798,
+   "lng": -8.703169,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila do Conde (Mindelo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8520285910",
+   "name": "Lusitan Furniture",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Rua Doutor José Falcão, 305",
+   "location": "Ovar",
+   "parish": "Ovar",
+   "lat": 40.866808,
+   "lng": -8.621011,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (Ovar), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10761654517",
+   "name": "Neves Loureiro & C.ª Lda.",
+   "source": "osm",
+   "category": "company",
+   "group": "eletrico",
+   "address": "",
+   "location": "Porto",
+   "parish": "Cedofeita",
+   "lat": 41.147431,
+   "lng": -8.609372,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Cedofeita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976886",
+   "name": "RPA Inovation - Automação Industrial",
+   "source": "osm",
+   "category": "company",
+   "group": "maquinas",
+   "address": "",
+   "location": "São João da Madeira",
+   "lat": 40.884193,
+   "lng": -8.491163,
+   "website": "http://rpa-innovation.com/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12729308067",
+   "name": "Ricalinox",
+   "source": "osm",
+   "category": "steel_products",
+   "group": "metal",
+   "address": "",
+   "location": "Arouca",
+   "parish": "Escariz",
+   "lat": 40.939591,
+   "lng": -8.399407,
+   "website": "https://www.ricalinox.pt/",
+   "check": {
+    "status": "a-confirmar",
+    "evidence": [
+     "Ponto dentro do concelho de Arouca (Escariz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "O site da empresa indica Almeirim."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12829377473",
+   "name": "Sonae Indústria",
+   "source": "osm",
+   "category": "wood",
+   "group": "madeira",
+   "address": "",
+   "location": "Maia",
+   "parish": "Guardeiras",
+   "lat": 41.236513,
+   "lng": -8.639953,
+   "website": "http://www.sonaeindustria.com/",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Guardeiras), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13392047797",
+   "name": "JM Carpintaria",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "Rua do Salgueiral de Cima, 2322",
+   "location": "Ovar",
+   "parish": "São João",
+   "lat": 40.881236,
+   "lng": -8.577008,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (São João), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13393207146",
+   "name": "Janeves - Indústria de Móveis Metálicos",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "Rua Professor Doutor Egas Moniz, 124",
+   "location": "Estarreja",
+   "parish": "Avanca",
+   "lat": 40.807043,
+   "lng": -8.583149,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Estarreja (Avanca), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13711322611",
+   "name": "Credin Portugal",
+   "source": "osm",
+   "category": "food",
+   "group": "alimentar",
+   "address": "Rua Engenheiro Frederico Ulrich",
+   "location": "Maia",
+   "parish": "Guardeiras",
+   "lat": 41.257998,
+   "lng": -8.642987,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Guardeiras), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/125486446",
+   "name": "Carpintaria Sol Nascente",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Sobreira",
+   "lat": 41.114778,
+   "lng": -8.400091,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Sobreira), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/143214983",
+   "name": "Lactogal I",
+   "source": "osm",
+   "category": "food_industry",
+   "group": "alimentar",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.838873,
+   "lng": -8.483775,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/143214993",
+   "name": "Lactogal II",
+   "source": "osm",
+   "category": "food_industry",
+   "group": "alimentar",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.837388,
+   "lng": -8.488058,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/191844026",
+   "name": "Fábricas Metalúrgicas Alba",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.684252,
+   "lng": -8.472563,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/304534341",
+   "name": "Navipa",
+   "source": "osm",
+   "category": "machinery",
+   "group": "maquinas",
+   "address": "",
+   "location": "Maia",
+   "lat": 41.242466,
+   "lng": -8.631869,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/337649469",
+   "name": "Tito Fernando & Ca.",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "Rua do Seixidro",
+   "location": "Gondomar",
+   "parish": "Foz do Sousa e Covelo",
+   "lat": 41.109386,
+   "lng": -8.479571,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Gondomar (Foz do Sousa e Covelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/471513656",
+   "name": "Associação dos Industriais Metalúrgicos e Afins de Portugal",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Porto",
+   "parish": "Ramalde",
+   "lat": 41.174279,
+   "lng": -8.658308,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Ramalde), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/542932320",
+   "name": "Ancal Plásticos",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "Rua Comendador António da Silva Rodrigues, 68",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.847413,
+   "lng": -8.478343,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/552871297",
+   "name": "Abel Andrade",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Cristelo",
+   "lat": 41.235579,
+   "lng": -8.36331,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Cristelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/567564130",
+   "name": "Jonil - Calçados",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.362632,
+   "lng": -8.21861,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/608392253",
+   "name": "Companhia Industrial de Fundição",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Gondomar",
+   "parish": "Foz do Sousa e Covelo",
+   "lat": 41.072445,
+   "lng": -8.496732,
+   "website": "www.cif.pt",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Gondomar (Foz do Sousa e Covelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/667233971",
+   "name": "Oscar Soares & C.",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Ovar",
+   "parish": "Arada",
+   "lat": 40.89878,
+   "lng": -8.612762,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ovar (Arada), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/750949714",
+   "name": "Bracar",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Gavião",
+   "lat": 41.431792,
+   "lng": -8.511202,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Gavião), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/778982116",
+   "name": "Matoso",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Primeiro de Dezembro",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.696362,
+   "lng": -8.495856,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/845427492",
+   "name": "Avoutiz",
+   "source": "osm",
+   "category": "food",
+   "group": "alimentar",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Outiz",
+   "lat": 41.416961,
+   "lng": -8.564393,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Outiz), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/987846669",
+   "name": "Kiwi Greensun - Conservação e Comercialização de Fruta, S.A.",
+   "source": "osm",
+   "category": "company",
+   "group": "alimentar",
+   "address": "Rua de Agrela",
+   "location": "Guimarães",
+   "parish": "Briteiros São Salvador e Briteiros Santa Leocádia",
+   "lat": 41.513614,
+   "lng": -8.324321,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Briteiros São Salvador e Briteiros Santa Leocádia), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1079505606",
+   "name": "Amorim Cork Floorings",
+   "source": "osm",
+   "category": "cork",
+   "group": "madeira",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Argoncilhe",
+   "lat": 41.000308,
+   "lng": -8.537831,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Argoncilhe), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1225324104",
+   "name": "Serração de Madeiras Garcez",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Cristelo",
+   "lat": 41.233858,
+   "lng": -8.364003,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Cristelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1316950742",
+   "name": "MSS Steel Tubes",
+   "source": "osm",
+   "category": "steel_tubes",
+   "group": "metal",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Bente",
+   "lat": 41.391983,
+   "lng": -8.447976,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Bente), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1331694175",
+   "name": "Izicar",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Requião",
+   "lat": 41.41514,
+   "lng": -8.458831,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Requião), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1350374592",
+   "name": "Agros",
+   "source": "osm",
+   "category": "food_industry",
+   "group": "alimentar",
+   "address": "",
+   "location": "Vila do Conde",
+   "parish": "Alto da Pega",
+   "lat": 41.367139,
+   "lng": -8.748908,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila do Conde (Alto da Pega), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1356756181",
+   "name": "Signorte",
+   "source": "osm",
+   "category": "machinery",
+   "group": "maquinas",
+   "address": "",
+   "location": "Maia",
+   "lat": 41.243571,
+   "lng": -8.630799,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1467320216",
+   "name": "Metalomecânica Agrela",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Nossa Senhora da Guia",
+   "location": "Santo Tirso",
+   "parish": "Agrela",
+   "lat": 41.253163,
+   "lng": -8.478893,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Agrela), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/1481413592",
+   "name": "Plasticambra",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.868014,
+   "lng": -8.412247,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/1700008986",
+   "name": "Matos & Filhos - Projectos Construção e Gestão Imobiliária",
+   "source": "osm",
+   "category": "stand_builder",
+   "group": "madeira",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Glória e Vera Cruz",
+   "lat": 40.627754,
+   "lng": -8.638732,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Glória e Vera Cruz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2065722572",
+   "name": "Gandralar - Empreendimentos Imobiliários",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Recarei",
+   "lat": 41.164682,
+   "lng": -8.430312,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Recarei), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2065722636",
+   "name": "Propiso - Empreendimentos Imobiliários",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Paredes",
+   "parish": "Recarei",
+   "lat": 41.164692,
+   "lng": -8.430311,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paredes (Recarei), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2901566415",
+   "name": "Aveidráulica",
+   "source": "osm",
+   "category": "machine_shop",
+   "group": "maquinas",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Santa Joana",
+   "lat": 40.637627,
+   "lng": -8.605836,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Santa Joana), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3075894281",
+   "name": "Ralpi - Acessórios e Borrachas",
+   "source": "osm",
+   "category": "works",
+   "group": "borracha",
+   "address": "",
+   "location": "Trofa",
+   "parish": "Coronado (São Romão e São Mamede)",
+   "lat": 41.28537,
+   "lng": -8.587837,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Coronado (São Romão e São Mamede)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3098120513",
+   "name": "Auto Eléctrica Santa Maria",
+   "source": "osm",
+   "category": "company",
+   "group": "eletrico",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.948746,
+   "lng": -8.53523,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3685806475",
+   "name": "Metalizareal",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Trofa",
+   "parish": "Coronado (São Romão e São Mamede)",
+   "lat": 41.279223,
+   "lng": -8.545086,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Coronado (São Romão e São Mamede)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4928900637",
+   "name": "Simoldes Plasticos",
+   "source": "osm",
+   "category": "company",
+   "group": "borracha",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.848318,
+   "lng": -8.480075,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4928902739",
+   "name": "Simoldes Aços",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.847783,
+   "lng": -8.479127,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5412040182",
+   "name": "O Feliz",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Braga",
+   "parish": "Tebosa",
+   "lat": 41.486304,
+   "lng": -8.472607,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Tebosa), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6201692198",
+   "name": "Mauifer serralharia",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Ílhavo",
+   "parish": "Gafanha da Encarnação",
+   "lat": 40.606937,
+   "lng": -8.713979,
+   "phone": "+351 919 956 220",
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ílhavo (Gafanha da Encarnação), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6381003675",
+   "name": "José Bola & Irmão",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Nazaré",
+   "lat": 40.630095,
+   "lng": -8.688557,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Nazaré, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6919442674",
+   "name": "Calçada Portuguesa Comemorativa",
+   "source": "osm",
+   "category": "sculptor",
+   "group": "calcado",
+   "address": "",
+   "location": "Águeda",
+   "lat": 40.570852,
+   "lng": -8.445142,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7021675791",
+   "name": "Siscomel - Sistemas e Comandos Eléctricos e Electrónicos",
+   "source": "osm",
+   "category": "company",
+   "group": "eletrico",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.972899,
+   "lng": -8.583252,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7021677257",
+   "name": "Precision Elite",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.968027,
+   "lng": -8.595352,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7021677968",
+   "name": "Casa Agrícola",
+   "source": "osm",
+   "category": "company",
+   "group": "alimentar",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Gondesende",
+   "lat": 40.967345,
+   "lng": -8.605542,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Gondesende), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7196108484",
+   "name": "CaixiCastêlo",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Travessa da Vitória",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.260812,
+   "lng": -8.617772,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7958886117",
+   "name": "Regras simétrica",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "1749",
+   "location": "Maia",
+   "parish": "Ferreiró",
+   "lat": 41.272399,
+   "lng": -8.610002,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Ferreiró), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10970998941",
+   "name": "Germano silva",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Sanfins",
+   "lat": 40.940551,
+   "lng": -8.538212,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Sanfins), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11188976881",
+   "name": "Euromacal - Máquinas para Calçado",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "",
+   "location": "São João da Madeira",
+   "lat": 40.884627,
+   "lng": -8.492055,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de São João da Madeira, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11289641155",
+   "name": "Sogenave",
+   "source": "osm",
+   "category": "food",
+   "group": "alimentar",
+   "address": "",
+   "location": "Maia",
+   "parish": "São Pedro Fins",
+   "lat": 41.253209,
+   "lng": -8.563231,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (São Pedro Fins), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11386662552",
+   "name": "DF Cork",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "Rua Estrada Nacional Nº 1",
+   "location": "Santa Maria da Feira",
+   "parish": "Argoncilhe",
+   "lat": 41.014528,
+   "lng": -8.556734,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Argoncilhe), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11819995416",
+   "name": "Tavares & Tavares",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Cacia",
+   "lat": 40.679705,
+   "lng": -8.587586,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Cacia), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12054671881",
+   "name": "Automoldes",
+   "source": "osm",
+   "category": "machinery",
+   "group": "maquinas",
+   "address": "",
+   "location": "Trofa",
+   "parish": "Coronado (São Romão e São Mamede)",
+   "lat": 41.285127,
+   "lng": -8.58523,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Coronado (São Romão e São Mamede)), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12522474372",
+   "name": "Amorim e Mário Santos, Lda",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua da Cancela Vermelha",
+   "location": "Trofa",
+   "parish": "Covelas",
+   "lat": 41.291654,
+   "lng": -8.55314,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Covelas), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12660137779",
+   "name": "Serviço ao Minuto - duplicação de chaves, sapateiro, fechaduras, carimbos",
+   "source": "osm",
+   "category": "key_cutter",
+   "group": "calcado",
+   "address": "Estrada Nacional 327",
+   "location": "Santa Maria da Feira",
+   "parish": "São Miguel de Souto",
+   "lat": 40.888457,
+   "lng": -8.542789,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São Miguel de Souto), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12726586281",
+   "name": "Corticeira Passarinho",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "São João de Ver",
+   "lat": 40.963209,
+   "lng": -8.552701,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (São João de Ver), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/14206249490",
+   "name": "Rodrimore - Metalomecânica Lda",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "Rua Nova das Cancelas",
+   "location": "Porto",
+   "lat": 41.233303,
+   "lng": -8.55406,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/108040954",
+   "name": "Laticínios Das Marinhas",
+   "source": "osm",
+   "category": "works",
+   "group": "alimentar",
+   "address": "",
+   "location": "Esposende",
+   "parish": "Marinhas",
+   "lat": 41.563707,
+   "lng": -8.786693,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Esposende (Marinhas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/121702729",
+   "name": "CNC Escuteiros",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Angeja",
+   "lat": 40.677407,
+   "lng": -8.557056,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Angeja), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/158840208",
+   "name": "Electromaquinas",
+   "source": "osm",
+   "category": "electronics_repair",
+   "group": "maquinas",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Esgueira",
+   "lat": 40.6405,
+   "lng": -8.608904,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Esgueira), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/188386391",
+   "name": "Serração Moutados",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Gavião",
+   "lat": 41.415353,
+   "lng": -8.501555,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Gavião), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/191744856",
+   "name": "Serração Castro e Filhos. lda",
+   "source": "osm",
+   "category": "factory",
+   "group": "madeira",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Prazins (Santa Eufémia)",
+   "lat": 41.485673,
+   "lng": -8.318712,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Prazins (Santa Eufémia)), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/221488927",
+   "name": "Leirinox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.854702,
+   "lng": -8.397972,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/290137338",
+   "name": "Albino Alves Moreira Serralharia",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Trofa",
+   "parish": "Covelas",
+   "lat": 41.294373,
+   "lng": -8.540145,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Covelas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/334481071",
+   "name": "Fabrica de Calçado de Pevidem",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Pevidém",
+   "lat": 41.424725,
+   "lng": -8.355318,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Pevidém), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/356309645",
+   "name": "Fábrica de Calçado Campeão Português",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Costa",
+   "lat": 41.443044,
+   "lng": -8.283961,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Costa), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/388589687",
+   "name": "M Luís & Irmãos",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Raiva",
+   "lat": 41.028064,
+   "lng": -8.36006,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Raiva), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/440506120",
+   "name": "Vertentes da Paisagem",
+   "source": "osm",
+   "category": "works",
+   "group": "maquinas",
+   "address": "",
+   "location": "Águeda",
+   "parish": "Macinhata do Vouga",
+   "lat": 40.670196,
+   "lng": -8.47449,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Macinhata do Vouga), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/474261874",
+   "name": "Reguila Children Shoes",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Santa Maria da Feira, Travanca, Sanfins e Espargo",
+   "lat": 40.918944,
+   "lng": -8.570178,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Santa Maria da Feira, Travanca, Sanfins e Espargo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/692191657",
+   "name": "Motrinde",
+   "source": "osm",
+   "category": "metal_processing",
+   "group": "metal",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Cacia",
+   "lat": 40.669123,
+   "lng": -8.599072,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Cacia), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/744193636",
+   "name": "Biscoitos Paupério",
+   "source": "osm",
+   "category": "works",
+   "group": "alimentar",
+   "address": "",
+   "location": "Valongo",
+   "parish": "Susão",
+   "lat": 41.188198,
+   "lng": -8.499875,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Valongo (Susão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/758192789",
+   "name": "Lusiaves",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "",
+   "location": "Estarreja",
+   "parish": "Pardilhó",
+   "lat": 40.795985,
+   "lng": -8.605752,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Estarreja (Pardilhó), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/761579532",
+   "name": "Kamstis - Indústria Corticeira",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Aveiro",
+   "lat": 40.958219,
+   "lng": -8.613545,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/884467459",
+   "name": "Euroabate - Matadouro Industrial",
+   "source": "osm",
+   "category": "slaughterhouse",
+   "group": "alimentar",
+   "address": "",
+   "location": "Marco de Canaveses",
+   "parish": "Soalhães",
+   "lat": 41.157685,
+   "lng": -8.086699,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Marco de Canaveses (Soalhães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/885497197",
+   "name": "Ribeira",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Arouca",
+   "parish": "Tropeço",
+   "lat": 40.920118,
+   "lng": -8.3429,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Arouca (Tropeço), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/989179373",
+   "name": "Serração Filicoelho Lda",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Fafe",
+   "parish": "Regadas",
+   "lat": 41.402358,
+   "lng": -8.145432,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Fafe (Regadas), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1077441638",
+   "name": "JPF Serracao Madeiras Lda",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Vale de Cambra",
+   "parish": "Macieira de Cambra",
+   "lat": 40.849369,
+   "lng": -8.365101,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Macieira de Cambra), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1080304525",
+   "name": "BT Mobiliário, Lda",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Pindelo",
+   "lat": 40.883987,
+   "lng": -8.439412,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Pindelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1084063324",
+   "name": "Metalurgica do Fojo",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Amarante",
+   "parish": "Fridão",
+   "lat": 41.304453,
+   "lng": -8.040522,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Amarante (Fridão), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1088308130",
+   "name": "Serralheria Xavier",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Fradelos",
+   "lat": 41.374305,
+   "lng": -8.594054,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Fradelos), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1181388331",
+   "name": "Cardoso Leal & Filhos Lda - Mobiliário",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Paços de Ferreira",
+   "parish": "Penamaior",
+   "lat": 41.273069,
+   "lng": -8.412405,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Paços de Ferreira (Penamaior), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1210817999",
+   "name": "Serralharia Tó-Zé",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Fafe",
+   "parish": "São Gens",
+   "lat": 41.455335,
+   "lng": -8.140524,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Fafe (São Gens), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1210818010",
+   "name": "Cantonagem Alves",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Fafe",
+   "parish": "São Gens",
+   "lat": 41.454798,
+   "lng": -8.140187,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Fafe (São Gens), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1210818014",
+   "name": "A. S. Martins Serralharia",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Fafe",
+   "parish": "São Gens",
+   "lat": 41.455999,
+   "lng": -8.138731,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Fafe (São Gens), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1252123884",
+   "name": "Carpintaria Faria e Faria",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ruivães",
+   "lat": 41.395284,
+   "lng": -8.431993,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ruivães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1254362192",
+   "name": "Tornearia Ruivanense",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ruivães",
+   "lat": 41.399058,
+   "lng": -8.448468,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ruivães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1293397209",
+   "name": "Paradigma Footwear, Lda",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Pencelo",
+   "lat": 41.472115,
+   "lng": -8.292923,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Pencelo), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1293397214",
+   "name": "Carribel - Indusria de Calçado, Lda.",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Selho (São Lourenço) e Gominhães",
+   "lat": 41.472342,
+   "lng": -8.291883,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Selho (São Lourenço) e Gominhães), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1293661802",
+   "name": "MetaloTubo",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Póvoa de Varzim",
+   "parish": "Beiriz",
+   "lat": 41.387782,
+   "lng": -8.72921,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Póvoa de Varzim (Beiriz), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1298810926",
+   "name": "Ambitious",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "São Torcato",
+   "lat": 41.468994,
+   "lng": -8.275063,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (São Torcato), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1350374593",
+   "name": "Sumol+Compal, SA",
+   "source": "osm",
+   "category": "food_industry",
+   "group": "alimentar",
+   "address": "",
+   "location": "Póvoa de Varzim",
+   "parish": "Nova Sintra",
+   "lat": 41.374677,
+   "lng": -8.742505,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Póvoa de Varzim (Nova Sintra), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1376586051",
+   "name": "Versão Latina",
+   "source": "osm",
+   "category": "shoes",
+   "group": "calcado",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Pinheiro da Bemposta, Travanca e Palmaz",
+   "lat": 40.819785,
+   "lng": -8.484533,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Pinheiro da Bemposta, Travanca e Palmaz), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1460562539",
+   "name": "RAHP Instalações Hidráulicas",
+   "source": "osm",
+   "category": "plumber",
+   "group": "maquinas",
+   "address": "",
+   "location": "Maia",
+   "parish": "Vermoim",
+   "lat": 41.234328,
+   "lng": -8.602188,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Vermoim), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1473866559",
+   "name": "ASM Metal",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Esgueira",
+   "lat": 40.657956,
+   "lng": -8.594675,
+   "website": "https://asmmetal.pt/",
+   "check": {
+    "status": "verificado",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Esgueira), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "O site da empresa confirma Aveiro."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1561727089",
+   "name": "Batista",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Mealhada",
+   "parish": "Mealhada",
+   "lat": 40.382156,
+   "lng": -8.441899,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Mealhada (Mealhada), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/698786058",
+   "name": "Carpintaria Silva",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Amares",
+   "parish": "Goães",
+   "lat": 41.656795,
+   "lng": -8.312284,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Amares (Goães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/1799466529",
+   "name": "MetalegIbérica",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Albergaria-a-Velha e Valmaior",
+   "lat": 40.689874,
+   "lng": -8.479012,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Albergaria-a-Velha e Valmaior), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/1799604931",
+   "name": "Sapateiro Brasileira",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Glória e Vera Cruz",
+   "lat": 40.642902,
+   "lng": -8.650981,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Glória e Vera Cruz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2006275752",
+   "name": "Trigal",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail",
+   "lat": 40.838212,
+   "lng": -8.476496,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Oliveira de Azeméis, Santiago de Riba-Ul, Ul, Macinhata da Seixa e Madail), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2365935050",
+   "name": "Carpintaria",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Ribeira de Fráguas",
+   "lat": 40.738799,
+   "lng": -8.442631,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Ribeira de Fráguas), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/2629797231",
+   "name": "Calçado Sameiro",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "",
+   "location": "Barcelos",
+   "parish": "Barcelinhos",
+   "lat": 41.517154,
+   "lng": -8.631269,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Barcelos (Barcelinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3357719803",
+   "name": "ToroNobre (madeiras)",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Barcelos",
+   "parish": "Pousa",
+   "lat": 41.557801,
+   "lng": -8.512116,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Barcelos (Pousa), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3386297949",
+   "name": "Metalogalva",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Trofa",
+   "parish": "Santiago",
+   "lat": 41.338712,
+   "lng": -8.608555,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Trofa (Santiago), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3460052401",
+   "name": "Barcel Inox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Barcelos",
+   "parish": "Várzea",
+   "lat": 41.505176,
+   "lng": -8.572951,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Barcelos (Várzea), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3467701048",
+   "name": "Júlio Fernandes - serralharia, alumínos",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Vila Verde",
+   "parish": "Marrancos",
+   "lat": 41.65866,
+   "lng": -8.518762,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Verde (Marrancos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3512953429",
+   "name": "Marco Manuel Ferreira Certo De Abreu",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Pevidém",
+   "lat": 41.424479,
+   "lng": -8.362389,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Pevidém), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3707270247",
+   "name": "Super-rápido Numi",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Porto",
+   "parish": "Cedofeita",
+   "lat": 41.146606,
+   "lng": -8.602063,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Cedofeita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3729148046",
+   "name": "Super rápido",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Porto",
+   "lat": 41.211185,
+   "lng": -8.554686,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3781522165",
+   "name": "Casa Pontes",
+   "source": "osm",
+   "category": "blacksmith",
+   "group": "metal",
+   "address": "",
+   "location": "Penafiel",
+   "parish": "Lagares e Figueira",
+   "lat": 41.124569,
+   "lng": -8.370117,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Penafiel (Lagares e Figueira), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/3834536593",
+   "name": "Braguinox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Braga",
+   "parish": "Celeirós, Aveleda e Vimieiro",
+   "lat": 41.508021,
+   "lng": -8.454453,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Celeirós, Aveleda e Vimieiro), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4643909084",
+   "name": "Vítor R. Coelho",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Santo Tirso",
+   "parish": "Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães",
+   "lat": 41.339379,
+   "lng": -8.492123,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santo Tirso (Santo Tirso, Couto (Santa Cristina e São Miguel) e Burgães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4755208758",
+   "name": "super rápido",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Vila Nova de Gaia",
+   "parish": "Mafamude",
+   "lat": 41.10526,
+   "lng": -8.60716,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Mafamude), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/4858063358",
+   "name": "Normetal",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Barcelos",
+   "parish": "Adães",
+   "lat": 41.520319,
+   "lng": -8.570437,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Barcelos (Adães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5765779745",
+   "name": "Com Sorriso - Artigos de Beleza, Acessóris de Moda, Detergentes, Brinquedos, Sapataria, Bricolage",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "",
+   "location": "Águeda",
+   "lat": 40.593926,
+   "lng": -8.463196,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5765786680",
+   "name": "Chapagueda",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Águeda",
+   "parish": "Óis da Ribeira",
+   "lat": 40.594563,
+   "lng": -8.472383,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Óis da Ribeira), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/5765786681",
+   "name": "Colometal",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Águeda",
+   "parish": "Óis da Ribeira",
+   "lat": 40.594541,
+   "lng": -8.47262,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Águeda (Óis da Ribeira), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6201672257",
+   "name": "J. L. Oliveira carpintaria",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Ílhavo",
+   "parish": "Gafanha da Encarnação",
+   "lat": 40.60692,
+   "lng": -8.714354,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ílhavo (Gafanha da Encarnação), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6201692200",
+   "name": "Monteiro carnes",
+   "source": "osm",
+   "category": "company",
+   "group": "alimentar",
+   "address": "",
+   "location": "Ílhavo",
+   "parish": "Gafanha da Encarnação",
+   "lat": 40.607669,
+   "lng": -8.719556,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Ílhavo (Gafanha da Encarnação), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6381358279",
+   "name": "Mário Avato - Componentes para Calçado",
+   "source": "osm",
+   "category": "company",
+   "group": "calcado",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Romariz",
+   "lat": 40.941074,
+   "lng": -8.43451,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Romariz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6652912613",
+   "name": "Cortiças N. S. L.",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Porto",
+   "parish": "Cedofeita",
+   "lat": 41.142801,
+   "lng": -8.6098,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Porto (Cedofeita), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/6919245521",
+   "name": "Sapataria bem calçar",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Maia",
+   "parish": "Gueifães",
+   "lat": 41.218169,
+   "lng": -8.60306,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Maia (Gueifães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7021677255",
+   "name": "MJS - Sociedade Metalomecânica",
+   "source": "osm",
+   "category": "company",
+   "group": "metal",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Paços de Brandão",
+   "lat": 40.968061,
+   "lng": -8.594828,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Paços de Brandão), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7034402972",
+   "name": "Carpintaria Marcenaria Valentim Ferreira da Silva & Filho",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Espinho",
+   "parish": "Paramos",
+   "lat": 40.974323,
+   "lng": -8.637626,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Espinho (Paramos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/7267031120",
+   "name": "Pramadeira",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Albergaria-a-Velha",
+   "parish": "Branca",
+   "lat": 40.745426,
+   "lng": -8.490216,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Albergaria-a-Velha (Branca), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8039956730",
+   "name": "SilverPlástico",
+   "source": "osm",
+   "category": "company",
+   "group": "borracha",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Cesar",
+   "lat": 40.901515,
+   "lng": -8.437129,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Cesar), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8787236117",
+   "name": "Grades de Segurança",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.176949,
+   "lng": -8.685628,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/8866280274",
+   "name": "Man Tubos - Componentes Hidráulicos",
+   "source": "osm",
+   "category": "plumber",
+   "group": "maquinas",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.179193,
+   "lng": -8.688333,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/9578025714",
+   "name": "Fábrica de Calçado Centénário",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Vila de Cucujães",
+   "lat": 40.872916,
+   "lng": -8.504815,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Vila de Cucujães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/10247373813",
+   "name": "Panga Panga",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Vieira do Minho",
+   "parish": "Tabuaças",
+   "lat": 41.627302,
+   "lng": -8.199405,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vieira do Minho (Tabuaças), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11201269508",
+   "name": "Lusowood",
+   "source": "osm",
+   "category": "sawmill",
+   "group": "madeira",
+   "address": "",
+   "location": "Castelo de Paiva",
+   "parish": "Sobrado",
+   "lat": 41.044302,
+   "lng": -8.264552,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Castelo de Paiva (Sobrado), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11219770181",
+   "name": "Clínica de Calçado",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Vila Nova de Famalicão",
+   "parish": "Ribeirão",
+   "lat": 41.356711,
+   "lng": -8.561479,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Famalicão (Ribeirão), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11381997656",
+   "name": "Miguel Silva - Serração de Madeiras, Embalagens e Paletes de Madeira",
+   "source": "osm",
+   "category": "company",
+   "group": "madeira",
+   "address": "",
+   "location": "Aveiro",
+   "lat": 40.980422,
+   "lng": -8.531295,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro, pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11405433934",
+   "name": "Sapateiro Rápido",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.184158,
+   "lng": -8.692197,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11418173123",
+   "name": "Oficina Económica",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.183931,
+   "lng": -8.68934,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11470160465",
+   "name": "Ramalho Gonçalves",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Matosinhos",
+   "lat": 41.185082,
+   "lng": -8.688365,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Matosinhos), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11766724046",
+   "name": "António",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Braga",
+   "parish": "Real, Dume e Semelhe",
+   "lat": 41.559373,
+   "lng": -8.446463,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Braga (Real, Dume e Semelhe), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11958628545",
+   "name": "Enshoes Calçados, Lda.",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Fermentões",
+   "lat": 41.451943,
+   "lng": -8.310737,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Fermentões), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11971758290",
+   "name": "LG Shoes",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Felgueiras",
+   "parish": "Lagares",
+   "lat": 41.362997,
+   "lng": -8.218892,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Felgueiras (Lagares), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/11992112623",
+   "name": "Serralharia E.M.S. Inox",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Póvoa de Varzim",
+   "parish": "Beiriz",
+   "lat": 41.387359,
+   "lng": -8.730654,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Póvoa de Varzim (Beiriz), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12031382413",
+   "name": "Almanaque Flexível",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Selho (São Lourenço) e Gominhães",
+   "lat": 41.467994,
+   "lng": -8.27609,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Selho (São Lourenço) e Gominhães), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12335720755",
+   "name": "PIP Soluctions",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Sever do Vouga",
+   "parish": "Sever do Vouga",
+   "lat": 40.732267,
+   "lng": -8.368001,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Sever do Vouga (Sever do Vouga), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/12735230609",
+   "name": "Zé Rápido - Chaves, Consertos Calçado",
+   "source": "osm",
+   "category": "key_cutter",
+   "group": "calcado",
+   "address": "",
+   "location": "Santa Maria da Feira",
+   "parish": "Sanfins",
+   "lat": 40.939319,
+   "lng": -8.54072,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Santa Maria da Feira (Sanfins), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13077889978",
+   "name": "Serralharia Manuel Correia",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Vila Nova de Gaia",
+   "parish": "Arcozelo",
+   "lat": 41.047041,
+   "lng": -8.625456,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vila Nova de Gaia (Arcozelo), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13842483401",
+   "name": "Jofebar",
+   "source": "osm",
+   "category": "carpenter",
+   "group": "madeira",
+   "address": "",
+   "location": "Matosinhos",
+   "parish": "Leça da Palmeira",
+   "lat": 41.212688,
+   "lng": -8.696063,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Matosinhos (Leça da Palmeira), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:node/13878922920",
+   "name": "Manuel Joaquim",
+   "source": "osm",
+   "category": "shoemaker",
+   "group": "calcado",
+   "address": "",
+   "location": "Guimarães",
+   "parish": "Oliveira, São Paio e São Sebastião",
+   "lat": 41.441501,
+   "lng": -8.294629,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Guimarães (Oliveira, São Paio e São Sebastião), pelos limites oficiais.",
+     "Marcada no OpenStreetMap como um ponto.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/222329396",
+   "name": "Inaceinox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Vale de Cambra",
+   "parish": "Vila Chã, Codal e Vila Cova de Perrinho",
+   "lat": 40.863748,
+   "lng": -8.394077,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Vale de Cambra (Vila Chã, Codal e Vila Cova de Perrinho), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/222338496",
+   "name": "Valinox",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Arouca",
+   "parish": "Chave",
+   "lat": 40.899184,
+   "lng": -8.370092,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Arouca (Chave), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/392688019",
+   "name": "Cindicalfe - Indústria de Calçado Lda.",
+   "source": "osm",
+   "category": "works",
+   "group": "calcado",
+   "address": "",
+   "location": "Castelo de Paiva",
+   "parish": "Pedorido",
+   "lat": 41.035234,
+   "lng": -8.391155,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Castelo de Paiva (Pedorido), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/440922895",
+   "name": "Vinox e Maquipack",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Gondesende",
+   "lat": 40.957863,
+   "lng": -8.606598,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Gondesende), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/548085578",
+   "name": "Carga Elétrica",
+   "source": "osm",
+   "category": "company",
+   "group": "eletrico",
+   "address": "",
+   "location": "Aveiro",
+   "parish": "Esgueira",
+   "lat": 40.648161,
+   "lng": -8.598435,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Aveiro (Esgueira), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/926252970",
+   "name": "Btl-indústrias Metalúrgicas Sa",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Oliveira de Azeméis",
+   "parish": "Ossela",
+   "lat": 40.836955,
+   "lng": -8.434794,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Oliveira de Azeméis (Ossela), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1076078170",
+   "name": "Metalozende",
+   "source": "osm",
+   "category": "metal_construction",
+   "group": "metal",
+   "address": "",
+   "location": "Esposende",
+   "parish": "Fonte Boa e Rio Tinto",
+   "lat": 41.502117,
+   "lng": -8.731769,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Esposende (Fonte Boa e Rio Tinto), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1339508116",
+   "name": "XPZ Madeiras",
+   "source": "osm",
+   "category": "works",
+   "group": "madeira",
+   "address": "",
+   "location": "Esposende",
+   "parish": "Vila Chã",
+   "lat": 41.570581,
+   "lng": -8.739549,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Esposende (Vila Chã), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  },
+  {
+   "id": "osm:way/1510043927",
+   "name": "Lumipaiva - Indústria de Metalomecânica, Unipessoal Lda.",
+   "source": "osm",
+   "category": "works",
+   "group": "metal",
+   "address": "",
+   "location": "Castelo de Paiva",
+   "parish": "Pedorido",
+   "lat": 41.035481,
+   "lng": -8.39247,
+   "check": {
+    "status": "provavel",
+    "evidence": [
+     "Ponto dentro do concelho de Castelo de Paiva (Pedorido), pelos limites oficiais.",
+     "Instalações desenhadas no OpenStreetMap (edifício ou terreno): posição exata.",
+     "Sem site para confirmar; confirma no Racius antes da visita."
+    ]
+   }
+  }
+ ]
+}

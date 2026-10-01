@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Feature } from "geojson";
 import type { GeoJSONSource, Map as MapLibre, MapMouseEvent, Marker } from "maplibre-gl";
-import { CalendarPlus, ExternalLink, Route, X } from "lucide-react";
+import { CalendarPlus, ExternalLink, Route, Sparkles, X } from "lucide-react";
 import { caeGroups, vougaBase, type CaeGroup } from "@/domain/prospects";
 import type { RouteStop } from "@/domain/routing";
 import { useWorkspace } from "./context";
@@ -10,7 +10,9 @@ import { useWorkspace } from "./context";
 type Plan = {
   stops: RouteStop[]; returnAt?: string; driveMinutes?: number; km?: number; lunchAt?: string; left?: number; considered: number;
   geometry?: [number, number][]; googleMaps?: string; provider?: string; warning?: string; message?: string; estimated?: boolean;
-  unknownSector?: number; sectors?: string[];
+  unknownSector?: number; sectors?: string[]; overtime?: number;
+  alternatives?: { id: string; name: string; location: string }[];
+  suggestions?: { remove: string; removeName: string; add: string; addName: string; saves: number }[];
 };
 const tomorrow = () => { const d = new Date(Date.now() + 86_400_000); return d.toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" }); };
 const circle = (lat: number, lng: number, km: number): [number, number][] =>
@@ -78,13 +80,18 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
     if (!response.ok) throw new Error(body.error ?? "Pedido falhou.");
     return body;
   }
-  async function calculate() {
+  // The user's adjustments: companies kept in the route and companies taken out of it.
+  const [include, setInclude] = useState<string[]>([]);
+  const [exclude, setExclude] = useState<string[]>([]);
+  async function calculate(next: { include?: string[]; exclude?: string[] } = {}) {
     if (!sectors.length) { setError("Seleciona pelo menos um setor por baixo do mapa."); return; }
+    const inc = next.include ?? include, exc = next.exclude ?? exclude;
+    setInclude(inc); setExclude(exc);
     setBusy(true); setError("");
     try {
-      const result = (await call("plan", { ...form, center, sectors })) as Plan;
+      const result = (await call("plan", { ...form, center, sectors, include: inc, exclude: exc })) as Plan;
       setPlan(result);
-      if (result.stops.length) {
+      if (result.stops.length && !inc.length) {
         const bounds = new lib.LngLatBounds([vougaBase.lng, vougaBase.lat], [vougaBase.lng, vougaBase.lat]);
         result.stops.forEach((s) => bounds.extend([s.lng, s.lat]));
         map.fitBounds(bounds, { padding: 60, maxZoom: 12, duration: 400 });
@@ -92,6 +99,12 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível planear."); }
     finally { setBusy(false); }
   }
+  const kept = () => plan?.stops.map((s) => s.id) ?? [];
+  // x on a stop: the others stay, that one leaves, and the planner fills the gap.
+  const remove = (id: string) => void calculate({ include: kept().filter((x) => x !== id), exclude: [...exclude, id] });
+  // Choosing a company for a stop: it replaces that stop.
+  const swap = (out: string, inn: string) => void calculate({ include: [...kept().filter((x) => x !== out), inn], exclude: [...exclude.filter((x) => x !== inn), out] });
+  const fresh = () => void calculate({ include: [], exclude: [] });
   async function scheduleVisits() {
     if (!plan?.stops.length) return;
     setBusy(true); setError("");
@@ -104,41 +117,58 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
   }
   const field = <K extends keyof typeof form>(key: K) => ({
     value: form[key] as string | number,
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => { setPlan(null); setForm({ ...form, [key]: event.target.type === "number" || event.target.type === "range" ? Number(event.target.value) : event.target.value }); },
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => { setPlan(null); setForm({ ...form, [key]: event.target.type === "number" ? Number(event.target.value) : event.target.value }); },
   });
+  const toggle = (key: "lunch" | "crm" | "prospects") => (event: React.ChangeEvent<HTMLInputElement>) => { setPlan(null); setForm({ ...form, [key]: event.target.checked }); };
+  const sectorText = sectors.length === Object.keys(caeGroups).length ? "todos os setores" : sectors.map((s) => caeGroups[s].replace(/ \(CAE \d+\)/, "")).join(", ");
 
   return <aside className="route-planner" aria-label="Planear visitas">
     <header><strong><Route size={15}/>Planear visitas</strong><button type="button" aria-label="Fechar planeador" onClick={onClose}><X size={15}/></button></header>
-    <p className="route-hint">Clica no mapa para escolher o centro da área. Partida e chegada: {vougaBase.name}.</p>
     <div className="route-grid">
       <label>Dia<input type="date" {...field("date")}/></label>
       <label>Visitas<input type="number" min={1} max={12} {...field("count")}/></label>
       <label>Início<input type="time" {...field("start")}/></label>
-      <label>Regresso até<input type="time" {...field("end")}/></label>
-      <label>Raio (km)<input type="number" min={2} max={80} {...field("radiusKm")}/></label>
-      <label>Min. por visita<input type="number" min={15} max={180} step={5} {...field("visitMinutes")}/></label>
+      <label>Regresso<input type="time" {...field("end")}/></label>
     </div>
-    <div className="route-checks">
-      <label><input type="checkbox" checked={form.lunch} onChange={(e) => setForm({ ...form, lunch: e.target.checked })}/>Pausa de almoço</label>
-      <label><input type="checkbox" checked={form.crm} onChange={(e) => setForm({ ...form, crm: e.target.checked })}/>Empresas New do CRM</label>
-      <label><input type="checkbox" checked={form.prospects} onChange={(e) => setForm({ ...form, prospects: e.target.checked })}/>Prospetos</label>
-    </div>
-    <p className="route-hint">Setores: {sectors.length === Object.keys(caeGroups).length ? "todos os setores prioritários" : sectors.map((s) => caeGroups[s].replace(/ \(CAE \d+\)/, "")).join(", ") || "nenhum selecionado"} (escolhe-os nos filtros por baixo do mapa).</p>
-    <button type="button" className="route-primary" disabled={busy} onClick={() => void calculate()}>{busy ? "A calcular…" : "Calcular roteiro"}</button>
+    <details className="route-more">
+      <summary>Mais opções · raio {form.radiusKm} km · {form.visitMinutes} min/visita</summary>
+      <div className="route-grid">
+        <label>Raio (km)<input type="number" min={2} max={80} {...field("radiusKm")}/></label>
+        <label>Min. por visita<input type="number" min={15} max={180} step={5} {...field("visitMinutes")}/></label>
+      </div>
+      <div className="route-checks">
+        <label><input type="checkbox" checked={form.lunch} onChange={toggle("lunch")}/>Pausa de almoço</label>
+        <label><input type="checkbox" checked={form.crm} onChange={toggle("crm")}/>Empresas New do CRM</label>
+        <label><input type="checkbox" checked={form.prospects} onChange={toggle("prospects")}/>Prospetos</label>
+      </div>
+    </details>
+    <p className="route-hint">Clica no mapa para mudar o centro · {sectorText}</p>
+    <button type="button" className="route-primary" disabled={busy} onClick={fresh}>{busy ? "A calcular…" : plan ? "Recalcular do zero" : "Calcular roteiro"}</button>
     {error && <p className="form-error" role="alert">{error}</p>}
     {plan && (plan.stops.length === 0
-      ? <p className="route-hint">{plan.message ?? "Nenhuma visita cabe no horário com estes filtros."}</p>
+      ? <p className="route-hint">{plan.message ?? "Não há empresas elegíveis nesta área."}</p>
       : <div className="route-result">
-          <p className="route-summary">{plan.stops.length} visitas · {plan.km} km · {Math.floor((plan.driveMinutes ?? 0) / 60)}h{String((plan.driveMinutes ?? 0) % 60).padStart(2, "0")} de condução · regresso às {plan.returnAt}</p>
+          <p className="route-summary">{plan.stops.length} visitas · {plan.km} km · regresso às {plan.returnAt}{plan.overtime ? <span className="route-late"> (+{plan.overtime} min)</span> : null}</p>
+          <ol>{plan.stops.map((stop) => <li key={stop.id}>
+            <span className="route-time">{stop.arrival}</span>
+            <span className="route-name"><strong>{stop.name}</strong><small>{stop.location}</small></span>
+            <span className="route-stop-actions">
+              {!!plan.alternatives?.length && <select aria-label={`Trocar ${stop.name}`} value="" disabled={busy} onChange={(e) => { if (e.target.value) swap(stop.id, e.target.value); }}>
+                <option value="">Trocar</option>
+                {plan.alternatives.map((alt) => <option key={alt.id} value={alt.id}>{alt.name} · {alt.location}</option>)}
+              </select>}
+              <button type="button" aria-label={`Tirar ${stop.name}`} title="Tirar da rota" disabled={busy} onClick={() => remove(stop.id)}><X size={13}/></button>
+            </span>
+          </li>)}</ol>
+          {!!plan.suggestions?.length && <div className="route-suggestions">
+            <p><Sparkles size={13}/>Para chegar mais cedo</p>
+            {plan.suggestions.map((sg) => <button key={`${sg.remove}>${sg.add}`} type="button" disabled={busy} onClick={() => swap(sg.remove, sg.add)}><span>Trocar <b>{sg.removeName}</b> por <b>{sg.addName}</b></span><em>−{sg.saves} min</em></button>)}
+          </div>}
           {plan.warning && <p className="route-warning">{plan.warning}</p>}
-          <ol>{plan.stops.map((stop) => <li key={stop.id}><span className="route-time">{stop.arrival}–{stop.departure}</span><strong>{stop.name}</strong><small>{stop.location} · {stop.driveMinutes} min de viagem · {stop.reasons.join(" · ")}</small></li>)}</ol>
-          {plan.lunchAt && <p className="route-hint">Almoço por volta das {plan.lunchAt}.</p>}
-          <p className="route-hint">Escolhidas entre {plan.considered} empresas elegíveis{plan.left ? `; ${plan.left} ficaram de fora por não caberem no dia ou no número de visitas` : ""}.{plan.unknownSector ? ` ${plan.unknownSector} empresas New do CRM não entraram por não terem setor reconhecido (acrescenta o CAE nas notas).` : ""}</p>
           <div className="route-actions">
-            {plan.googleMaps && <a href={plan.googleMaps} target="_blank" rel="noopener noreferrer"><ExternalLink size={13}/>Abrir no Google Maps</a>}
+            {plan.googleMaps && <a href={plan.googleMaps} target="_blank" rel="noopener noreferrer"><ExternalLink size={13}/>Google Maps</a>}
             <button type="button" disabled={busy} onClick={() => void scheduleVisits()}><CalendarPlus size={13}/>Marcar no calendário</button>
           </div>
-          {plan.stops.length > 9 && <p className="route-hint">O Google Maps só aceita 9 paragens por link; as restantes seguem pela lista.</p>}
         </div>)}
   </aside>;
 }

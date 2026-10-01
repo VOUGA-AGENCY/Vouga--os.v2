@@ -321,6 +321,23 @@ button:hover, a:hover { text-decoration: none; }
 .route-time { color:var(--vouga-coral); font-size:var(--text-xs); font-variant-numeric:tabular-nums; }
 .route-actions { display:flex; flex-wrap:wrap; gap:var(--space-2); }
 .route-actions a, .route-actions button { display:inline-flex; align-items:center; gap:var(--space-1); padding:var(--space-2) var(--space-3); border:var(--border-width) solid var(--color-border-strong); border-radius:var(--radius-pill); font-size:var(--text-xs); color:var(--color-ink); }
+.route-more summary { cursor:pointer; color:var(--color-subtle); font-size:var(--text-xs); }
+.route-more[open] { display:grid; gap:var(--space-2); }
+.route-late { color:var(--stage-contacted); font-weight:500; }
+.route-result ol { list-style:none; padding:0; }
+.route-result li { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:var(--space-2); }
+.route-name { display:grid; min-width:0; }
+.route-name strong { font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.route-name small { color:var(--color-subtle); font-size:var(--text-xs); }
+.route-stop-actions { display:flex; align-items:center; gap:var(--space-1); }
+.route-stop-actions select { width:4.6rem; min-height:0; height:1.6rem; padding:0 4px; font-size:var(--text-xs); border-radius:var(--radius-pill); }
+.route-stop-actions button { color:var(--color-subtle); }
+.route-stop-actions button:hover { color:var(--color-danger); }
+.route-suggestions { display:grid; gap:var(--space-1); padding:var(--space-2); border-radius:var(--radius-sm); background:color-mix(in srgb, var(--vouga-coral) 8%, transparent); }
+.route-suggestions p { display:flex; align-items:center; gap:var(--space-1); color:var(--vouga-coral); font-size:var(--text-xs); font-weight:500; }
+.route-suggestions button { display:flex; justify-content:space-between; gap:var(--space-2); text-align:left; font-size:var(--text-xs); color:var(--color-muted); padding:2px 0; }
+.route-suggestions button b { color:var(--color-ink); font-weight:500; }
+.route-suggestions button em { color:var(--stage-client); font-style:normal; white-space:nowrap; }
 .route-base, .route-stop { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; font-size:11px; font-weight:700; box-shadow:0 1px 4px rgb(0 0 0 / 45%); }
 .route-base { background:var(--color-ink); color:var(--color-bg); }
 .route-stop { background:var(--vouga-coral); color:#fff; border:2px solid #0b1020; }

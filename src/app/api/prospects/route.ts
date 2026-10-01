@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     await requireMember(request);
     let base: { items: Prospect[]; updatedAt?: string; attribution?: string } = { items: [] };
     try {
-      base = JSON.parse(await readFile(path.resolve(process.env.VOUGA_DATA_DIR || ".local", "prospects.json"), "utf8"));
+      base = JSON.parse(await readFile(path.resolve("data", "prospects.json"), "utf8"));
     } catch {
       return Response.json({ items: [], missing: true }, { headers: { "Cache-Control": "no-store" } });
     }
