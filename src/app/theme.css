@@ -33,6 +33,7 @@
 :root[data-theme="light"] .company-map { background: #e9ecef; }
 :root[data-theme="light"] .company-map .maplibregl-ctrl-icon, :root[data-theme="light"] .company-map .maplibregl-ctrl-attrib-button { filter: none; }
 :root[data-theme="light"] .company-map-pin { border-color: #fff; }
+:root[data-theme="light"] .company-map-prospect { border-color: var(--vouga-blue); background: rgb(255 255 255 / 70%); }
 :root[data-theme="light"] .company-map-pin::after { background: #fff; }
 :root[data-theme="light"] .company-card { background: linear-gradient(180deg, var(--color-panel) 40%, color-mix(in srgb, var(--vouga-blue) 6%, var(--color-panel)) 100%); }
 :root[data-theme="light"] .side-panel-backdrop,

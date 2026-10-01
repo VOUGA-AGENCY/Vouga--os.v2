@@ -266,6 +266,123 @@ describe("ordinary work", () => {
       }),
     ).toThrow("Coordenadas inválidas");
   });
+  it("validates NIFs, keeps them unique and stores other facilities", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const details = {
+      id: organization.id,
+      name: organization.name,
+      stage: organization.stage,
+      ownerId: organization.ownerId,
+    };
+    expect(() =>
+      run("organization.save", { ...details, version: organization.version, nif: "502541866" }),
+    ).toThrow("dígito de controlo");
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      nif: "502541865",
+      siteKind: "armazem",
+      sites: [{ kind: "sede", address: "Rua Nossa Senhora de Fátima, 26", location: "Gondomar" }],
+    });
+    expect(organization.nif).toBe("502541865");
+    expect(organization.siteKind).toBe("armazem");
+    expect(organization.sites).toMatchObject([{ kind: "sede", location: "Gondomar" }]);
+    const other = data.organizations.find((item) => item.id !== "norte")!;
+    expect(() =>
+      run("organization.save", {
+        id: other.id,
+        version: other.version,
+        name: other.name,
+        stage: other.stage,
+        ownerId: other.ownerId,
+        nif: "502541865",
+      }),
+    ).toThrow("com este NIF");
+  });
+  it("stores turnover and headcount per year and rejects inconsistent data", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const details = {
+      id: organization.id,
+      name: organization.name,
+      stage: organization.stage,
+      ownerId: organization.ownerId,
+    };
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      financials: [
+        { year: 2024, turnover: 5000000, employees: 45 },
+        { year: 2023, turnover: "4000000", employees: "40" },
+      ],
+    });
+    expect(organization.financials).toEqual([
+      { year: 2023, turnover: 4000000, employees: 40 },
+      { year: 2024, turnover: 5000000, employees: 45 },
+    ]);
+    expect(() =>
+      run("organization.save", {
+        ...details,
+        version: organization.version,
+        financials: [{ year: 2024 }, { year: 2024 }],
+      }),
+    ).toThrow("anos repetidos");
+    expect(() =>
+      run("organization.save", {
+        ...details,
+        version: organization.version,
+        financials: [{ year: 2024, turnover: -1 }],
+      }),
+    ).toThrow("Volume de negócios inválido");
+  });
+  it("stores Iberinform brackets and rejects anything else", () => {
+    const organization = data.organizations.find(
+      (item) => item.id === "norte",
+    )!;
+    const details = {
+      id: organization.id,
+      name: organization.name,
+      stage: organization.stage,
+      ownerId: organization.ownerId,
+    };
+    run("organization.save", {
+      ...details,
+      version: organization.version,
+      size: {
+        source: "Iberinform",
+        url: "https://www.iberinform.pt/empresa/24976641/x",
+        nif: "516626159",
+        turnover: { label: "2.000.000 - 10.000.000€", min: 2000000, max: 10000000 },
+        trend: "aumenta",
+        employees: { label: "26 - 50", min: 26, max: 50 },
+        checkedAt: "2026-09-29T10:00:00.000Z",
+      },
+    });
+    expect(organization.size).toMatchObject({ trend: "aumenta", employees: { min: 26 } });
+    expect(() =>
+      run("organization.save", {
+        ...details,
+        version: organization.version,
+        size: { source: "Outro", url: "https://example.com" },
+      }),
+    ).toThrow("Dados de dimensão inválidos");
+  });
+  it("records where a company created from a prospect came from", () => {
+    run("organization.save", {
+      name: "Prospeto Teste",
+      stage: "new",
+      location: "Trofa",
+      initialNote: "Origem: prospeção (OpenStreetMap).",
+    });
+    const created = data.organizations.find((item) => item.name === "Prospeto Teste")!;
+    expect(data.interactions.at(-1)).toMatchObject({
+      organizationId: created.id,
+      body: "Origem: prospeção (OpenStreetMap).",
+    });
+  });
   it("links a company event to its calendar and timeline", () => {
     run("meeting.save", {
       title: "Reunião Santosom",

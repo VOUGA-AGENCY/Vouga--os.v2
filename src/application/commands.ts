@@ -6,6 +6,7 @@ import type { Entity, Member, Store } from "@/domain/model";
 import {
   captureKinds,
   projectStatuses,
+  siteKinds,
   stages,
   taskStatuses,
 } from "@/domain/model";
@@ -283,6 +284,70 @@ function executeCore(
       throw new AppError("Coordenadas inválidas.");
     return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) };
   };
+  const nif = (value: unknown) => {
+    const digits = text(value, "NIF", 20, false).replace(/\s/g, "");
+    if (!digits) return undefined;
+    if (!/^\d{9}$/.test(digits)) throw new AppError("NIF inválido: são 9 dígitos.");
+    const sum = [...digits.slice(0, 8)].reduce((total, digit, index) => total + Number(digit) * (9 - index), 0);
+    const check = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    if (check !== Number(digits[8])) throw new AppError("NIF inválido: o dígito de controlo não confere.");
+    return digits;
+  };
+  const siteKind = (value: unknown) => value ? choice(value, Object.keys(siteKinds), "Tipo de instalação") as keyof typeof siteKinds : undefined;
+  const sites = (value: unknown) => {
+    if (!Array.isArray(value)) throw new AppError("Instalações inválidas.");
+    if (value.length > 10) throw new AppError("Máximo de 10 instalações por empresa.");
+    return value.map((site: Values) => ({
+      id: typeof site.id === "string" && site.id ? site.id : randomUUID(),
+      kind: siteKind(site.kind) ?? "sede",
+      address: text(site.address, "Morada da instalação", 300),
+      location: text(site.location, "Concelho da instalação", 160, false),
+      ...(site.coordinates ? { coordinates: coordinates(site.coordinates) } : {}),
+    }));
+  };
+  const financials = (value: unknown) => {
+    if (!Array.isArray(value)) throw new AppError("Dados financeiros inválidos.");
+    if (value.length > 15) throw new AppError("Máximo de 15 anos de dados financeiros.");
+    const years = value.map((entry: Values) => {
+      const year = Number(entry.year);
+      if (!Number.isInteger(year) || year < 1990 || year > 2100) throw new AppError("Ano inválido nos dados financeiros.");
+      const number = (raw: unknown, label: string) => {
+        if (raw === undefined || raw === null || raw === "") return undefined;
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n < 0) throw new AppError(`${label} inválido.`);
+        return n;
+      };
+      const turnover = number(entry.turnover, "Volume de negócios");
+      const employees = number(entry.employees, "Número de empregados");
+      return { year, ...(turnover !== undefined ? { turnover } : {}), ...(employees !== undefined ? { employees: Math.round(employees) } : {}) };
+    });
+    if (new Set(years.map((y) => y.year)).size !== years.length) throw new AppError("Há anos repetidos nos dados financeiros.");
+    return years.sort((a, b) => a.year - b.year);
+  };
+  const companySize = (value: unknown) => {
+    if (value === null) return undefined;
+    const v = (value ?? {}) as Values;
+    if (v.source !== "Iberinform" || typeof v.url !== "string" || !/^https:\/\/www\.iberinform\.pt\/empresa\//.test(v.url))
+      throw new AppError("Dados de dimensão inválidos.");
+    const bracket = (b: unknown) => {
+      if (b === undefined || b === null) return undefined;
+      const { label, min, max } = b as Values;
+      if (typeof label !== "string" || label.length > 60) throw new AppError("Escalão inválido.");
+      const ok = (n: unknown) => n === undefined || (typeof n === "number" && Number.isFinite(n) && n >= 0);
+      if (!ok(min) || !ok(max)) throw new AppError("Escalão inválido.");
+      return { label, ...(min !== undefined ? { min: min as number } : {}), ...(max !== undefined ? { max: max as number } : {}) };
+    };
+    return {
+      source: "Iberinform" as const,
+      url: v.url,
+      ...(typeof v.nif === "string" && /^\d{9}$/.test(v.nif) ? { nif: v.nif } : {}),
+      ...(v.turnover ? { turnover: bracket(v.turnover) } : {}),
+      ...(v.trend ? { trend: choice(v.trend, ["aumenta", "diminui", "igual"] as const, "Tendência") } : {}),
+      ...(v.employees ? { employees: bracket(v.employees) } : {}),
+      ...(v.capital ? { capital: bracket(v.capital) } : {}),
+      checkedAt: typeof v.checkedAt === "string" && !Number.isNaN(Date.parse(v.checkedAt)) ? new Date(v.checkedAt).toISOString() : new Date().toISOString(),
+    };
+  };
   const saveOrganization = (values: Values) => {
     const existing = values.id ? find(data.organizations, values.id) : null;
     if (existing) version(existing, values.version);
@@ -311,6 +376,11 @@ function executeCore(
       phone: text(values.phone, "Telefone", 50, false),
       location,
       address,
+      nif: values.nif !== undefined ? nif(values.nif) : existing?.nif,
+      siteKind: values.siteKind !== undefined ? siteKind(values.siteKind) : existing?.siteKind,
+      sites: values.sites !== undefined ? sites(values.sites) : existing?.sites,
+      financials: values.financials !== undefined ? financials(values.financials) : existing?.financials,
+      size: values.size !== undefined ? companySize(values.size) : existing?.size,
       coordinates:
         values.coordinates !== undefined
           ? coordinates(values.coordinates)
@@ -328,6 +398,8 @@ function executeCore(
       pinned: boolean(values.pinned, existing?.pinned ?? false),
       archived: boolean(values.archived, existing?.archived ?? false),
     };
+    if (item.nif && data.organizations.some((o) => o.id !== item.id && o.nif === item.nif))
+      throw new AppError("Já existe uma empresa com este NIF.");
     if (existing && item.stage !== existing.stage) {
       const statusNote = text(values.statusNote, "Nota de estado", 10000);
       data.interactions.push({
@@ -342,7 +414,13 @@ function executeCore(
     if (existing) {
       Object.assign(existing, item);
       touch(existing);
-    } else data.organizations.push(item);
+    } else {
+      data.organizations.push(item);
+      // A company created from a prospect keeps where it came from in its timeline.
+      const initialNote = text(values.initialNote, "Nota inicial", 2000, false);
+      if (initialNote)
+        data.interactions.push({ ...base(), organizationId: item.id, channel: "note", body: initialNote });
+    }
     return item.id;
   };
   const saveNote = (values: Values) => {

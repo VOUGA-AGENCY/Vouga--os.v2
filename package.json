@@ -22,7 +22,9 @@
     "meetings:migrate": "bun --conditions=react-server scripts/import-meetings.ts --apply",
     "meetings:supabase": "bun --conditions=react-server scripts/import-meetings-supabase.ts",
     "meetings:supabase:apply": "bun --conditions=react-server scripts/import-meetings-supabase.ts --apply",
-    "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts"
+    "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts",
+    "prospects:sync": "bun scripts/sync-prospects.ts",
+    "prospects:import": "bun scripts/import-prospects.ts"
   },
   "dependencies": {
     "lucide-react": "0.575.0",

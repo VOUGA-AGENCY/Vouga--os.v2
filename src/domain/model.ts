@@ -7,6 +7,7 @@ import type {
   CalendarKey,
   RepositoryLink,
 } from "./integration-model";
+import type { CompanySize, FinancialYear } from "./prospects";
 export type Role = "admin" | "engineer";
 export interface Member {
   id: string;
@@ -103,6 +104,22 @@ export interface Meeting extends Entity {
 
   visibility?: "private" | "team";
 }
+export const siteKinds = {
+  fabrica: "Fábrica",
+  armazem: "Armazém",
+  sede: "Sede",
+  escritorio: "Escritório",
+  delegacao: "Delegação",
+} as const;
+export type SiteKind = keyof typeof siteKinds;
+/** A facility other than the one visited (e.g. the registered seat when visits happen at the warehouse). */
+export interface CompanySite {
+  id: string;
+  kind: SiteKind;
+  address: string;
+  location: string;
+  coordinates?: { lat: number; lng: number };
+}
 export interface Organization extends Entity {
   name: string;
   person: string;
@@ -113,6 +130,16 @@ export interface Organization extends Entity {
   address?: string;
   /** Precise position of the address; without it the map uses the municipality centroid. */
   coordinates?: { lat: number; lng: number };
+  /** Portuguese tax number; identifies the legal entity unambiguously (names repeat). */
+  nif?: string;
+  /** What location/address/coordinates above are: the facility the team visits. */
+  siteKind?: SiteKind;
+  /** Other known facilities. */
+  sites?: CompanySite[];
+  /** Turnover and headcount per year, from a purchased list or entered after checking Racius/eInforma. */
+  financials?: FinancialYear[];
+  /** Free brackets (turnover, its trend, headcount) read from the company's public Iberinform page. */
+  size?: CompanySize;
   stage: Stage;
   ownerId: string;
   nextStep: string;

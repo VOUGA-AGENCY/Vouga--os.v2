@@ -171,3 +171,15 @@ export function placeCompanies<T extends { location?: string; coordinates?: { la
   );
   return { placed, unplaced };
 }
+
+/** Nearest municipality centroid; a fallback label when a source gives coordinates but no municipality. */
+export function nearestMunicipality(lat: number, lng: number) {
+  let best = "";
+  let distance = Infinity;
+  const cos = Math.cos((lat * Math.PI) / 180);
+  for (const [name, [mLat, mLng]] of Object.entries(municipalities)) {
+    const d = (mLat - lat) ** 2 + ((mLng - lng) * cos) ** 2;
+    if (d < distance) { distance = d; best = name; }
+  }
+  return best;
+}
