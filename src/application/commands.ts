@@ -1,3 +1,4 @@
+import { isActiveMember, isBoardMember } from "@/domain/team";
 import { queueCreationNotices } from "@/services/creation-notifications";
 import { captureChanges } from "@/services/activity-service";
 import type { ActivityEvent } from "@/domain/integration-model";
@@ -39,7 +40,7 @@ function executeCore(
   const command = record(input);
   const action = text(command.action, "Action", 50);
   const me = data.members.find((m) => m.id === actor.id);
-  if (!me || me.archived) throw new AppError("Invalid session.", 401);
+  if (!me || !isActiveMember(me)) throw new AppError("Invalid session.", 401);
   const v = record(command.values ?? {});
   const base = (): Entity => ({
     id: randomUUID(),
@@ -57,9 +58,10 @@ function executeCore(
     if (!item) throw new AppError("Record not found.", 404);
     return item;
   };
+  const findMember = (id: string) => data.members.find((m) => m.id === id)!;
   const member = (value: unknown) => {
     const id = text(value, "Person", 100);
-    if (!data.members.some((m) => m.id === id && !m.archived))
+    if (!data.members.some((m) => m.id === id && isActiveMember(m)))
       throw new AppError("Select a team member.");
     return id;
   };
@@ -106,61 +108,91 @@ function executeCore(
     }
     const visibility = choice(
       values.visibility ?? existing?.visibility ?? "team",
-      ["private", "team"] as const,
+      ["private", "team", "board"] as const,
       "Visibility",
     );
     const project =
-      visibility === "private"
+      visibility !== "team"
         ? null
         : values.projectId !== undefined
-        ? projectId(values.projectId)
-        : existing?.projectId ?? null;
+          ? projectId(values.projectId)
+          : (existing?.projectId ?? null);
 
     const rawAssignees: string[] = Array.isArray(values.assigneeIds)
       ? values.assigneeIds.map(String).filter(Boolean)
       : typeof values.assigneeIds === "string"
-      ? values.assigneeIds.split(",").map((s) => s.trim()).filter(Boolean)
-      : values.ownerId
-      ? [String(values.ownerId)]
-      : existing?.assigneeIds?.length
-      ? existing.assigneeIds
-      : existing?.ownerId
-      ? [existing.ownerId]
+        ? values.assigneeIds
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : values.ownerId
+          ? [String(values.ownerId)]
+          : existing?.assigneeIds?.length
+            ? existing.assigneeIds
+            : existing?.ownerId
+              ? [existing.ownerId]
+              : [me.id];
+
+    const assigneeIds = rawAssignees.length
+      ? [...new Set(rawAssignees)]
       : [me.id];
-
-    const assigneeIds = rawAssignees.length ? [...new Set(rawAssignees)] : [me.id];
     assigneeIds.forEach((id) => owner(id, project));
+    if (visibility === "board") {
+      allow(isBoardMember(me));
+      if (assigneeIds.some((id) => !isBoardMember(findMember(id))))
+        throw new AppError(
+          "Board tasks can only be assigned to Miguel and Roque.",
+        );
+    }
 
-    if (visibility === "private" && (assigneeIds.length !== 1 || assigneeIds[0] !== me.id))
+    if (
+      visibility === "private" &&
+      (assigneeIds.length !== 1 || assigneeIds[0] !== me.id)
+    )
       throw new AppError("A private task must be assigned to you.");
 
     if (project) {
       const linkedProject = find(data.projects, project);
       for (const aId of assigneeIds) {
-        if (aId !== linkedProject.ownerId && !linkedProject.memberIds.includes(aId))
-          throw new AppError("Add the assignee to the project team before assigning this task.");
+        if (
+          aId !== linkedProject.ownerId &&
+          !linkedProject.memberIds.includes(aId)
+        )
+          throw new AppError(
+            "Add the assignee to the project team before assigning this task.",
+          );
       }
     }
     const ownerId = assigneeIds[0];
 
     const taskStatus = choice(
-      values.status ?? "todo",
+      values.status ?? existing?.status ?? "todo",
       Object.keys(taskStatuses),
       "Status",
     ) as keyof typeof taskStatuses;
 
-    let pullRequestId = values.pullRequestId !== undefined
-      ? (values.pullRequestId ? String(values.pullRequestId) : null)
-      : existing?.pullRequestId ?? null;
+    let pullRequestId =
+      values.pullRequestId !== undefined
+        ? values.pullRequestId
+          ? String(values.pullRequestId)
+          : null
+        : (existing?.pullRequestId ?? null);
 
     if (values.pullRequestUrl && typeof values.pullRequestUrl === "string") {
       const url = values.pullRequestUrl.trim();
       if (url) {
-        const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(url);
+        const match =
+          /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(
+            url,
+          );
         if (!match) {
-          throw new AppError("Use a GitHub link in the format https://github.com/team/repo/pull/123.");
+          throw new AppError(
+            "Use a GitHub link in the format https://github.com/team/repo/pull/123.",
+          );
         }
-        let pr = data.pullRequests.find((p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, ""));
+        let pr = data.pullRequests.find(
+          (p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, ""),
+        );
         if (!pr) {
           pr = {
             ...base(),
@@ -179,20 +211,26 @@ function executeCore(
     }
 
     if (pullRequestId && (taskStatus === "todo" || taskStatus === "backlog")) {
-      throw new AppError("Pull requests can only be linked when the task is in progress.");
+      throw new AppError(
+        "Pull requests can only be linked when the task is in progress.",
+      );
     }
 
     const task = {
       ...(existing ?? base()),
       visibility,
-      title: text(values.title, "Title", 160),
-      body: body(values.body),
+      title: text(values.title ?? existing?.title, "Title", 160),
+      body: body(values.body ?? existing?.body),
       status: taskStatus,
       ownerId,
       assigneeIds,
-      dueOn: day(values.dueOn),
+      dueOn: day(values.dueOn === undefined ? existing?.dueOn : values.dueOn),
       projectId: project,
-      organizationId: organizationId(values.organizationId),
+      organizationId: organizationId(
+        values.organizationId === undefined
+          ? existing?.organizationId
+          : values.organizationId,
+      ),
       priority: choice(
         values.priority ?? existing?.priority ?? "none",
         ["none", "low", "medium", "high", "urgent"] as const,
@@ -208,12 +246,18 @@ function executeCore(
         );
       })(),
       pullRequestId,
-      issueNumber: values.issueNumber !== undefined
-        ? (values.issueNumber ? Number(values.issueNumber) : null)
-        : existing?.issueNumber ?? null,
-      issueUrl: values.issueUrl !== undefined
-        ? (values.issueUrl ? String(values.issueUrl).trim() : null)
-        : existing?.issueUrl ?? null,
+      issueNumber:
+        values.issueNumber !== undefined
+          ? values.issueNumber
+            ? Number(values.issueNumber)
+            : null
+          : (existing?.issueNumber ?? null),
+      issueUrl:
+        values.issueUrl !== undefined
+          ? values.issueUrl
+            ? String(values.issueUrl).trim()
+            : null
+          : (existing?.issueUrl ?? null),
     };
     if (existing) {
       if (existing.status !== task.status)
@@ -296,8 +340,8 @@ function executeCore(
     participants.forEach(member);
     const meeting = {
       ...(existing ?? base()),
-      title: text(values.title, "Title", 160),
-      body: body(values.body),
+      title: text(values.title ?? existing?.title, "Title", 160),
+      body: body(values.body ?? existing?.body),
       kind: choice(
         values.kind ?? "meeting",
         ["meeting", "event"] as const,
@@ -325,7 +369,11 @@ function executeCore(
           throw new AppError("Invalid external participants.");
         return [...new Set(emails)];
       })(),
-      organizationId: organizationId(values.organizationId),
+      organizationId: organizationId(
+        values.organizationId === undefined
+          ? existing?.organizationId
+          : values.organizationId,
+      ),
       projectId: projectId(values.projectId),
       groupId: trustedGroupId ?? existing?.groupId,
       allDay: boolean(values.allDay, existing?.allDay ?? false),
@@ -424,16 +472,28 @@ function executeCore(
       throw new AppError("Select at least one person for the note.");
     const item = {
       ...(existing ?? base()),
-      title: text(values.title, "Title", 160),
-      body: body(values.body),
-      projectId: projectId(values.projectId),
-      organizationId: organizationId(values.organizationId),
-      meetingId: values.meetingId
-        ? find(data.meetings, values.meetingId).id
-        : null,
-      contactId: values.contactId
-        ? find(data.contacts, values.contactId).id
-        : null,
+      title: text(values.title ?? existing?.title, "Title", 160),
+      body: body(values.body ?? existing?.body),
+      projectId: projectId(
+        values.projectId === undefined ? existing?.projectId : values.projectId,
+      ),
+      organizationId: organizationId(
+        values.organizationId === undefined
+          ? existing?.organizationId
+          : values.organizationId,
+      ),
+      meetingId:
+        values.meetingId === undefined
+          ? (existing?.meetingId ?? null)
+          : values.meetingId
+            ? find(data.meetings, values.meetingId).id
+            : null,
+      contactId:
+        values.contactId === undefined
+          ? (existing?.contactId ?? null)
+          : values.contactId
+            ? find(data.contacts, values.contactId).id
+            : null,
       visibility,
       recipientIds,
       pinned: boolean(values.pinned, existing?.pinned ?? false),
@@ -446,6 +506,17 @@ function executeCore(
     return item.id;
   };
   switch (action) {
+    case "member.github": {
+      allow(!v.memberId || v.memberId === me.id);
+      const login = text(v.githubLogin, "GitHub username", 39, false);
+      if (login && !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(login))
+        throw new AppError("Enter a GitHub username, without a URL or @.");
+      if (login && data.members.some((other) => isActiveMember(other) && other.id !== me.id && other.githubLogin?.toLowerCase() === login.toLowerCase()))
+        throw new AppError("This GitHub username is already linked to another profile.");
+      if (login) me.githubLogin = login;
+      else delete me.githubLogin;
+      return { message: login ? "GitHub username linked." : "GitHub username removed." };
+    }
     case "meeting.participants": {
       const event = find(data.meetings, v.id);
       allow(canEditMeeting(me, event));
@@ -475,17 +546,30 @@ function executeCore(
       const task = find(data.tasks, v.id);
       allow(canSeeTask(me, task, data));
       version(task, v.version);
-      if ((v.pullRequestId || v.pullRequestUrl) && (task.status === "todo" || task.status === "backlog")) {
-        throw new AppError("Pull requests can only be linked when the task is in progress.");
+      if (
+        (v.pullRequestId || v.pullRequestUrl) &&
+        (task.status === "todo" || task.status === "backlog")
+      ) {
+        throw new AppError(
+          "Pull requests can only be linked when the task is in progress.",
+        );
       }
       let pr = null;
       if (v.pullRequestUrl && typeof v.pullRequestUrl === "string") {
         const url = text(v.pullRequestUrl, "Pull request link", 500);
-        const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(url);
+        const match =
+          /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/pull\/(\d+)\/?$/.exec(
+            url,
+          );
         if (!match) {
-          throw new AppError("Use a GitHub link in the format https://github.com/team/repo/pull/123.");
+          throw new AppError(
+            "Use a GitHub link in the format https://github.com/team/repo/pull/123.",
+          );
         }
-        pr = data.pullRequests.find((p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, "")) ?? null;
+        pr =
+          data.pullRequests.find(
+            (p) => p.url.replace(/\/$/, "") === url.replace(/\/$/, ""),
+          ) ?? null;
         if (!pr) {
           const newPr: PullRequest = {
             ...base(),
@@ -503,7 +587,12 @@ function executeCore(
       } else if (v.pullRequestId) {
         pr = find(data.pullRequests, v.pullRequestId);
       }
-      if (pr && task.projectId && pr.projectId && pr.projectId !== task.projectId) {
+      if (
+        pr &&
+        task.projectId &&
+        pr.projectId &&
+        pr.projectId !== task.projectId
+      ) {
         throw new AppError("The pull request belongs to another project.");
       }
       task.pullRequestId = pr?.id ?? null;
@@ -560,8 +649,7 @@ function executeCore(
           body: `Status: ${taskStatuses[previous]} → ${taskStatuses[task.status]}`,
         });
       return {
-        message:
-          task.status === "done" ? "Task completed." : "Status updated.",
+        message: task.status === "done" ? "Task completed." : "Status updated.",
       };
     }
     case "task.comment": {
@@ -573,7 +661,7 @@ function executeCore(
         body: text(v.body, "Comment", 10000),
       };
       data.taskComments.push(comment);
-      touch(task);
+      // Comments are separate entities: don't invalidate concurrent field edits.
       return { message: "Comment added.", ids: [comment.id] };
     }
     case "task.tomorrow": {
@@ -617,8 +705,7 @@ function executeCore(
         }
       }
       const targets = [...new Set(stringList(v.calendarTargets))];
-      if (!targets.length)
-        throw new AppError("Select at least one calendar.");
+      if (!targets.length) throw new AppError("Select at least one calendar.");
       const original = v.id ? find(data.meetings, v.id) : null;
       if (original) {
         allow(canEditMeeting(me, original));
@@ -686,9 +773,7 @@ function executeCore(
         touch(sibling);
       }
       return {
-        message: item.cancelled
-          ? "Event canceled."
-          : "Event restored.",
+        message: item.cancelled ? "Event canceled." : "Event restored.",
       };
     }
     case "organization.save":
@@ -728,8 +813,7 @@ function executeCore(
         Object.keys(stages),
         "Status",
       ) as keyof typeof stages;
-      if (stage === organization.stage)
-        return { message: "Status unchanged." };
+      if (stage === organization.stage) return { message: "Status unchanged." };
       const note = text(v.note, "Status note", 10000);
       data.interactions.push({
         ...base(),
@@ -764,7 +848,10 @@ function executeCore(
         phone: text(v.phone, "Phone", 50, false),
       };
       data.contacts.push(contact);
-      return { message: "Person added to the organization.", ids: [contact.id] };
+      return {
+        message: "Person added to the organization.",
+        ids: [contact.id],
+      };
     }
     case "inbox.resolve": {
       const item = find(data.inbox, v.id);
@@ -859,7 +946,9 @@ function executeCore(
       data.taskActivity = data.taskActivity.filter(
         (item) => !taskIds.has(item.taskId),
       );
-      data.updates = data.updates.filter((item) => item.projectId !== project.id);
+      data.updates = data.updates.filter(
+        (item) => item.projectId !== project.id,
+      );
       data.pullRequests = data.pullRequests.filter(
         (item) => item.projectId !== project.id,
       );
@@ -868,8 +957,10 @@ function executeCore(
       });
       data.activity = data.activity.filter(
         (item) =>
-          !(item.projectId === project.id ||
-            (item.entityType === "task" && taskIds.has(item.entityId))),
+          !(
+            item.projectId === project.id ||
+            (item.entityType === "task" && taskIds.has(item.entityId))
+          ),
       );
       return { message: "Project and its tasks deleted." };
     }
@@ -900,9 +991,7 @@ function executeCore(
       note.pinned = !note.pinned;
       touch(note);
       return {
-        message: note.pinned
-          ? "Note pinned to Today."
-          : "Note unpinned.",
+        message: note.pinned ? "Note pinned to Today." : "Note unpinned.",
       };
     }
     case "pr.save": {
@@ -999,9 +1088,7 @@ function executeCore(
         }
       }
       return {
-        message: snooze
-          ? "Remind me again in one hour."
-          : "Reminder handled.",
+        message: snooze ? "Remind me again in one hour." : "Reminder handled.",
       };
     }
     case "capture.commit": {
@@ -1075,8 +1162,7 @@ function executeCore(
               channel: "note",
               body: text(d.body || d.title, "Conversation", 10000),
             });
-            if (d.nextStep)
-              org.nextStep = text(d.nextStep, "Next step", 500);
+            if (d.nextStep) org.nextStep = text(d.nextStep, "Next step", 500);
             if (d.date) org.followUpOn = day(d.date);
             if (
               d.person &&
@@ -1171,9 +1257,7 @@ function executeCore(
       data.captureReceipts.push({ memberId: me.id, key, ids });
       return {
         message:
-          ids.length === 1
-            ? "Record saved."
-            : `${ids.length} records saved.`,
+          ids.length === 1 ? "Record saved." : `${ids.length} records saved.`,
         ids,
       };
     }

@@ -1,3 +1,4 @@
+import { isActiveMember } from "@/domain/team";
 import { creationNotice, type CreationNotice } from "./creation-notifications";
 import { canSeeMeeting } from "@/domain/permissions";
 import { uniqueEvents, calendarLabel } from "@/domain/calendars";
@@ -134,8 +135,9 @@ export async function applyTelegramUpdate(
       )
         throw new AppError("This Telegram account is already linked.", 409);
       const member = data.members.find(
-        (member) => member.id === link.memberId,
-      )!;
+        (member) => member.id === link.memberId && isActiveMember(member),
+      );
+      if (!member) throw new AppError("This profile is no longer active.", 403);
       member.telegramChatId = String(chat.id);
       member.telegramUserId = String(userId);
       data.telegramLinks = data.telegramLinks.filter((item) => item !== link);
@@ -151,7 +153,8 @@ export async function applyTelegramUpdate(
   const me = (await ctx.repo.read()).members.find(
     (member) =>
       member.telegramChatId === String(chat.id) &&
-      member.telegramUserId === String(userId),
+      member.telegramUserId === String(userId) &&
+      isActiveMember(member),
   );
   if (!me) return;
   if (callback?.data) {
@@ -195,8 +198,7 @@ export async function applyTelegramUpdate(
       `https://api.telegram.org/file/bot${required(ctx.env, "TELEGRAM_BOT_TOKEN")}/${file.file_path}`,
       { signal: AbortSignal.timeout(25000) },
     );
-    if (!response.ok)
-      throw new AppError("Could not retrieve the audio.", 502);
+    if (!response.ok) throw new AppError("Could not retrieve the audio.", 502);
     const bytes = await boundedBody(
       new Request("https://local.invalid", {
         method: "POST",
@@ -290,7 +292,7 @@ export function meetingReminders(data: Store, now: string) {
     text: string;
   }[] = [];
   for (const member of data.members) {
-    if (!member.telegramChatId || member.archived) continue;
+    if (!member.telegramChatId || !isActiveMember(member)) continue;
     const events = uniqueEvents(
       data.meetings
         .filter(
@@ -302,7 +304,9 @@ export function meetingReminders(data: Store, now: string) {
         )
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
     );
-    const todayEvents = events.filter((event) => dateKey(event.startsAt) === today);
+    const todayEvents = events.filter(
+      (event) => dateKey(event.startsAt) === today,
+    );
     if (hour === 8 && minute < 15 && todayEvents.length)
       jobs.push({
         key: `daily:${member.id}:${today}`,
@@ -329,8 +333,19 @@ export async function deliverReminders(ctx: ServiceContext) {
     await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId);
 }
 
-export async function deliverCreationNotice(ctx: ServiceContext, key: string, notice: CreationNotice) {
+export async function deliverCreationNotice(
+  ctx: ServiceContext,
+  key: string,
+  notice: CreationNotice,
+) {
   const message = creationNotice(await ctx.repo.read(), notice);
   if (!message) return;
-  await sendOnce(ctx, key, message.chatId, message.text, undefined, message.memberId);
+  await sendOnce(
+    ctx,
+    key,
+    message.chatId,
+    message.text,
+    undefined,
+    message.memberId,
+  );
 }

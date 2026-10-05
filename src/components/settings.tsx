@@ -38,6 +38,19 @@ function AppearanceSettings() {
   }
   return <section className="appearance-settings"><h2>Appearance</h2><div className="integration-row"><div><strong>Theme</strong><small>Saved in this browser.</small></div><div className="theme-options" role="group" aria-label="Theme"><button aria-pressed={theme === "light"} onClick={() => choose("light")}>Light</button><button aria-pressed={theme === "dark"} onClick={() => choose("dark")}>Dark</button></div></div></section>;
 }
+function GithubIdentitySettings() {
+  const { data, command, notify, busy } = useWorkspace();
+  return <form className="integration-row github-identity" onSubmit={async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    try { await command("member.github", { githubLogin: new FormData(form).get("githubLogin") }); }
+    catch (error) { notify(error instanceof Error ? error.message : "Could not link username."); }
+  }}>
+    <div><strong>My GitHub username</strong><small>Used to show your requested PR reviews. Does not grant permissions.</small></div>
+    <input key={data.me.githubLogin ?? ""} name="githubLogin" aria-label="My GitHub username" placeholder="username" defaultValue={data.me.githubLogin ?? ""} maxLength={39} autoCapitalize="none" autoCorrect="off" />
+    <button disabled={busy}>Save</button>
+  </form>;
+}
 export function IntegrationSettings() {
   const { data } = useWorkspace();
   const [status, setStatus] = useState<Status | null>(null),
@@ -183,6 +196,7 @@ export function IntegrationSettings() {
                 </button>
               )}
             </div>
+            <GithubIdentitySettings />
             <p className="muted">
               Link repositories within each project.
             </p>

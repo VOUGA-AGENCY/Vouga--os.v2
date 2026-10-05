@@ -1,6 +1,6 @@
 # Acesso da equipa
 
-Utilizadores: miguel e roque (admins); vasco, patrick, ana e pedro (engineers). O login aceita o nome ou o email já associado ao perfil. O ID antigo afonso mantém-se internamente para preservar autoria; o nome de login é roque.
+Utilizadores: miguel e roque (admins); vasco, ana e pedro (engineers). O login aceita o nome ou o email já associado ao perfil. O ID antigo afonso mantém-se internamente para preservar autoria; o nome de login é roque.
 
 As contas provisionadas exigem alteração de password. A sessão inicial dura dez minutos e não permite consultar dados nem executar comandos. A nova password requer 12–200 caracteres; ao gravar, todas as sessões anteriores dessa pessoa são revogadas. Passwords temporárias expiram em 24 horas. Não existe registo público nem lista de passwords na página de login.
 
@@ -19,3 +19,5 @@ Usar a mesma base Supabase e manter INTEGRATION_ENCRYPTION_KEY, necessária para
 Atualizar os redirect URIs autorizados na Google Cloud e os endpoints públicos Google/GitHub/Telegram. Um deployment da interface não inicia automaticamente o worker: é necessário configurar o scheduler protegido por INTEGRATION_CRON_SECRET. A troca do domínio deve acontecer com o build e as variáveis preparados.
 
 Esta entrega prepara o código e as contas; não publica nem muda DNS. Passwords pessoais são escolhidas pelos próprios utilizadores no primeiro acesso. Não executar novamente o provisionamento em contas já ativas sem pedido explícito: isso invalida passwords e sessões.
+
+Perfis removidos não têm acesso ao OS. A migração remove contas OS/sessões/Telegram e reatribui trabalho ao Miguel, mantendo um identificador arquivado para autoria. Não modifica o Supabase Auth partilhado com o OS antigo.

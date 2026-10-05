@@ -15,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { applySnapshotPatch } from "@/projections/changes";
 import type { CaptureKind, Snapshot } from "@/domain/model";
 import { WorkspaceContext, type Editor } from "./context";
 import { Today } from "./today";
@@ -28,6 +29,7 @@ import { IntegrationSettings } from "./settings";
 import { RecordEditor } from "./editors";
 import { CompactPanel } from "./compact-panel";
 import { Dialog } from "./dialog";
+import { flushEdits } from "./autosave";
 import { PersonAvatar } from "./person-avatar";
 
 const navigation = [
@@ -45,18 +47,33 @@ export function Workspace({
 }) {
   const [data, setData] = useState(initial);
   const [view, setView] = useState(initialView);
+  const lastPath = useRef(`/${initialView}`);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
+  const current = useRef(initial);
+  const saveQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const localVersions = useRef(new Map<string, Map<number, number>>());
+  const lastRefresh = useRef(0);
   const [captureKind, setCaptureKind] = useState<
     CaptureKind | null | undefined
   >(undefined);
   const [editor, setEditor] = useState<Editor | null>(null);
+  const [toast, setToast] = useState("");
   const [project, setProject] = useState<string | null>(null);
   useEffect(() => {
     const navigate = () => {
-      setView(window.location.pathname.slice(1));
-      setProject(null);
-      setEditor(null);
+      const path = window.location.pathname;
+      void flushEdits()
+        .then(() => {
+          lastPath.current = path;
+          setView(path.slice(1));
+          setProject(null);
+          setEditor(null);
+        })
+        .catch((error) => {
+          window.history.pushState(null, "", lastPath.current);
+          setToast(error.message);
+        });
     };
     window.addEventListener("popstate", navigate);
     return () => window.removeEventListener("popstate", navigate);
@@ -64,100 +81,179 @@ export function Workspace({
   const [help, setHelp] = useState(false);
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
-  const [toast, setToast] = useState("");
   const [connection, setConnection] = useState("");
-  const accept = useCallback(
-    (snapshot: Snapshot) =>
-      setData((old) => (snapshot.revision >= old.revision ? snapshot : old)),
-    [],
-  );
+  const accept = useCallback((snapshot: Snapshot) => {
+    if (snapshot.revision < current.current.revision) return;
+    current.current = snapshot;
+    setData(snapshot);
+  }, []);
   const capture = useCallback((kind?: CaptureKind) => {
     setCaptureKind(kind ?? null);
   }, []);
   const edit = useCallback((item: Editor) => {
-    setSearch(false);
-    setEditor(item);
-    setCaptureKind(undefined);
+    void flushEdits()
+      .then(() => {
+        setSearch(false);
+        setEditor(item);
+        setCaptureKind(undefined);
+      })
+      .catch((error) => setToast(error.message));
   }, []);
   const openProject = useCallback((id: string) => {
-    setSearch(false);
-    setProject(id);
-    setEditor(null);
+    void flushEdits()
+      .then(() => {
+        setSearch(false);
+        setProject(id);
+        setEditor(null);
+      })
+      .catch((error) => setToast(error.message));
   }, []);
-  const command = useCallback(
-    async (action: string, values: Record<string, unknown>) => {
-      if (inFlight.current) throw new Error("Please wait for the current save to finish.");
-      inFlight.current = true;
-      setBusy(true);
-      try {
-        const response = await fetch("/api/workspace", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, values }),
-        });
-        if (response.status === 401) {
-          window.location.assign(
-            view === "painel" ? "/login?next=painel" : "/login",
-          );
-          throw new Error("Please sign in again.");
-        }
-        const result = await response.json();
-        if (!response.ok)
-          throw new Error(result.error ?? "Could not save.");
-        accept(result.snapshot);
-        setToast(result.message);
-        setConnection("");
-      } finally {
-        inFlight.current = false;
-        setBusy(false);
-      }
-    },
-    [accept, view],
-  );
   const refresh = useCallback(async () => {
-    const response = await fetch("/api/workspace", { cache: "no-store" });
-    if (response.ok) accept(await response.json());
-  }, [accept]);
-  useEffect(() => {
-    let cancelled = false;
-    const controller = new AbortController();
-    async function refresh() {
-      if (document.hidden || inFlight.current) return;
-      try {
-        const response = await fetch("/api/workspace", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        if (response.status === 401) {
-          window.location.assign(
-            view === "painel" ? "/login?next=painel" : "/login",
-          );
-          return;
-        }
-        if (!response.ok) throw new Error("Unavailable");
-        const next = await response.json();
-        if (!cancelled) {
-          accept(next);
-          setConnection("");
-        }
-      } catch {
-        if (!cancelled)
-          setConnection(
-            "No connection to the server. Saved records are safe. Retrying…",
-          );
+    if (
+      document.hidden ||
+      inFlight.current ||
+      Date.now() - lastRefresh.current < 1000
+    )
+      return;
+    lastRefresh.current = Date.now();
+    try {
+      const response = await fetch("/api/workspace", {
+        cache: "no-store",
+        headers: {
+          "If-None-Match": `"${current.current.me.id}:${current.current.revision}"`,
+        },
+      });
+      if (response.status === 401) {
+        window.location.assign("/login");
+        return;
       }
+      // A refresh started before a write must not race its delta response.
+      if (inFlight.current) return;
+      if (response.status !== 304) {
+        if (!response.ok) throw new Error("Unavailable");
+        const next: Snapshot = await response.json();
+        for (const id of localVersions.current.keys()) {
+          const old = [
+            ...current.current.tasks,
+            ...current.current.meetings,
+            ...current.current.projects,
+            ...current.current.organizations,
+            ...current.current.notes,
+            ...current.current.pullRequests,
+          ].find((item) => item.id === id);
+          const updated = [
+            ...next.tasks,
+            ...next.meetings,
+            ...next.projects,
+            ...next.organizations,
+            ...next.notes,
+            ...next.pullRequests,
+          ].find((item) => item.id === id);
+          if (old?.version !== updated?.version)
+            localVersions.current.delete(id);
+        }
+        accept(next);
+      }
+      setConnection("");
+    } catch {
+      setConnection(
+        "No connection to the server. Saved records are safe. Retrying…",
+      );
     }
-    const timer = setInterval(() => void refresh(), 30000);
-    document.addEventListener("visibilitychange", refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      cancelled = true;
-      controller.abort();
-      clearInterval(timer);
-      document.removeEventListener("visibilitychange", refresh);
-      window.removeEventListener("focus", refresh);
+  }, [accept]);
+  const command = useCallback(
+    (action: string, values: Record<string, unknown>) => {
+      const run = async () => {
+        inFlight.current = true;
+        setBusy(true);
+        try {
+          const response = await fetch("/api/workspace", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Workspace-Revision": String(current.current.revision),
+            },
+            body: JSON.stringify({
+              action,
+              values: (() => {
+                const map = localVersions.current.get(String(values.id));
+                let version = Number(values.version);
+                while (map?.has(version)) version = map.get(version)!;
+                return map && Number.isFinite(version)
+                  ? { ...values, version }
+                  : values;
+              })(),
+            }),
+          });
+          if (response.status === 401) {
+            window.location.assign("/login");
+            throw new Error("Please sign in again.");
+          }
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error ?? "Could not save.");
+          const snapshot =
+            result.snapshot ??
+            applySnapshotPatch(current.current, result.patch);
+          const entityId =
+            typeof values.id === "string"
+              ? values.id
+              : typeof values.taskId === "string"
+                ? values.taskId
+                : null;
+          if (entityId) {
+            const name = (
+              {
+                task: "tasks",
+                meeting: "meetings",
+                organization: "organizations",
+                project: "projects",
+                note: "notes",
+                pr: "pullRequests",
+              } as const
+            )[action.split(".")[0] as "task"];
+            const previous = current.current[name]?.find(
+              (item) => item.id === entityId,
+            );
+            const updated = snapshot[name]?.find(
+              (item: { id: string }) => item.id === entityId,
+            );
+            if (previous && updated && updated.version > previous.version) {
+              const versions =
+                localVersions.current.get(entityId) ??
+                new Map<number, number>();
+              versions.set(previous.version, updated.version);
+              localVersions.current.set(entityId, versions);
+            }
+          }
+          accept(snapshot);
+          // Frequent autosaves have inline feedback; keep toasts for explicit actions.
+          if (!values.id || !action.endsWith(".save")) setToast(result.message);
+          setConnection("");
+          return snapshot as Snapshot;
+        } finally {
+          inFlight.current = false;
+          setBusy(false);
+        }
+      };
+      const pending = saveQueue.current.then(run, run);
+      saveQueue.current = pending.catch(() => undefined);
+      return pending;
+    },
+    [accept],
+  );
+  useEffect(() => {
+    const focus = () => {
+      if (Date.now() - lastRefresh.current > 10000) void refresh();
     };
-  }, [accept, view]);
+    const timer = setInterval(() => void refresh(), 60000);
+    document.addEventListener("visibilitychange", focus);
+    window.addEventListener("focus", focus);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", focus);
+      window.removeEventListener("focus", focus);
+    };
+  }, [refresh]);
   useEffect(() => {
     function keyboard(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -183,6 +279,28 @@ export function Workspace({
     <Link
       key={path}
       href={`/${path}`}
+      prefetch={false}
+      onClick={(event) => {
+        if (
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          event.button !== 0
+        )
+          return;
+        event.preventDefault();
+        void flushEdits()
+          .then(() => {
+            window.history.pushState(null, "", `/${path}`);
+            lastPath.current = `/${path}`;
+            setView(path);
+            setProject(null);
+            setEditor(null);
+            setCaptureKind(undefined);
+          })
+          .catch((error) => setToast(error.message));
+      }}
       className={`navigation-item ${!project && view === path ? "active" : ""}`}
       aria-current={!project && view === path ? "page" : undefined}
     >
@@ -348,15 +466,23 @@ export function Workspace({
                   aria-label="Sign out"
                   onClick={async () => {
                     try {
+                      try {
+                        await flushEdits();
+                      } catch (error) {
+                        setToast(
+                          error instanceof Error
+                            ? error.message
+                            : "Could not save.",
+                        );
+                        return;
+                      }
                       const response = await fetch("/api/session", {
                         method: "DELETE",
                       });
                       if (!response.ok) throw new Error();
                       window.location.assign("/login");
                     } catch {
-                      setToast(
-                        "Could not sign out. Try again.",
-                      );
+                      setToast("Could not sign out. Try again.");
                     }
                   }}
                 >
@@ -450,7 +576,11 @@ export function Workspace({
           key={editor.id ?? "new"}
           id={editor.id}
           projectId={editor.projectId}
-          onClose={() => setEditor(null)}
+          onClose={() => {
+            void flushEdits()
+              .then(() => setEditor(null))
+              .catch((error) => setToast(error.message));
+          }}
         />
       )}
       {editor?.type === "organization" &&
@@ -458,14 +588,22 @@ export function Workspace({
         data.organizations.some((item) => item.id === editor.id) && (
           <CompanyPanel
             company={data.organizations.find((item) => item.id === editor.id)!}
-            onClose={() => setEditor(null)}
+            onClose={() => {
+              void flushEdits()
+                .then(() => setEditor(null))
+                .catch((error) => setToast(error.message));
+            }}
           />
         )}
       {editor?.type === "note" && (
         <NoteComposer
           key={editor.id ?? "new"}
           editor={editor}
-          onClose={() => setEditor(null)}
+          onClose={() => {
+            void flushEdits()
+              .then(() => setEditor(null))
+              .catch((error) => setToast(error.message));
+          }}
         />
       )}
       {editor &&
@@ -475,7 +613,11 @@ export function Workspace({
           <RecordEditor
             key={`${editor.type}:${editor.id ?? "new"}`}
             editor={editor}
-            onClose={() => setEditor(null)}
+            onClose={() => {
+              void flushEdits()
+                .then(() => setEditor(null))
+                .catch((error) => setToast(error.message));
+            }}
           />
         )}
       {toast && (
@@ -519,9 +661,7 @@ export function Workspace({
                 </button>
               ))}
               {!results.length && (
-                <p className="quiet-empty">
-                  No results for this search.
-                </p>
+                <p className="quiet-empty">No results for this search.</p>
               )}
             </div>
           </div>
@@ -573,6 +713,14 @@ export function Workspace({
             <button
               className="text-button"
               onClick={async () => {
+                try {
+                  await flushEdits();
+                } catch (error) {
+                  setToast(
+                    error instanceof Error ? error.message : "Could not save.",
+                  );
+                  return;
+                }
                 const response = await fetch("/api/session", {
                   method: "DELETE",
                 });

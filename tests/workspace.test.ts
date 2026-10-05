@@ -179,9 +179,17 @@ describe("ordinary work", () => {
     const pr = data.pullRequests.find((item) => item.number === 99)!;
     const task = data.tasks.find((item) => item.id === "flow")!;
 
-    run("task.status", { id: task.id, version: task.version, status: "todo" }, engineer);
+    run(
+      "task.status",
+      { id: task.id, version: task.version, status: "todo" },
+      engineer,
+    );
     expect(() =>
-      run("task.linkPR", { id: task.id, version: task.version, pullRequestId: pr.id }, engineer),
+      run(
+        "task.linkPR",
+        { id: task.id, version: task.version, pullRequestId: pr.id },
+        engineer,
+      ),
     ).toThrow("in progress");
 
     run(
@@ -197,12 +205,24 @@ describe("ordinary work", () => {
     expect(task.issueNumber).toBe(42);
     expect(task.issueUrl).toBe("https://github.com/example/repo/issues/42");
 
-    run("task.status", { id: task.id, version: task.version, status: "doing" }, engineer);
-    run("task.linkPR", { id: task.id, version: task.version, pullRequestId: pr.id }, engineer);
+    run(
+      "task.status",
+      { id: task.id, version: task.version, status: "doing" },
+      engineer,
+    );
+    run(
+      "task.linkPR",
+      { id: task.id, version: task.version, pullRequestId: pr.id },
+      engineer,
+    );
     expect(task.pullRequestId).toBe(pr.id);
 
     // Unlink PR
-    run("task.linkPR", { id: task.id, version: task.version, pullRequestId: null }, engineer);
+    run(
+      "task.linkPR",
+      { id: task.id, version: task.version, pullRequestId: null },
+      engineer,
+    );
     expect(task.pullRequestId).toBeNull();
 
     // Link via URL
@@ -313,7 +333,7 @@ describe("ordinary work", () => {
       { taskId: "flow", body: "API pronta para revisão" },
       engineer,
     );
-    run("task.status", { id: "flow", version: 2, status: "review" }, engineer);
+    run("task.status", { id: "flow", version: 1, status: "review" }, engineer);
     const view = workspaceFor(data, engineer, now);
     expect(
       view.taskComments.some(
@@ -691,7 +711,7 @@ describe("Home notes and personal calendars", () => {
     ).not.toThrow();
   });
   it("provides the six named profiles and individual login accounts", () => {
-    for (const id of ["miguel", "afonso", "vasco", "patrick", "ana", "pedro"]) {
+    for (const id of ["miguel", "afonso", "vasco", "ana", "pedro"]) {
       expect(data.members.find((member) => member.id === id)?.role).toBe(
         ["miguel", "afonso"].includes(id) ? "admin" : "engineer",
       );

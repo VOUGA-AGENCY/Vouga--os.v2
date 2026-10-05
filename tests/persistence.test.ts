@@ -121,7 +121,6 @@ it("adds named profiles without replacing accounts, private notes or appointment
       "miguel",
       "afonso",
       "vasco",
-      "patrick",
       "ana",
       "pedro",
     ]);

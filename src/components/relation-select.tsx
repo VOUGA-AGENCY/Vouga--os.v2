@@ -24,10 +24,18 @@ export function RelationSelect({
   options: Option[];
 }) {
   const id = useId();
+  const input = useRef<HTMLInputElement>(null);
+  const previous = useRef(defaultValue);
   const trigger = useRef<HTMLButtonElement>(null);
   const popup = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(defaultValue);
+  useEffect(() => {
+    if (previous.current !== value) {
+      previous.current = value;
+      input.current?.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }, [value]);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -88,7 +96,7 @@ export function RelationSelect({
 
   return (
     <div className="relation-select">
-      <input type="hidden" name={name} value={value} />
+      <input ref={input} type="hidden" name={name} value={value} />
       <button
         ref={trigger}
         type="button"

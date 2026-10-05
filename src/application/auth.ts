@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import type { Member } from "@/domain/model";
+import { isActiveMember } from "@/domain/team";
+import type { Member, Store } from "@/domain/model";
 import { AppError } from "@/domain/validation";
 import { repository } from "@/persistence/store";
 import { hashPassword, verifyPassword } from "@/persistence/password";
@@ -60,9 +61,13 @@ export function tokenFrom(request: Request) {
 }
 export async function sessionIdentity(
   token: string,
+  store?: Store,
 ): Promise<{ member: Member; mustChangePassword: boolean } | null> {
   if (!/^[a-f0-9]{64}$/.test(token)) return null;
-  const data = await repository().read();
+  return identityFromStore(store ?? (await repository().read()), token);
+}
+export function identityFromStore(data: Store, token: string) {
+  if (!/^[a-f0-9]{64}$/.test(token)) return null;
   const now = new Date().toISOString();
   const session = data.sessions.find(
     (s) => s.hash === digest(token) && s.expiresAt > now,
@@ -74,6 +79,7 @@ export async function sessionIdentity(
     !account ||
     account.disabled ||
     !member ||
+    !isActiveMember(member) ||
     (account.mustChangePassword &&
       account.temporaryExpiresAt &&
       account.temporaryExpiresAt <= now)
@@ -87,10 +93,11 @@ export async function authenticatedMember(
   const identity = await sessionIdentity(token);
   return identity && !identity.mustChangePassword ? identity.member : null;
 }
-export async function requireMember(request: Request) {
+export async function requireMember(request: Request, store?: Store) {
   assertLocalRequest(request, request.method !== "GET");
-  const identity = await sessionIdentity(tokenFrom(request));
-  if (!identity) throw new AppError("The session ended. Please sign in again.", 401);
+  const identity = await sessionIdentity(tokenFrom(request), store);
+  if (!identity)
+    throw new AppError("The session ended. Please sign in again.", 401);
   if (identity.mustChangePassword)
     throw new AppError(
       "Altera a palavra-passe antes de aceder ao workspace.",
@@ -117,7 +124,7 @@ export async function login(identifier: string, password: string) {
     );
     const account = data.accounts.find((a) => a.memberId === me?.id);
     const now = Date.now();
-    if (!me || !account || account.disabled)
+    if (!me || !isActiveMember(me) || !account || account.disabled)
       return { error: "Utilizador ou palavra-passe incorretos.", status: 401 };
     if (account.lockedUntil && Date.parse(account.lockedUntil) > now)
       return {

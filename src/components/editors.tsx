@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, MessageSquare, Plus, X } from "lucide-react";
 import {
   projectStatuses,
@@ -12,6 +12,7 @@ import { calendarOptions, calendarTarget } from "@/domain/calendars";
 import { canEditMeeting } from "@/domain/permissions";
 import { addDays, dateKey, localDateTime, shortDate } from "@/domain/time";
 import { useWorkspace, type Editor } from "./context";
+import { flushEdits, formFields, SaveStatus, useAutosave } from "./autosave";
 import { Dialog } from "./dialog";
 import { RelationSelect } from "./relation-select";
 
@@ -75,9 +76,57 @@ function SaveForm({
   const { command } = useWorkspace();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const autosave = useAutosave(
+    action,
+    typeof values.id === "string" ? values.id : undefined,
+    Number(values.version),
+  );
+  const baseline = useRef<Record<string, unknown> | null>(null);
+  function changed(form: HTMLFormElement) {
+    if (!values.id) return;
+    const fields = formFields(form);
+    if (JSON.stringify(fields) === JSON.stringify(baseline.current)) return;
+    baseline.current = fields;
+    autosave.patch({ ...values, ...fields });
+  }
   return (
     <form
       className="record-composer"
+      ref={(form) => {
+        if (form && baseline.current === null)
+          baseline.current = formFields(form);
+      }}
+      onBlur={(event) => {
+        changed(event.currentTarget);
+        void autosave.flush().catch(() => undefined);
+      }}
+      onInput={(event) => {
+        if (!values.id) return;
+        const target = event.target;
+        if (target instanceof HTMLInputElement && target.type === "hidden")
+          changed(event.currentTarget);
+        else if (
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement
+        ) {
+          const fields = formFields(event.currentTarget);
+          if (JSON.stringify(fields) !== JSON.stringify(baseline.current)) {
+            baseline.current = fields;
+            autosave.stage({ ...values, ...fields });
+          }
+        }
+      }}
+      onChange={(event) => {
+        const target = event.target;
+        if (
+          target instanceof HTMLSelectElement ||
+          (target instanceof HTMLInputElement &&
+            ["hidden", "checkbox", "date", "datetime-local"].includes(
+              target.type,
+            ))
+        )
+          changed(event.currentTarget);
+      }}
       onSubmit={async (e) => {
         e.preventDefault();
         if (busy) return;
@@ -90,12 +139,15 @@ function SaveForm({
         setBusy(true);
         setError("");
         try {
-          await command(action, { ...values, ...fields });
-          onClose();
+          if (values.id) {
+            changed(e.currentTarget);
+            await autosave.flush();
+          } else {
+            await command(action, { ...values, ...fields });
+            onClose();
+          }
         } catch (e) {
-          setError(
-            e instanceof Error ? e.message : "Could not save.",
-          );
+          setError(e instanceof Error ? e.message : "Could not save.");
         } finally {
           setBusy(false);
         }
@@ -120,9 +172,13 @@ function SaveForm({
             Cancel
           </button>
         )}
-        <button className="button-primary" disabled={busy}>
-          {busy ? "Saving…" : label}
-        </button>
+        {values.id ? (
+          <SaveStatus saver={autosave.saver} />
+        ) : (
+          <button className="button-primary" disabled={busy}>
+            {busy ? "Saving…" : label}
+          </button>
+        )}
       </footer>
     </form>
   );
@@ -194,9 +250,7 @@ function Members({
 }) {
   return (
     <fieldset>
-      <legend>
-        {name === "memberIds" ? "Project team" : "Participants"}
-      </legend>
+      <legend>{name === "memberIds" ? "Project team" : "Participants"}</legend>
       <input name={`${name}Present`} type="hidden" value="1" />
       <div className="checkbox-group">
         {data.members.map((m) => (
@@ -344,9 +398,8 @@ export function RecordEditor({
               </SaveForm>
             )}
             <p className="muted">
-              Calendar{" "}
-              {item.calendarKey === "contacto" ? "Contacto" : "Office"}.
-              Participants:{" "}
+              Calendar {item.calendarKey === "contacto" ? "Contacto" : "Office"}
+              . Participants:{" "}
               {item.participantIds
                 .map(
                   (id) => data.members.find((member) => member.id === id)?.name,
@@ -486,7 +539,9 @@ export function RecordEditor({
           )}
           {item?.syncStatus === "conflict" && (
             <div className="composer-properties">
-              <span>Review the event in Google and choose which version to keep.</span>
+              <span>
+                Review the event in Google and choose which version to keep.
+              </span>
               {(["google", "os"] as const).map((keep) => (
                 <button
                   type="button"
@@ -538,8 +593,13 @@ export function RecordEditor({
                   !window.confirm(`Delete the event “${item.title}”?`)
                 )
                   return;
-                void workspace
-                  .command("meeting.cancel", { id, version: item.version })
+                void flushEdits()
+                  .then(() =>
+                    workspace.command("meeting.cancel", {
+                      id,
+                      version: item.version,
+                    }),
+                  )
                   .then(onClose)
                   .catch((error) => workspace.notify(error.message));
               }}
@@ -579,11 +639,13 @@ export function RecordEditor({
                       )
                     )
                       return;
-                    void workspace
-                      .command("project.delete", {
-                        id: item.id,
-                        version: item.version,
-                      })
+                    void flushEdits()
+                      .then(() =>
+                        workspace.command("project.delete", {
+                          id: item.id,
+                          version: item.version,
+                        }),
+                      )
                       .then(onClose)
                       .catch((error) => workspace.notify(error.message));
                   }}
@@ -674,10 +736,7 @@ export function RecordEditor({
   }
   const pr = data.pullRequests.find((p) => p.id === id);
   return (
-    <Dialog
-      title={pr ? "Pull request" : "Link pull request"}
-      onClose={onClose}
-    >
+    <Dialog title={pr ? "Pull request" : "Link pull request"} onClose={onClose}>
       <SaveForm
         action="pr.save"
         values={pr ? { id, version: pr.version } : {}}
@@ -691,8 +750,13 @@ export function RecordEditor({
                 onClick={() => {
                   if (!window.confirm(`Delete the pull request “${pr.title}”?`))
                     return;
-                  void workspace
-                    .command("pr.delete", { id: pr.id, version: pr.version })
+                  void flushEdits()
+                    .then(() =>
+                      workspace.command("pr.delete", {
+                        id: pr.id,
+                        version: pr.version,
+                      }),
+                    )
                     .then(onClose)
                     .catch((error) => workspace.notify(error.message));
                 }}
@@ -747,8 +811,8 @@ export function RecordEditor({
           </select>
         </label>
         <p className="field-hint">
-          Status is updated here manually. GitHub synchronization will be
-          enabled in a future phase.
+          GitHub updates linked repositories through the App. Links added
+          manually remain available here.
         </p>
       </SaveForm>
     </Dialog>
@@ -907,14 +971,22 @@ function OrganizationEditor({
         <div className="editor-tabs">
           <button
             className={tab === "conversation" ? "tab active" : "tab"}
-            onClick={() => setTab("conversation")}
+            onClick={() =>
+              void flushEdits()
+                .then(() => setTab("conversation"))
+                .catch((error) => notify(error.message))
+            }
           >
             <MessageSquare size={14} />
             Conversation
           </button>
           <button
             className={tab === "details" ? "tab active" : "tab"}
-            onClick={() => setTab("details")}
+            onClick={() =>
+              void flushEdits()
+                .then(() => setTab("details"))
+                .catch((error) => notify(error.message))
+            }
           >
             Details
           </button>
@@ -929,6 +1001,7 @@ function OrganizationEditor({
       )}
       {tab === "conversation" && item ? (
         <SaveForm
+          key="conversation"
           action="interaction.add"
           values={{ organizationId: id, version: item.version }}
           onClose={onClose}
@@ -997,6 +1070,7 @@ function OrganizationEditor({
         </SaveForm>
       ) : (
         <SaveForm
+          key="details"
           action="organization.save"
           values={item ? { id, version: item.version } : {}}
           onClose={onClose}
@@ -1098,7 +1172,7 @@ export function ProjectUpdateForm({
       }
     >
       <label>
-          What changed?
+        What changed?
         <textarea
           name="body"
           required

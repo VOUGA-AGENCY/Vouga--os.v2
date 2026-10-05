@@ -1,3 +1,4 @@
+import { isTaskAssignee } from "@/domain/team";
 import { randomUUID } from "node:crypto";
 import { executeCommand } from "@/application/commands";
 import { AppError, record, text } from "@/domain/validation";
@@ -87,17 +88,18 @@ export const agentTools = [
       title: string,
       body: string,
       ownerId: string,
+      assigneeIds: strings,
       projectId: string,
       organizationId: string,
       dueOn: string,
-      visibility: { type: "string", enum: ["team", "private"] },
+      visibility: { type: "string", enum: ["team", "private", "board"] },
       priority: {
         type: "string",
         enum: ["none", "low", "medium", "high", "urgent"],
       },
       size: { type: "string", enum: ["xs", "s", "m", "l", "xl"] },
     },
-    ["title", "ownerId"],
+    ["title"],
   ),
   tool(
     "updateTask",
@@ -107,8 +109,9 @@ export const agentTools = [
       title: string,
       body: string,
       ownerId: string,
+      assigneeIds: strings,
       dueOn: string,
-      visibility: { type: "string", enum: ["team", "private"] },
+      visibility: { type: "string", enum: ["team", "private", "board"] },
       priority: {
         type: "string",
         enum: ["none", "low", "medium", "high", "urgent"],
@@ -237,7 +240,7 @@ export function readAgentTool(
     return view.tasks
       .filter(
         (item) =>
-          (!args.ownerId || item.ownerId === args.ownerId) &&
+          (!args.ownerId || isTaskAssignee(item, String(args.ownerId))) &&
           (!args.projectId || item.projectId === args.projectId) &&
           (!args.overdue ||
             (item.status !== "done" &&
@@ -301,7 +304,8 @@ export function readAgentTool(
 function mutation(view: Snapshot, name: string, args: Record<string, unknown>) {
   const requireItem = <T extends { id: string }>(items: T[]) => {
     const item = items.find((item) => item.id === args.id);
-    if (!item) throw new AppError("Record does not exist or is inaccessible.", 404);
+    if (!item)
+      throw new AppError("Record does not exist or is inaccessible.", 404);
     return item;
   };
   if (name === "resolveInbox") {
@@ -313,7 +317,13 @@ function mutation(view: Snapshot, name: string, args: Record<string, unknown>) {
   if (name === "updateTask")
     return {
       action: "task.save",
-      values: { ...requireItem(view.tasks), ...args },
+      values: {
+        ...requireItem(view.tasks),
+        ...args,
+        ...(args.ownerId && !args.assigneeIds
+          ? { assigneeIds: [args.ownerId] }
+          : {}),
+      },
       confirm: false,
     };
   if (name === "moveTask")
@@ -429,7 +439,9 @@ export async function decideAction(
     if (action.state !== "pending")
       return {
         message:
-          action.state === "confirmed" ? "Already confirmed." : "Already canceled.",
+          action.state === "confirmed"
+            ? "Already confirmed."
+            : "Already canceled.",
       };
     if (action.expiresAt <= ctx.now())
       throw new AppError("Confirmation expired. Make the request again.", 409);
@@ -560,7 +572,9 @@ export async function runAgent(
         break;
       }
       if (message.tool_calls.length > 5)
-        throw new AppError("Too many actions in one request. Split it into parts.");
+        throw new AppError(
+          "Too many actions in one request. Split it into parts.",
+        );
       for (const call of message.tool_calls) {
         let answer: unknown;
         try {
@@ -639,16 +653,16 @@ export async function summarizeMyWork(
     ),
   ).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const tasks = view.tasks
-    .filter((t) => t.ownerId === me.id && t.status === "todo")
+    .filter((t) => isTaskAssignee(t, me.id) && t.status === "todo")
     .sort((a, b) => (a.dueOn ?? "9999").localeCompare(b.dueOn ?? "9999"));
   return {
     text: [
       "Next 7 days",
       ...events.map(
         (e) =>
-            `${dateKey(e.startsAt)} · ${e.allDay ? "All day" : timeLabel(e.startsAt)} · ${e.title}`,
-          ),
-          ...(!events.length ? ["No upcoming events."] : []),
+          `${dateKey(e.startsAt)} · ${e.allDay ? "All day" : timeLabel(e.startsAt)} · ${e.title}`,
+      ),
+      ...(!events.length ? ["No upcoming events."] : []),
       "",
       "Your tasks · To do",
       ...tasks.map(

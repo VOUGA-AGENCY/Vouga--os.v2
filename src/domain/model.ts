@@ -14,6 +14,7 @@ export interface Member {
   email: string;
   role: Role;
   archived?: boolean;
+  githubLogin?: string;
   telegramChatId?: string;
   telegramUserId?: string;
 }
@@ -75,7 +76,7 @@ export interface Task extends Entity {
   dueOn: string | null;
   projectId: string | null;
   organizationId: string | null;
-  visibility?: "private" | "team";
+  visibility?: "private" | "team" | "board";
   priority?: TaskPriority;
   size?: TaskSize | null;
   pullRequestId?: string | null;

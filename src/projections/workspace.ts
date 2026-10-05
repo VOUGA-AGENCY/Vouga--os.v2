@@ -1,3 +1,4 @@
+import { isActiveMember } from "@/domain/team";
 import { canSeeActivity } from "@/services/activity-service";
 import type {
   Alert,
@@ -15,33 +16,30 @@ import {
 
 export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
   const projects = data.projects.filter((p) => canSeeProject(me, p));
+  const tasks = data.tasks.filter((t) => canSeeTask(me, t, data));
+  const taskIds = new Set(tasks.map((t) => t.id));
   const visible: WorkspaceData = {
     activity: data.activity.filter((event) => canSeeActivity(data, me, event)),
     members: data.members
-      .filter((m) => !m.archived && m.name !== "Engineer")
+      .filter(isActiveMember)
       .sort((a, b) => a.name.localeCompare(b.name, "pt"))
-      .map(({ id, name, role, email }) => ({
+      .map(({ id, name, role, email, githubLogin }) => ({
         id,
         name,
         role,
         email,
+        ...(githubLogin ? { githubLogin } : {}),
       })),
     projects,
-    tasks: data.tasks.filter((t) => canSeeTask(me, t, data)),
+    tasks,
     taskComments: data.taskComments.filter((comment) =>
-      data.tasks.some(
-        (task) => task.id === comment.taskId && canSeeTask(me, task, data),
-      ),
+      taskIds.has(comment.taskId),
     ),
     taskAttachments: data.taskAttachments.filter((attachment) =>
-      data.tasks.some(
-        (task) => task.id === attachment.taskId && canSeeTask(me, task, data),
-      ),
+      taskIds.has(attachment.taskId),
     ),
     taskActivity: data.taskActivity.filter((activity) =>
-      data.tasks.some(
-        (task) => task.id === activity.taskId && canSeeTask(me, task, data),
-      ),
+      taskIds.has(activity.taskId),
     ),
     meetings: data.meetings.filter((m) => canSeeMeeting(me, m)),
     organizations: data.organizations,

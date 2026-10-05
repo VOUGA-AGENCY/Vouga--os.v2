@@ -1,93 +1,53 @@
-# Integrações operacionais
+# Vouga OS v2
 
-Consultar [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) para a auditoria da stack, estado real, configuração das contas, limites e proposta de hosting. Esta especificação substitui as descrições de Home/Calendar/Capture abaixo: Home sem alertas/notas permanentes, Office/Contacto, Agent partilhado, Activity e Telegram.
+Workspace interno da Vouga Agency, com Home, Tasks, Calendar, CRM e Projects. Next.js 16, React 19, TypeScript e CSS semântico, com temas dark/light. Produção: https://os.vouga-agency.pt.
 
-# Vouga OS
+## Desenvolvimento
 
-**Capturar rápido. Organizar automaticamente. Mostrar apenas o que importa.**
-
-Nova base independente do sistema operativo interno da Vouga Agency. Esta edição é funcional e exclusivamente local: sessões com dois perfis, dados persistidos neste computador e exemplos fictícios. Não contém histórico Git, credenciais, dados de clientes nem ligações ao Supabase, Google ou GitHub do projeto anterior.
-
-## Abrir
-
-Requer Bun **1.3.14** (o runtime usado no desenvolvimento).
+Requer Bun 1.3.14. Instalar dependências com `bun install --frozen-lockfile`. Com `.env.local` já configurado, executar:
 
 ```sh
-bun install --frozen-lockfile
-bun run setup
-bun run dev
+bun run dev -- --port 3001
 ```
 
-Abre **http://127.0.0.1:3100**. O servidor escuta apenas neste computador. Se as dependências já estiverem instaladas, basta `bun run dev`.
+Abrir http://127.0.0.1:3001. A porta padrão do script é 3100. Para uma demonstração isolada sem dados empresariais, usar `bun run setup` e armazenamento local; não executar setup por cima da configuração de produção existente.
 
-| Conta local            | Perfil   |
-| ---------------------- | -------- |
-| `miguel@vouga.local`   | Admin    |
-| `afonso@vouga.local`   | Admin    |
-| `engineer@vouga.local` | Engineer |
+## Equipa e acesso
 
-Palavra-passe inicial das três contas: `vouga-local-2026`. São contas de demonstração sem relação com contas reais. Para usar outro valor **antes da primeira inicialização**, altera `VOUGA_DEMO_PASSWORD` em `.env.local` (mínimo 12 caracteres). Alterar a variável posteriormente não altera os hashes já guardados.
+Miguel e Roque são admins. Ana, Pedro e Vasco são engineers. Roque conserva o ID histórico `afonso`. Perfis arquivados não aparecem nos seletores e não podem iniciar sessão. A remoção de um membro preserva o identificador histórico e reatribui trabalho, sem apagar clientes, projetos ou tasks.
 
-## Experiência
+O servidor valida sessões e permissões. O login atual aceita email/password através do Supabase Auth e mantém o caminho interno de utilizador/password; estes dois caminhos ainda precisam de consolidação. Não há passwords ou chaves de demonstração publicadas neste documento.
 
-- **Home:** My Day e Inbox de atenção, com notas em post-its na zona inferior. O dia reúne tarefas, reuniões e lembretes pessoais; a Inbox apresenta alertas progressivos e capturas por confirmar.
-- **Tasks:** entidade única com Board por defeito ou lista, agrupamento, filtros, ordenação e mudança de estado por drag-and-drop. O painel lateral reúne detalhes, comentários, ficheiros e atividade.
-- **Calendar:** vistas Week e Month, seleção de calendários pessoais, criação por clique ou arrasto e indicadores discretos de deadlines. No mês, selecionar um dia abre a sua agenda num painel sem sair da grelha. Os participantes determinam em que calendários aparece o evento; o criador pode marcar para outra pessoa sem participar. Eventos podem ser privados ou partilhados com a equipa.
-- **Projects:** projetos ativos na sidebar; progresso calculado a partir das tasks, vistas List/Board e painel lateral de task.
-- **CRM:** tabela compacta de empresas, estado e última nota. Mudanças de estado exigem nota, que entra na timeline. Eventos marcados na empresa entram no Calendar e na timeline.
-- **Capture:** botão permanente ou `⌘K` / `Ctrl+K`, por texto ou ditado quando o browser suportar reconhecimento de voz. Uma frase pode propor vários registos associados. A revisão é sempre obrigatória. Informação ambígua vai para a Inbox.
-- **Notas:** na Home, privadas por defeito ou partilhadas com destinatários escolhidos. Só o autor pode editar. As antigas páginas Notes e Inbox redirecionam para Home.
-- **Lembretes:** derivados de tarefas, reuniões, follow-ups e prazos de projetos; dispensar ou adiar uma hora. Cada reunião tem um único aviso que evolui de amanhã para hoje, uma hora e dez minutos antes. Os avisos são internos à aplicação.
-- **Perfis:** Miguel e Afonso são admins; Vasco, Patrick, Ana e Pedro são engineers. Os novos acessos usam nome@vouga.local e a palavra-passe configurada para a demonstração local. A antiga conta Engineer é preservada com os seus dados.
-- **Companion:** `/painel` continua disponível para o companion macOS existente; o botão flutuante foi removido do workspace.
+## Fluxos
 
-### Barra de menus do macOS
+- **Home:** My tasks (cinco, In progress → To do, incluindo sem prazo), Next event com contexto, Needs me (Review/PRs/Agent) e Follow-ups vencidos. Inbox apenas para capturas por organizar. Resumo manual abaixo; sem centro de notificações nem parede de notas. Em Settings → GitHub, associar o username uma vez para identificar PR reviews.
+- **Tasks:** vários responsáveis, estado, prioridade, dimensão, prazo e contexto opcionais. Board por defeito, List, filtros, drag-and-drop, comentários, anexos e Activity. `ownerId` conserva o primeiro responsável para compatibilidade; `assigneeIds` é a lista efetiva usada nos filtros, Agent, resumo e Telegram.
+- **Visibility:** `Team` segue as permissões do projeto e atribuição; `Private` é uma task pessoal só do utilizador; `Board` é visível exclusivamente a Miguel e Roque, atribuída a um deles ou aos dois, sem projeto. Board é uma visibilidade, distinta da vista Kanban.
+- **Calendar:** Month por defeito e Week. Office/Contacto sincronizam com Google; calendários pessoais ficam no OS. Um evento pode ter vários destinos. Admin vê todos; engineer vê Contacto e o próprio pessoal. Participantes internos definem My Day e destinatários Telegram.
+- **Projects:** acesso direto na sidebar, tasks Board/List e Activity unificada com GitHub; progresso calculado pelas tasks.
+- **CRM:** empresas e timeline; etapas New → Contacted → Meeting → Proposal → Client → Dormant. Uma mudança de estado exige nota. Agendar evento associa calendário e histórico da empresa.
+- **Agent/Voice:** `⌘K`/`Ctrl+K`, painel global, tools internas com validação de permissões. Web e Telegram partilham Agent e transcrição. Informação ambígua/destrutiva pede confirmação.
+- **Notas:** acessíveis por pesquisa, contexto e Agent. Privadas ou partilhadas com pessoas escolhidas; só o autor edita.
 
-Inclui um companion local em `desktop/macos`. Com o servidor a funcionar:
+## Gravação e desempenho
 
-```sh
-bun run desktop:build
-open "desktop/macos/build/Vouga OS.app"
-```
+Editar uma task, projeto, empresa, evento, nota ou ligação PR existente grava automaticamente: texto ao sair do campo, seleções imediatamente com pequena agregação. Estado de gravação e erros ficam visíveis; Retry conserva o draft. Criar registos, apagar e confirmar mudanças CRM continuam a exigir ação explícita. Versões impedem sobrescrever uma edição concorrente.
 
-Requer as Apple Command Line Tools. O símbolo Vouga aparece na barra de menus e abre o painel compacto. Entra com uma das contas admin. A sessão do companion é independente da sessão do browser. [Detalhes e limites](desktop/macos/README.md).
+A navegação principal reutiliza o workspace em memória. GET usa uma única leitura e ETag por utilizador/revisão; sem alterações responde 304. POST autentica dentro da transação e devolve uma projeção da gravação confirmada, sem releitura. Se o cliente tem a revisão correta recebe apenas deltas filtrados; caso contrário recebe snapshot completo. Atualização externa ocorre com a tab visível a cada 60 segundos e ao recuperar foco, com limitação de pedidos. A persistência ainda lê o Store completo por transação: otimizações futuras de consultas não estão implementadas.
 
-## Captura e voz
+## Integrações e dados
 
-O interpretador é **determinístico e local**, sem LLM: propõe tipos, datas e ligações para revisão. Reconhece expressões comuns em português, incluindo dias da semana e datas com mês, e pode criar reunião mais tarefa de preparação na mesma captura. Nunca inventa uma hora ausente. O microfone usa o reconhecimento de voz disponibilizado pelo browser, quando existir; o serviço de transcrição pode depender do fornecedor do browser. Áudio não é guardado no Vouga OS. Se o browser não suportar ditado, o texto continua disponível.
+Supabase guarda dados no schema isolado `vouga_next` do projeto existente, através de RPCs exclusivas do servidor. Não se alteram tabelas antigas. O adaptador JSON existe apenas para desenvolvimento local; nunca usar `.local` como BD em Vercel.
 
-Isto não é interpretação geral de linguagem natural. Frases fora dos padrões ficam na Inbox para tratamento posterior. A associação e o dono devem ser confirmados antes de guardar.
+Google Calendar API, GitHub App/webhooks, Groq Agent/transcrição e Telegram têm serviços próprios. Activity guarda acontecimentos; não envia notificações por si. Telegram envia templates sem AI na criação de objetos para os destinatários relevantes, agenda diária às 08:00 e lembrete individual uma hora antes de reuniões, com deduplicação e revalidação de acesso. Exige scheduler e webhook públicos configurados.
 
-## Estrutura
-
-```text
-src/app/           Rotas Next.js, autenticação e endpoints
-src/components/    Shell, quatro áreas principais, formulários, captura e painel
-src/domain/        Objetos, validação, permissões, tempo e sugestões de captura
-src/application/   Casos de uso, autenticação e contratos de integração
-src/projections/   Leitura por perfil, lembretes e exportação de calendário
-src/persistence/   Repositório local, transações, seed e hashes de passwords
-src/foundation/    Tokens visuais e utilitários HTTP
-desktop/macos/    Companion nativo da barra de menus
-tests/            Regras, permissões, datas, gravação e concorrência
-docs/             Análise da origem, arquitetura, produto e operação local
-```
+Secrets só no backend. `.env.local`, `.local`, exportações empresariais e backups não entram no Git. Ver [Integrações](docs/INTEGRATIONS.md), [Arquitetura](docs/ARCHITECTURE.md) e [Acesso](docs/TEAM-ACCESS.md).
 
 ## Verificar
 
 ```sh
-bun run typecheck
-bun run lint
-bun run test
+bun run check
 bun run build
 ```
 
-`bun run start` executa o build local na mesma porta. Para formatar: `bun run format`.
-
-## O que ainda não está ligado
-
-Google Calendar não recebe reuniões desta edição; a delegação funciona na **agenda interna**. Os PRs são links com estado manual, sem sincronização automática. Os lembretes não são push e não são entregues com a aplicação fechada. O companion requer o servidor local ativo. Integrações e distribuição autónoma do desktop estão descritas em `docs/PRODUCT.md`.
-
-O armazenamento de ficheiro é adequado a esta edição local. Para uso real partilhado, a próxima etapa é um novo backend com autenticação de produção, políticas de acesso, backup e adaptadores de integração. Não apontar esta base ao Supabase anterior nem aplicar as migrations antigas.
-
-[Arquitetura e permissões](docs/ARCHITECTURE.md) · [Análise do código anterior](docs/SOURCE-REVIEW.md) · [Dados locais](docs/LOCAL-DATA.md) · [Verificação](docs/VERIFICATION.md)
+Os testes externos usam providers simulados; passar testes não prova saúde das ligações em produção. O companion macOS em `desktop/macos` reutiliza `/painel` e o mesmo backend.
