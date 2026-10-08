@@ -11,7 +11,7 @@ export function PasswordForm() {
         if (busy) return;
         const form = new FormData(e.currentTarget);
         if (form.get("password") !== form.get("confirmation")) {
-          setError("As passwords não coincidem.");
+          setError("Passwords do not match.");
           return;
         }
         setBusy(true);
@@ -32,14 +32,14 @@ export function PasswordForm() {
           setError(
             err instanceof Error
               ? err.message
-              : "Não foi possível alterar a password.",
+              : "Could not change the password.",
           );
           setBusy(false);
         }
       }}
     >
       <label>
-        Nova password
+        New password
         <input
           name="password"
           type="password"
@@ -50,7 +50,7 @@ export function PasswordForm() {
         />
       </label>
       <label>
-        Confirmar password
+        Confirm password
         <input
           name="confirmation"
           type="password"
@@ -66,7 +66,7 @@ export function PasswordForm() {
         </p>
       )}
       <button className="button-primary login-submit" disabled={busy}>
-        {busy ? "A guardar…" : "Guardar e entrar"}
+        {busy ? "Saving…" : "Save and sign in"}
       </button>
     </form>
   );

@@ -269,7 +269,7 @@ describe("private tasks and calendar destinations", () => {
     expect(simplifyWorkspace(data, now).resolvedAutomaticInbox).toBe(1);
     expect(data.tasks[0].createdBy).toBe("engineer");
     expect(data.tasks[0].ownerId).toBe("miguel");
-    expect(workspaceFor(data, data.members[0], now).members).toHaveLength(6);
+    expect(workspaceFor(data, data.members[0], now).members).toHaveLength(5);
     expect(data.inbox.find((i) => i.id === "real")?.resolved).toBe(false);
     expect(data.accounts.find((a) => a.memberId === "engineer")?.disabled).toBe(
       true,

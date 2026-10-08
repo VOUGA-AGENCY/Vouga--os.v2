@@ -2,13 +2,13 @@ import { AppError } from "@/domain/validation";
 import { api, required, type ServiceContext } from "./runtime";
 export async function transcribe(ctx: ServiceContext, audio: Blob) {
   if (!audio.size || audio.size > 24 * 1024 * 1024)
-    throw new AppError("Áudio vazio ou superior a 24 MB.", 413);
+    throw new AppError("Audio is empty or larger than 24 MB.", 413);
   if (
     !/^(audio\/(webm|ogg|mpeg|mp4|wav|x-wav|flac)|video\/webm)(;.*)?$/.test(
       audio.type,
     )
   )
-    throw new AppError("Formato de áudio não suportado.");
+    throw new AppError("Unsupported audio format.");
   const form = new FormData();
   form.set(
     "model",

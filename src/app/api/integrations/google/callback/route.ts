@@ -14,13 +14,13 @@ const escape = (value: string) =>
 export async function GET(request: Request) {
   const url = new URL(request.url);
   if (url.searchParams.has("error"))
-    return errorResponse(new AppError("Autorização Google cancelada."));
+    return errorResponse(new AppError("Google authorization canceled."));
   const state = url.searchParams.get("state") || "",
     code = url.searchParams.get("code") || "";
   if (!/^[a-f0-9]{64}$/.test(state) || !code || code.length > 4096)
-    return errorResponse(new AppError("Resposta OAuth inválida."));
+    return errorResponse(new AppError("Invalid OAuth response."));
   return new Response(
-    `<!doctype html><html lang="pt"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Ligar Google Calendar · Vouga OS</title><body><main><h1>Concluir ligação ao Google Calendar</h1><p>Continua com a tua sessão Vouga OS. As permissões da conta não mudam.</p><form method="post" action="/api/integrations/google/callback"><input type="hidden" name="state" value="${escape(state)}"><input type="hidden" name="code" value="${escape(code)}"><button type="submit">Concluir ligação</button></form></main></body></html>`,
+    `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Connect Google Calendar · Vouga OS</title><body><main><h1>Complete Google Calendar connection</h1><p>Continue with your Vouga OS session. Account permissions will not change.</p><form method="post" action="/api/integrations/google/callback"><input type="hidden" name="state" value="${escape(state)}"><input type="hidden" name="code" value="${escape(code)}"><button type="submit">Complete connection</button></form></main></body></html>`,
     {
       headers: {
         "Content-Type": "text/html; charset=utf-8",
@@ -47,9 +47,9 @@ export async function POST(request: Request) {
     const message =
       error instanceof AppError
         ? error.message
-        : "Não foi possível concluir a ligação. Consulta o estado em Settings.";
+        : "Could not complete the connection. Check its status in Settings.";
     return new Response(
-      `<!doctype html><html lang="pt"><meta charset="utf-8"><title>Ligação Google · Vouga OS</title><body><main><h1>Ligação ao Google Calendar</h1><p>${escape(message)}</p><p>Se já concluíste este pedido, a ligação pode estar ativa.</p><a href="/settings">Voltar a Settings e verificar ligação</a></main></body></html>`,
+      `<!doctype html><html lang="en"><meta charset="utf-8"><title>Google connection · Vouga OS</title><body><main><h1>Google Calendar connection</h1><p>${escape(message)}</p><p>If you already completed this request, the connection may be active.</p><a href="/settings">Return to Settings and check the connection</a></main></body></html>`,
       {
         status: error instanceof AppError ? error.status : 500,
         headers: {

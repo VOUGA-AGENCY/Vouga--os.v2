@@ -27,12 +27,12 @@ export async function verifySupabasePassword(
       },
     );
   } catch {
-    throw new AppError("O serviço de autenticação está indisponível.", 503);
+    throw new AppError("The authentication service is unavailable.", 503);
   }
 
   if ([400, 401].includes(response.status)) return null;
   if (!response.ok)
-    throw new AppError("O serviço de autenticação recusou o pedido.", 503);
+    throw new AppError("The authentication service rejected the request.", 503);
 
   const payload = (await response.json()) as PasswordGrantResponse;
   return payload.user?.email?.trim().toLowerCase() || null;

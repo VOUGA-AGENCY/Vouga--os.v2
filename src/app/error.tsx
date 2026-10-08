@@ -2,7 +2,7 @@
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <main className="standalone">
-      <h1>Não foi possível abrir o workspace.</h1>
+      <h1>Could not open the workspace.</h1>
       <p>
         Confirma que executaste <code>bun run setup</code> e tenta novamente.
       </p>

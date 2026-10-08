@@ -15,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { applySnapshotPatch } from "@/projections/changes";
 import type { CaptureKind, Snapshot } from "@/domain/model";
 import { WorkspaceContext, type Editor } from "./context";
 import { Today } from "./today";
@@ -28,6 +29,7 @@ import { IntegrationSettings } from "./settings";
 import { RecordEditor } from "./editors";
 import { CompactPanel } from "./compact-panel";
 import { Dialog } from "./dialog";
+import { flushEdits } from "./autosave";
 import { PersonAvatar } from "./person-avatar";
 
 const navigation = [
@@ -45,8 +47,13 @@ export function Workspace({
 }) {
   const [data, setData] = useState(initial);
   const [view, setView] = useState(initialView);
+  const lastPath = useRef(`/${initialView}`);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
+  const current = useRef(initial);
+  const saveQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const localVersions = useRef(new Map<string, Map<number, number>>());
+  const lastRefresh = useRef(0);
   const [captureKind, setCaptureKind] = useState<
     CaptureKind | null | undefined
   >(undefined);
@@ -67,12 +74,22 @@ export function Workspace({
     confirmation?.resolve(value);
     setConfirmation(null);
   };
+  const [toast, setToast] = useState("");
   const [project, setProject] = useState<string | null>(null);
   useEffect(() => {
     const navigate = () => {
-      setView(window.location.pathname.slice(1));
-      setProject(null);
-      setEditor(null);
+      const path = window.location.pathname;
+      void flushEdits()
+        .then(() => {
+          lastPath.current = path;
+          setView(path.slice(1));
+          setProject(null);
+          setEditor(null);
+        })
+        .catch((error) => {
+          window.history.pushState(null, "", lastPath.current);
+          setToast(error.message);
+        });
     };
     window.addEventListener("popstate", navigate);
     return () => window.removeEventListener("popstate", navigate);
@@ -80,100 +97,179 @@ export function Workspace({
   const [help, setHelp] = useState(false);
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
-  const [toast, setToast] = useState("");
   const [connection, setConnection] = useState("");
-  const accept = useCallback(
-    (snapshot: Snapshot) =>
-      setData((old) => (snapshot.revision >= old.revision ? snapshot : old)),
-    [],
-  );
+  const accept = useCallback((snapshot: Snapshot) => {
+    if (snapshot.revision < current.current.revision) return;
+    current.current = snapshot;
+    setData(snapshot);
+  }, []);
   const capture = useCallback((kind?: CaptureKind) => {
     setCaptureKind(kind ?? null);
   }, []);
   const edit = useCallback((item: Editor) => {
-    setSearch(false);
-    setEditor(item);
-    setCaptureKind(undefined);
+    void flushEdits()
+      .then(() => {
+        setSearch(false);
+        setEditor(item);
+        setCaptureKind(undefined);
+      })
+      .catch((error) => setToast(error.message));
   }, []);
   const openProject = useCallback((id: string) => {
-    setSearch(false);
-    setProject(id);
-    setEditor(null);
+    void flushEdits()
+      .then(() => {
+        setSearch(false);
+        setProject(id);
+        setEditor(null);
+      })
+      .catch((error) => setToast(error.message));
   }, []);
-  const command = useCallback(
-    async (action: string, values: Record<string, unknown>) => {
-      if (inFlight.current) throw new Error("Aguarda a gravação em curso.");
-      inFlight.current = true;
-      setBusy(true);
-      try {
-        const response = await fetch("/api/workspace", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, values }),
-        });
-        if (response.status === 401) {
-          window.location.assign(
-            view === "painel" ? "/login?next=painel" : "/login",
-          );
-          throw new Error("Volta a entrar.");
-        }
-        const result = await response.json();
-        if (!response.ok)
-          throw new Error(result.error ?? "Não foi possível guardar.");
-        accept(result.snapshot);
-        setToast(result.message);
-        setConnection("");
-      } finally {
-        inFlight.current = false;
-        setBusy(false);
-      }
-    },
-    [accept, view],
-  );
   const refresh = useCallback(async () => {
-    const response = await fetch("/api/workspace", { cache: "no-store" });
-    if (response.ok) accept(await response.json());
-  }, [accept]);
-  useEffect(() => {
-    let cancelled = false;
-    const controller = new AbortController();
-    async function refresh() {
-      if (document.hidden || inFlight.current) return;
-      try {
-        const response = await fetch("/api/workspace", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        if (response.status === 401) {
-          window.location.assign(
-            view === "painel" ? "/login?next=painel" : "/login",
-          );
-          return;
-        }
-        if (!response.ok) throw new Error("indisponível");
-        const next = await response.json();
-        if (!cancelled) {
-          accept(next);
-          setConnection("");
-        }
-      } catch {
-        if (!cancelled)
-          setConnection(
-            "Sem ligação ao servidor. Os registos já guardados estão seguros. A tentar novamente…",
-          );
+    if (
+      document.hidden ||
+      inFlight.current ||
+      Date.now() - lastRefresh.current < 1000
+    )
+      return;
+    lastRefresh.current = Date.now();
+    try {
+      const response = await fetch("/api/workspace", {
+        cache: "no-store",
+        headers: {
+          "If-None-Match": `"${current.current.me.id}:${current.current.revision}"`,
+        },
+      });
+      if (response.status === 401) {
+        window.location.assign("/login");
+        return;
       }
+      // A refresh started before a write must not race its delta response.
+      if (inFlight.current) return;
+      if (response.status !== 304) {
+        if (!response.ok) throw new Error("Unavailable");
+        const next: Snapshot = await response.json();
+        for (const id of localVersions.current.keys()) {
+          const old = [
+            ...current.current.tasks,
+            ...current.current.meetings,
+            ...current.current.projects,
+            ...current.current.organizations,
+            ...current.current.notes,
+            ...current.current.pullRequests,
+          ].find((item) => item.id === id);
+          const updated = [
+            ...next.tasks,
+            ...next.meetings,
+            ...next.projects,
+            ...next.organizations,
+            ...next.notes,
+            ...next.pullRequests,
+          ].find((item) => item.id === id);
+          if (old?.version !== updated?.version)
+            localVersions.current.delete(id);
+        }
+        accept(next);
+      }
+      setConnection("");
+    } catch {
+      setConnection(
+        "No connection to the server. Saved records are safe. Retrying…",
+      );
     }
-    const timer = setInterval(() => void refresh(), 30000);
-    document.addEventListener("visibilitychange", refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      cancelled = true;
-      controller.abort();
-      clearInterval(timer);
-      document.removeEventListener("visibilitychange", refresh);
-      window.removeEventListener("focus", refresh);
+  }, [accept]);
+  const command = useCallback(
+    (action: string, values: Record<string, unknown>) => {
+      const run = async () => {
+        inFlight.current = true;
+        setBusy(true);
+        try {
+          const response = await fetch("/api/workspace", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Workspace-Revision": String(current.current.revision),
+            },
+            body: JSON.stringify({
+              action,
+              values: (() => {
+                const map = localVersions.current.get(String(values.id));
+                let version = Number(values.version);
+                while (map?.has(version)) version = map.get(version)!;
+                return map && Number.isFinite(version)
+                  ? { ...values, version }
+                  : values;
+              })(),
+            }),
+          });
+          if (response.status === 401) {
+            window.location.assign("/login");
+            throw new Error("Please sign in again.");
+          }
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error ?? "Could not save.");
+          const snapshot =
+            result.snapshot ??
+            applySnapshotPatch(current.current, result.patch);
+          const entityId =
+            typeof values.id === "string"
+              ? values.id
+              : typeof values.taskId === "string"
+                ? values.taskId
+                : null;
+          if (entityId) {
+            const name = (
+              {
+                task: "tasks",
+                meeting: "meetings",
+                organization: "organizations",
+                project: "projects",
+                note: "notes",
+                pr: "pullRequests",
+              } as const
+            )[action.split(".")[0] as "task"];
+            const previous = current.current[name]?.find(
+              (item) => item.id === entityId,
+            );
+            const updated = snapshot[name]?.find(
+              (item: { id: string }) => item.id === entityId,
+            );
+            if (previous && updated && updated.version > previous.version) {
+              const versions =
+                localVersions.current.get(entityId) ??
+                new Map<number, number>();
+              versions.set(previous.version, updated.version);
+              localVersions.current.set(entityId, versions);
+            }
+          }
+          accept(snapshot);
+          // Frequent autosaves have inline feedback; keep toasts for explicit actions.
+          if (!values.id || !action.endsWith(".save")) setToast(result.message);
+          setConnection("");
+          return snapshot as Snapshot;
+        } finally {
+          inFlight.current = false;
+          setBusy(false);
+        }
+      };
+      const pending = saveQueue.current.then(run, run);
+      saveQueue.current = pending.catch(() => undefined);
+      return pending;
+    },
+    [accept],
+  );
+  useEffect(() => {
+    const focus = () => {
+      if (Date.now() - lastRefresh.current > 10000) void refresh();
     };
-  }, [accept, view]);
+    const timer = setInterval(() => void refresh(), 60000);
+    document.addEventListener("visibilitychange", focus);
+    window.addEventListener("focus", focus);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", focus);
+      window.removeEventListener("focus", focus);
+    };
+  }, [refresh]);
   useEffect(() => {
     function keyboard(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -199,6 +295,28 @@ export function Workspace({
     <Link
       key={path}
       href={`/${path}`}
+      prefetch={false}
+      onClick={(event) => {
+        if (
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          event.button !== 0
+        )
+          return;
+        event.preventDefault();
+        void flushEdits()
+          .then(() => {
+            window.history.pushState(null, "", `/${path}`);
+            lastPath.current = `/${path}`;
+            setView(path);
+            setProject(null);
+            setEditor(null);
+            setCaptureKind(undefined);
+          })
+          .catch((error) => setToast(error.message));
+      }}
       className={`navigation-item ${!project && view === path ? "active" : ""}`}
       aria-current={!project && view === path ? "page" : undefined}
     >
@@ -216,7 +334,7 @@ export function Workspace({
         id: t.id,
         type: "task" as const,
         title: t.title,
-        meta: "Tarefa",
+        meta: "Task",
       })),
     ...data.organizations
       .filter((o) => matching(`${o.name} ${o.person}`))
@@ -224,7 +342,7 @@ export function Workspace({
         id: o.id,
         type: "organization" as const,
         title: o.name,
-        meta: "Contacto",
+        meta: "Contact",
       })),
     ...data.projects
       .filter((p) => matching(p.name))
@@ -232,7 +350,7 @@ export function Workspace({
         id: p.id,
         type: "project" as const,
         title: p.name,
-        meta: "Projeto",
+        meta: "Project",
       })),
     ...data.notes
       .filter((n) => matching(`${n.title} ${n.body}`))
@@ -240,7 +358,7 @@ export function Workspace({
         id: n.id,
         type: "note" as const,
         title: n.title,
-        meta: "Nota",
+        meta: "Note",
       })),
     ...data.meetings
       .filter((m) => matching(m.title))
@@ -248,7 +366,7 @@ export function Workspace({
         id: m.id,
         type: "meeting" as const,
         title: m.title,
-        meta: "Compromisso",
+        meta: "Event",
       })),
   ].slice(0, 15);
   return (
@@ -312,10 +430,10 @@ export function Workspace({
           }}
         >
           <a className="skip-link" href="#main">
-            Saltar para o conteúdo
+            Skip to content
           </a>
           <aside className="sidebar">
-            <Link href="/" aria-label="Vouga OS — Hoje" className="brand">
+            <Link href="/" aria-label="Vouga OS — Today" className="brand">
               <Image
                 src="/vouga-mark-white.png"
                 alt="Vouga"
@@ -325,7 +443,7 @@ export function Workspace({
                 priority
               />
             </Link>
-            <nav aria-label="Navegação principal" className="sidebar-nav">
+            <nav aria-label="Main navigation" className="sidebar-nav">
               {links}
             </nav>
             <div className="sidebar-projects">
@@ -362,18 +480,26 @@ export function Workspace({
                 </span>
                 <button
                   className="icon-button logout-button"
-                  aria-label="Terminar sessão"
+                  aria-label="Sign out"
                   onClick={async () => {
                     try {
+                      try {
+                        await flushEdits();
+                      } catch (error) {
+                        setToast(
+                          error instanceof Error
+                            ? error.message
+                            : "Could not save.",
+                        );
+                        return;
+                      }
                       const response = await fetch("/api/session", {
                         method: "DELETE",
                       });
                       if (!response.ok) throw new Error();
                       window.location.assign("/login");
                     } catch {
-                      setToast(
-                        "Não foi possível terminar sessão. Tenta novamente.",
-                      );
+                      setToast("Could not sign out. Try again.");
                     }
                   }}
                 >
@@ -397,7 +523,7 @@ export function Workspace({
               <div className="header-actions">
                 <button
                   className="icon-button"
-                  aria-label="Pesquisar no workspace"
+                  aria-label="Search workspace"
                   onClick={() => {
                     setSearch(true);
                     setQuery("");
@@ -444,7 +570,7 @@ export function Workspace({
               <span>Local workspace</span>
             </footer>
           </div>
-          <nav className="bottom-navigation" aria-label="Navegação móvel">
+          <nav className="bottom-navigation" aria-label="Mobile navigation">
             {links}
           </nav>
         </div>
@@ -467,7 +593,11 @@ export function Workspace({
           key={editor.id ?? "new"}
           id={editor.id}
           projectId={editor.projectId}
-          onClose={() => setEditor(null)}
+          onClose={() => {
+            void flushEdits()
+              .then(() => setEditor(null))
+              .catch((error) => setToast(error.message));
+          }}
         />
       )}
       {editor?.type === "organization" &&
@@ -475,14 +605,22 @@ export function Workspace({
         data.organizations.some((item) => item.id === editor.id) && (
           <CompanyPanel
             company={data.organizations.find((item) => item.id === editor.id)!}
-            onClose={() => setEditor(null)}
+            onClose={() => {
+              void flushEdits()
+                .then(() => setEditor(null))
+                .catch((error) => setToast(error.message));
+            }}
           />
         )}
       {editor?.type === "note" && (
         <NoteComposer
           key={editor.id ?? "new"}
           editor={editor}
-          onClose={() => setEditor(null)}
+          onClose={() => {
+            void flushEdits()
+              .then(() => setEditor(null))
+              .catch((error) => setToast(error.message));
+          }}
         />
       )}
       {editor &&
@@ -492,7 +630,11 @@ export function Workspace({
           <RecordEditor
             key={`${editor.type}:${editor.id ?? "new"}`}
             editor={editor}
-            onClose={() => setEditor(null)}
+            onClose={() => {
+              void flushEdits()
+                .then(() => setEditor(null))
+                .catch((error) => setToast(error.message));
+            }}
           />
         )}
       {confirmation && (
@@ -524,7 +666,7 @@ export function Workspace({
           <span>{toast}</span>
           <button
             className="icon-button"
-            aria-label="Fechar mensagem"
+            aria-label="Dismiss message"
             onClick={() => setToast("")}
           >
             <X size={14} />
@@ -532,16 +674,16 @@ export function Workspace({
         </div>
       )}
       {search && (
-        <Dialog title="Encontrar no workspace" onClose={() => setSearch(false)}>
+        <Dialog title="Find in workspace" onClose={() => setSearch(false)}>
           <div className="dialog-body">
             <label className="search-field global-search">
               <Search size={18} />
               <input
-                aria-label="Pesquisar"
+                aria-label="Search"
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Tarefa, pessoa, projeto ou nota…"
+                placeholder="Task, person, project, or note…"
               />
             </label>
             <div className="search-results">
@@ -559,68 +701,74 @@ export function Workspace({
                 </button>
               ))}
               {!results.length && (
-                <p className="quiet-empty">
-                  Sem resultados para esta pesquisa.
-                </p>
+                <p className="quiet-empty">No results for this search.</p>
               )}
             </div>
           </div>
         </Dialog>
       )}
       {help && (
-        <Dialog title="Vouga OS · versão local" onClose={() => setHelp(false)}>
+        <Dialog title="Vouga OS · local version" onClose={() => setHelp(false)}>
           <div className="dialog-body form-stack">
             <p>
-              Tarefas, projetos, relações e calendário da Vouga num só
+              Vouga tasks, projects, relationships, and calendar in one
               workspace.
             </p>
             <dl className="about-list">
               <div>
-                <dt>Dados do workspace</dt>
+                <dt>Workspace data</dt>
                 <dd>
-                  Guardados na base configurada no servidor. A aplicação está a
-                  correr neste computador.
+                  Stored in the database configured on the server. The app is
+                  running on this computer.
                 </dd>
               </div>
               <div>
-                <dt>Texto e voz</dt>
+                <dt>Text and voice</dt>
                 <dd>
-                  Texto e áudio usam o mesmo Agent. A ligação pode ser
-                  verificada em Settings.
+                  Text and audio use the same Agent. The connection can be
+                  checked in Settings.
                 </dd>
               </div>
               <div>
-                <dt>Integrações</dt>
+                <dt>Integrations</dt>
                 <dd>
-                  Consulta o estado de Google Calendar, GitHub, Telegram e AI em
-                  Settings.
+                  Check the status of Google Calendar, GitHub, Telegram, and AI
+                  in Settings.
                 </dd>
               </div>
               <div>
-                <dt>Painel compacto</dt>
+                <dt>Compact panel</dt>
                 <dd>
-                  Disponível dentro do browser e numa janela própria. Inclui um
-                  companion macOS na pasta desktop/macos para abrir o painel na
-                  barra de menus.
+                  Available in the browser and in its own window. Includes a
+                  macOS companion in desktop/macos for opening the panel from
+                  the menu bar.
                 </dd>
               </div>
             </dl>
             {data.me.role === "admin" && (
               <a className="button-secondary" href="/api/backup" download>
-                Exportar dados visíveis em JSON
+                Export visible data as JSON
               </a>
             )}
             <button
               className="text-button"
               onClick={async () => {
+                try {
+                  await flushEdits();
+                } catch (error) {
+                  setToast(
+                    error instanceof Error ? error.message : "Could not save.",
+                  );
+                  return;
+                }
                 const response = await fetch("/api/session", {
                   method: "DELETE",
                 });
                 if (response.ok) window.location.assign("/login");
-                else setToast("Não foi possível terminar sessão.");
+                else setToast("Could not sign out.");
               }}
             >
-              Terminar sessão
+              Sign out
               <LogOut size={15} />
             </button>
           </div>

@@ -84,7 +84,7 @@ export function Agenda() {
       (task) =>
         task.dueOn === day &&
         task.status !== "done" &&
-        task.ownerId === data.me.id,
+        (task.ownerId === data.me.id || (task.assigneeIds?.includes(data.me.id) ?? false)),
     ).length;
   const shift = (direction: number) => {
     setInspectedDay(null);
@@ -122,7 +122,7 @@ export function Agenda() {
         <div>
           <h1>Calendar</h1>
           <span>
-            {new Intl.DateTimeFormat("pt-PT", {
+            {new Intl.DateTimeFormat("en-GB", {
               month: "long",
               year: "numeric",
               timeZone: "Europe/Lisbon",
@@ -131,7 +131,7 @@ export function Agenda() {
         </div>
         <button onClick={() => edit({ type: "meeting", date: selected })}>
           <Plus size={15} />
-          Novo evento
+          New event
         </button>
       </header>
       <div className="calendar-controls">
@@ -164,20 +164,20 @@ export function Agenda() {
       <div className="calendar-filter-toolbar">
         <span>
           {calendars.length === options.length
-            ? "Todos os calendários"
+            ? "All calendars"
             : calendars.length > 3
-              ? `${calendars.length} calendários`
+              ? `${calendars.length} calendars`
               : options
                   .filter((option) => calendars.includes(option.id))
                   .map((option) => option.label)
-                  .join(" · ") || "Nenhum calendário"}
+                  .join(" · ") || "No calendars"}
         </span>
         <Popover
-          label="Filtrar calendários"
+          label="Filter calendars"
           icon={<ListFilter size={15} />}
           active={calendars.length !== options.length}
         >
-          <h3>Calendários</h3>
+          <h3>Calendars</h3>
           <button
             onClick={() => setCalendars(options.map((option) => option.id))}
           >
@@ -278,7 +278,7 @@ export function Agenda() {
             </div>
           </div>
           <div className="calendar-all-day">
-            <span>Todo o dia</span>
+            <span>All day</span>
             {days.map((day) => (
               <div key={day}>
                 {meetingsOn(day)
@@ -425,7 +425,7 @@ export function Agenda() {
                       (task) =>
                         task.dueOn === inspectedDay &&
                         task.status !== "done" &&
-                        task.ownerId === data.me.id,
+                        (task.ownerId === data.me.id || (task.assigneeIds?.includes(data.me.id) ?? false)),
                     )
                     .map((task) => (
                       <button

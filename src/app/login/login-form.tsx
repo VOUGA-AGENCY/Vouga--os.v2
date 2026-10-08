@@ -33,7 +33,7 @@ export function LoginForm({
           );
         } catch (error) {
           setError(
-            error instanceof Error ? error.message : "Não foi possível entrar.",
+            error instanceof Error ? error.message : "Could not sign in.",
           );
           setBusy(false);
         }
@@ -53,7 +53,7 @@ export function LoginForm({
         />
       </label>
       <label>
-        Palavra-passe
+        Password
         <input
           name="password"
           type="password"
@@ -67,7 +67,7 @@ export function LoginForm({
         </p>
       )}
       <button className="button-primary login-submit" disabled={busy}>
-        {busy ? "A entrar…" : "Entrar"}
+        {busy ? "Signing in…" : "Sign in"}
         <ArrowRight size={16} />
       </button>
     </form>

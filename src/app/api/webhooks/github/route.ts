@@ -9,15 +9,15 @@ export async function POST(request: Request) {
       raw = await boundedBody(request, 2 * 1024 * 1024),
       signature = `sha256=${createHmac("sha256", required(ctx.env, "GITHUB_WEBHOOK_SECRET")).update(raw).digest("hex")}`;
     if (!equal(signature, request.headers.get("X-Hub-Signature-256") || ""))
-      throw new AppError("Assinatura inválida.", 403);
+      throw new AppError("Invalid signature.", 403);
     const event = request.headers.get("X-GitHub-Event") || "",
       delivery = request.headers.get("X-GitHub-Delivery") || "";
     if (!/^[\w-]{1,100}$/.test(delivery))
-      throw new AppError("Entrega inválida.");
+      throw new AppError("Invalid delivery.");
     if (["push", "pull_request", "pull_request_review"].includes(event)) {
       const body = JSON.parse(Buffer.from(raw).toString());
       if (String(body.installation?.id) !== ctx.env.GITHUB_INSTALLATION_ID)
-        throw new AppError("Instalação não autorizada.", 403);
+        throw new AppError("Unauthorized installation.", 403);
       await ctx.repo.transact((data) =>
         enqueue(
           data,

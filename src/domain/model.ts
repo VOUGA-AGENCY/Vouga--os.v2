@@ -15,6 +15,7 @@ export interface Member {
   email: string;
   role: Role;
   archived?: boolean;
+  githubLogin?: string;
   telegramChatId?: string;
   telegramUserId?: string;
 }
@@ -34,11 +35,11 @@ export const taskStatuses = {
   done: "Done",
 } as const;
 export const projectStatuses = {
-  planned: "Por iniciar",
-  active: "Em curso",
-  waiting: "À espera do cliente",
-  delivered: "Entregue",
-  archived: "Arquivado",
+  planned: "Planned",
+  active: "In progress",
+  waiting: "Waiting for client",
+  delivered: "Delivered",
+  archived: "Archived",
 } as const;
 export const stages = {
   new: "New",
@@ -52,17 +53,36 @@ export type TaskStatus = keyof typeof taskStatuses;
 export type ProjectStatus = keyof typeof projectStatuses;
 export type Stage = keyof typeof stages;
 export type TaskPriority = "none" | "low" | "medium" | "high" | "urgent";
+export const taskSizes = {
+  xs: "XS",
+  s: "S",
+  m: "M",
+  l: "L",
+  xl: "XL",
+} as const;
+export type TaskSize = keyof typeof taskSizes;
+export const taskSizeLabels: Record<TaskSize, string> = {
+  xs: "XS · Extra small",
+  s: "S · Small",
+  m: "M · Medium",
+  l: "L · Large",
+  xl: "XL · Extra large",
+};
 export interface Task extends Entity {
   title: string;
   body: string;
   status: TaskStatus;
   ownerId: string;
+  assigneeIds?: string[];
   dueOn: string | null;
   projectId: string | null;
   organizationId: string | null;
-  visibility?: "private" | "team";
+  visibility?: "private" | "team" | "board";
   priority?: TaskPriority;
+  size?: TaskSize | null;
   pullRequestId?: string | null;
+  issueNumber?: number | null;
+  issueUrl?: string | null;
 }
 export interface TaskComment extends Entity {
   taskId: string;
@@ -289,14 +309,14 @@ export interface Snapshot extends WorkspaceData {
   pendingActions: Omit<PendingAction, "values" | "action">[];
 }
 export const captureKinds = {
-  task: "Tarefa",
-  meeting: "Reunião",
-  event: "Evento",
-  contact: "Contacto",
-  crm: "Atualização CRM",
-  note: "Nota",
-  update: "Atualização de projeto",
-  reminder: "Lembrete",
+  task: "Task",
+  meeting: "Meeting",
+  event: "Event",
+  contact: "Contact",
+  crm: "CRM update",
+  note: "Note",
+  update: "Project update",
+  reminder: "Reminder",
   inbox: "Inbox",
 } as const;
 export type CaptureKind = keyof typeof captureKinds;

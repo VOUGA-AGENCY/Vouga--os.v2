@@ -2,7 +2,7 @@ import type { Entity, Store } from "@/domain/model";
 import { addDays, dateKey, toInstant } from "@/domain/time";
 import { hashPassword } from "./password";
 
-const engineers = ["Vasco", "Patrick", "Ana", "Pedro"];
+const engineers = ["Vasco", "Ana", "Pedro"];
 export function addTeamProfiles(data: Store, password: string) {
   for (const name of engineers) {
     const id = name.toLowerCase();
@@ -151,6 +151,8 @@ export function createSeed(
         dueOn: today,
         projectId: null,
         organizationId: "norte",
+        priority: "medium",
+        size: "m",
       },
       {
         ...base("flow"),
@@ -161,6 +163,8 @@ export function createSeed(
         dueOn: today,
         projectId: "operations",
         organizationId: "vale",
+        priority: "high",
+        size: "l",
       },
       {
         ...base("access"),
@@ -171,6 +175,8 @@ export function createSeed(
         dueOn: addDays(today, -1),
         projectId: "operations",
         organizationId: "vale",
+        priority: "urgent",
+        size: "s",
       },
       {
         ...base("visit"),
@@ -181,6 +187,8 @@ export function createSeed(
         dueOn: addDays(today, 2),
         projectId: "discovery",
         organizationId: "atlas",
+        priority: "low",
+        size: "xs",
       },
     ],
     meetings: [

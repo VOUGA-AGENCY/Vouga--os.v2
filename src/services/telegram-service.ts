@@ -1,3 +1,4 @@
+import { isActiveMember } from "@/domain/team";
 import { creationNotice, type CreationNotice } from "./creation-notifications";
 import { canSeeMeeting } from "@/domain/permissions";
 import { uniqueEvents, calendarLabel } from "@/domain/calendars";
@@ -48,7 +49,7 @@ async function telegram<T>(
       body: JSON.stringify(body),
     },
   );
-  if (!result.ok) throw new AppError("Telegram recusou o pedido.", 502);
+  if (!result.ok) throw new AppError("Telegram rejected the request.", 502);
   return result.result;
 }
 export async function connectBot(ctx: ServiceContext) {
@@ -124,7 +125,7 @@ export async function applyTelegramUpdate(
       const link = data.telegramLinks.find(
         (item) => item.hash === hash(start[1]) && item.expiresAt > ctx.now(),
       );
-      if (!link) throw new AppError("Código de ligação inválido.", 403);
+      if (!link) throw new AppError("Invalid link code.", 403);
       if (
         data.members.some(
           (member) =>
@@ -132,10 +133,11 @@ export async function applyTelegramUpdate(
             member.id !== link.memberId,
         )
       )
-        throw new AppError("Esta conta Telegram já está ligada.", 409);
+        throw new AppError("This Telegram account is already linked.", 409);
       const member = data.members.find(
-        (member) => member.id === link.memberId,
-      )!;
+        (member) => member.id === link.memberId && isActiveMember(member),
+      );
+      if (!member) throw new AppError("This profile is no longer active.", 403);
       member.telegramChatId = String(chat.id);
       member.telegramUserId = String(userId);
       data.telegramLinks = data.telegramLinks.filter((item) => item !== link);
@@ -151,7 +153,8 @@ export async function applyTelegramUpdate(
   const me = (await ctx.repo.read()).members.find(
     (member) =>
       member.telegramChatId === String(chat.id) &&
-      member.telegramUserId === String(userId),
+      member.telegramUserId === String(userId) &&
+      isActiveMember(member),
   );
   if (!me) return;
   if (callback?.data) {
@@ -190,13 +193,12 @@ export async function applyTelegramUpdate(
       !/^[\w/-]+\.[\w]+$/.test(file.file_path) ||
       file.file_path.includes("..")
     )
-      throw new AppError("Ficheiro Telegram inválido.");
+      throw new AppError("Invalid Telegram file.");
     const response = await ctx.fetch(
       `https://api.telegram.org/file/bot${required(ctx.env, "TELEGRAM_BOT_TOKEN")}/${file.file_path}`,
       { signal: AbortSignal.timeout(25000) },
     );
-    if (!response.ok)
-      throw new AppError("Não foi possível obter o áudio.", 502);
+    if (!response.ok) throw new AppError("Could not retrieve the audio.", 502);
     const bytes = await boundedBody(
       new Request("https://local.invalid", {
         method: "POST",
@@ -290,7 +292,7 @@ export function meetingReminders(data: Store, now: string) {
     text: string;
   }[] = [];
   for (const member of data.members) {
-    if (!member.telegramChatId || member.archived) continue;
+    if (!member.telegramChatId || !isActiveMember(member)) continue;
     const events = uniqueEvents(
       data.meetings
         .filter(
@@ -302,7 +304,9 @@ export function meetingReminders(data: Store, now: string) {
         )
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
     );
-    const todayEvents = events.filter((event) => dateKey(event.startsAt) === today);
+    const todayEvents = events.filter(
+      (event) => dateKey(event.startsAt) === today,
+    );
     if (hour === 8 && minute < 15 && todayEvents.length)
       jobs.push({
         key: `daily:${member.id}:${today}`,
@@ -317,7 +321,7 @@ export function meetingReminders(data: Store, now: string) {
           key: `hour:${member.id}:${event.groupId ?? event.id}:${event.startsAt}`,
           memberId: member.id,
           chatId: member.telegramChatId,
-          text: `${event.title} começa dentro de 1 hora\n${timeLabel(event.startsAt)} · ${calendarLabel(event, data.members)}`,
+          text: `${event.title} starts within 1 hour\n${timeLabel(event.startsAt)} · ${calendarLabel(event, data.members)}`,
         });
     }
   }
@@ -329,8 +333,19 @@ export async function deliverReminders(ctx: ServiceContext) {
     await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId);
 }
 
-export async function deliverCreationNotice(ctx: ServiceContext, key: string, notice: CreationNotice) {
+export async function deliverCreationNotice(
+  ctx: ServiceContext,
+  key: string,
+  notice: CreationNotice,
+) {
   const message = creationNotice(await ctx.repo.read(), notice);
   if (!message) return;
-  await sendOnce(ctx, key, message.chatId, message.text, undefined, message.memberId);
+  await sendOnce(
+    ctx,
+    key,
+    message.chatId,
+    message.text,
+    undefined,
+    message.memberId,
+  );
 }

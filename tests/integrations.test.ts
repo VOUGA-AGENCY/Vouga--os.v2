@@ -225,7 +225,7 @@ describe("operational calendars and queue", () => {
     );
     await expect(pushCalendarEvent(ctx, data.meetings[0].id)).rejects.toThrow();
     expect(data.meetings[0].syncStatus).toBe("conflict");
-    expect(data.inbox[0].body).toContain("Conflito");
+    expect(data.inbox[0].body).toContain("Conflict");
   });
   it("does not process a live leased job twice", async () => {
     enqueue(data, "event", "calendar.pull", { calendarKey: "office" }, now);
@@ -249,14 +249,14 @@ describe("Agent domain tools", () => {
         id: "visit",
         status: "done",
       }),
-    ).rejects.toThrow("sem acesso");
+    ).rejects.toThrow("inaccessible");
     await expect(
       executeAgentTool(ctx, data.members[0], "createTask", {
         title: "x",
         ownerId: "miguel",
         sql: "DROP TABLE",
       }),
-    ).rejects.toThrow("não permitido");
+    ).rejects.toThrow("not allowed");
   });
   it("requires confirmation for cancellation, rechecks actor and handles repeat confirmation", async () => {
     const result = (await executeAgentTool(
@@ -471,7 +471,7 @@ it("does not restore a cancelled event when the Agent receives cancel twice", as
     executeAgentTool(ctx, data.members[0], "cancelCalendarEvent", {
       id: data.meetings[0].id,
     }),
-  ).rejects.toThrow("já está cancelado");
+  ).rejects.toThrow("already canceled");
   expect(data.meetings[0].cancelled).toBe(true);
 });
 

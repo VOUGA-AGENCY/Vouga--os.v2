@@ -13,7 +13,10 @@ export type Editor = {
 export interface WorkspaceContextValue {
   data: Snapshot;
   busy: boolean;
-  command: (action: string, values: Record<string, unknown>) => Promise<void>;
+  command: (
+    action: string,
+    values: Record<string, unknown>,
+  ) => Promise<Snapshot>;
   edit: (editor: Editor) => void;
   capture: (kind?: CaptureKind) => void;
   openProject: (id: string) => void;
@@ -27,6 +30,6 @@ export const WorkspaceContext = createContext<WorkspaceContextValue | null>(
 );
 export function useWorkspace() {
   const value = useContext(WorkspaceContext);
-  if (!value) throw new Error("Workspace indisponível.");
+  if (!value) throw new Error("Workspace unavailable.");
   return value;
 }

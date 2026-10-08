@@ -1,69 +1,48 @@
-# Arquitetura da nova base
+# Arquitetura atual
 
-## Decisão central
+## Camadas
 
-Uma aplicação pequena, com uma fonte de verdade por objeto e duas leituras adequadas à pessoa. O admin vê prioridades da empresa e acompanha execução; o engineer vê execução relevante para si e mantém autonomia no CRM. Não há módulos de finanças, Governance, Context Engine, Sprints, Roadmap, Decisions, Vault, gestão de uploads ou Google Docs.
+`src/domain` define entidades, permissões e datas. `src/application` valida e executa comandos. `src/projections` filtra a informação antes de sair do servidor. `src/persistence` implementa transações locais e Supabase. `src/services` contém Activity, Calendar, GitHub, Agent, Telegram e transcrição. Componentes não têm credenciais de providers.
 
-Mantêm-se Next.js, React, TypeScript e Lucide nas versões instaladas e verificadas no projeto de origem. A identidade mantém o fundo quente, contraste discreto, tipografia semibold no máximo, laranja reservado a ação, estados em pequenos pontos e navegação móvel.
+## Escrita e leitura
 
-## Fluxo de escrita
+GET workspace valida host/sessão na mesma leitura que gera a projeção. O ETag é específico da pessoa e revisão; uma revisão igual devolve 304. Não há cache partilhada de dados privados.
 
-1. O browser envia um comando conhecido para `/api/workspace`.
-2. A fronteira HTTP limita o body real a 64 KiB e valida origem, host local e sessão.
-3. A identidade e a função são obtidas no servidor. O comando ignora qualquer função enviada pelo cliente.
-4. `executeCommand` valida campos, referências, permissões e versão do objeto.
-5. O repositório faz a transação completa e substitui atomicamente o ficheiro.
-6. A resposta contém uma projeção filtrada para essa pessoa, sem contas, hashes ou sessões.
+POST valida origem e token, autentica dentro da transação e executa apenas comandos conhecidos. A projeção retornada é calculada no estado que acabou de ser gravado. Se a revisão do cliente coincide com a anterior, a resposta contém inserções/alterações/remoções dos registos visíveis. Em caso de revisão diferente devolve toda a projeção para reconciliar. Não se devolvem accounts, sessions, secrets ou jobs internos.
 
-Operações de captura múltipla são atómicas: todos os registos ou nenhum. A chave de idempotência por pessoa impede duplicação numa repetição do mesmo pedido. Edições normais têm `version`; um formulário aberto não adota silenciosamente uma versão mais recente durante o polling.
+As edições usam versões por entidade. O draft de autosave agrega mudanças, serializa pedidos e avança a versão apenas depois de uma gravação confirmada. Erros mantêm campos pendentes, impedem fechar o editor silenciosamente e permitem Retry. O cliente não adota versões de outros utilizadores para sobrescrever alterações concorrentes. Criações e operações destrutivas são explícitas.
 
-## Objetos
+A navegação não volta a pedir a página ao servidor; back/forward atualiza a vista. Refresh externo a cada 60 segundos quando visível e ao recuperar foco. O ETag reduz transferência, mas o backend ainda lê o Store completo para verificar a revisão. A transação Supabase continua a comparar uma revisão global e fazer CAS; ainda pode repetir perante concorrência. Não há promessa de tempo de resposta em produção.
 
-| Objeto          | Responsabilidade                                                           |
-| --------------- | -------------------------------------------------------------------------- |
-| Member          | Identidade e função admin/engineer                                         |
-| Task            | Ação, responsável, estado, data e contexto                                 |
-| Meeting         | Reunião ou evento, horário, titular do calendário, participantes e criador |
-| Organization    | CRM compacto: organização, contacto principal, etapa e próximo passo       |
-| Interaction     | Histórico ligado à organização                                             |
-| Project         | Entrega, equipa, objetivo, estado, prazo e próxima ação                    |
-| ProjectUpdate   | Contexto escrito da evolução de um projeto                                 |
-| Note            | Texto pessoal/partilhado, projeto opcional, destaque e arquivo             |
-| PullRequest     | Link validado para GitHub e estado atualizado manualmente                  |
-| Reminder        | Lembrete explícito pessoal                                                 |
-| ReminderReceipt | Estado pessoal de lembrete dispensado/adiado                               |
+## Tasks e permissões
 
-O CRM desta base guarda um contacto principal por organização. Vários contactos por organização podem ser acrescentados se o uso real justificar essa complexidade.
+Uma entidade Task em todo o produto. `assigneeIds` contém todos os responsáveis; em registos históricos ausentes, usa-se `[ownerId]`. `ownerId` é o primeiro responsável por compatibilidade.
 
-## Permissões
+- Team: admins e responsáveis, ou membros de projeto autorizado.
+- Private: apenas o responsável, sem projeto e atribuição exclusiva a quem grava.
+- Board: exclusivamente os IDs Miguel/Roque, independentemente de quem está atribuído. Apenas eles podem criar/editar e ser responsáveis. Sem projeto. Outros admins futuros também não ganham acesso automaticamente.
 
-| Capacidade                        | Admin                              | Engineer                                     |
-| --------------------------------- | ---------------------------------- | -------------------------------------------- |
-| Hoje                              | Tarefas/projetos/agenda da empresa | Tarefas próprias e projetos em que participa |
-| Projetos                          | Todos                              | Responsável ou membro da equipa              |
-| Tarefas                           | Todas                              | Próprias ou de um projeto acessível          |
-| CRM                               | Partilhado                         | Partilhado, com filtro pessoal               |
-| Reuniões visíveis                 | Todas                              | Titular, participante ou criador             |
-| Criar reunião para admin          | Sim                                | Sim, com criador preservado                  |
-| Editar/cancelar reunião           | Todas                              | Titular ou criador                           |
-| Notas partilhadas                 | Gerais e de projetos acessíveis    | Gerais e de projetos acessíveis              |
-| Notas privadas                    | Só as próprias                     | Só as próprias                               |
-| Lembretes                         | Pessoais                           | Pessoais                                     |
-| Painel compacto                   | Sim                                | Não; redireciona para Hoje                   |
-| Exportação JSON de dados visíveis | Sim                                | Não                                          |
+Comentários, anexos, pesquisa, Activity, Agent e Telegram usam as mesmas permissões. Tasks num projeto exigem responsáveis pertencentes à equipa desse projeto.
 
-Uma tarefa de projeto só pode ser atribuída a alguém da equipa desse projeto. Reatribuir trabalho ou escolher participantes não altera a função de uma pessoa. Não há endpoint genérico de escrita nem gestão de funções pelo cliente.
+Equipa ativa: Miguel/Roque (admin), Ana/Pedro/Vasco (engineer). Roque mantém ID afonso. Perfis removidos são tombstones anónimos/arquivados apenas para integridade histórica; sem contas OS, sessões ou ligação Telegram. Não se apagam utilizadores Supabase do projeto antigo partilhado.
 
-## Tempo e lembretes
+## Calendar e integrações
 
-Datas de tarefas e follow-ups são datas sem hora. Reuniões e lembretes explícitos são instantes UTC. Todos os campos de horário são interpretados em **Europe/Lisbon**, independentemente do fuso do computador. Horas inexistentes na mudança para horário de verão são rejeitadas. Na repetição de uma hora no outono, a conversão é determinística, mas esta interface não permite escolher explicitamente entre as duas ocorrências; é uma melhoria antes de suportar operações nessa janela.
+Office e Contacto são calendários operacionais Google. Personal é interno ao OS. Admin vê todos, engineer apenas Contacto e o seu Personal. Destinos múltiplos têm groupId para não duplicar agenda nem lembretes.
 
-Os avisos derivam dos objetos oficiais; não são uma segunda lista de tarefas. As confirmações pertencem à pessoa. Alterar a data de um objeto produz um novo aviso. O polling acontece com o separador visível; ao voltar ao OS, os avisos pendentes reaparecem. Não existe scheduler externo, push, email ou garantia de entrega com a aplicação fechada.
+Activity é memória estruturada por entidade/origem/actor/timestamp. Jobs externos são idempotentes e executados fora das transações. Web e Telegram partilham Agent/Voice; o modelo escolhe tools, o backend valida. Telegram é a única interface de lembretes do OS. Criações usam mensagens fixas sem tokens; reuniões têm resumo diário às 08:00 e aviso uma hora antes, Europe/Lisbon. O scheduler deve correr regularmente; a implementação atual ainda tem uma janela curta para o lembrete de uma hora.
 
-## Persistência e evolução
+## Persistência e autenticação
 
-`WorkspaceRepository` separa os casos de uso do armazenamento. A implementação local usa JSON versionado, lock de diretório e substituição atómica por rename. Funciona entre processos no mesmo computador e não sobrescreve um ficheiro corrompido com dados novos. Não é um armazenamento para Vercel/serverless ou múltiplas máquinas; não oferece durabilidade contra falha elétrica equivalente a uma base transacional com WAL.
+Produção usa schema vouga_next no Supabase existente. RPCs read/commit só para chave de servidor; commits usam deltas JSONB e revisão global. Acesso do browser passa pelos endpoints autenticados. O adaptador local usa JSON, lock e rename atómico; exclusivo de desenvolvimento.
 
-Uma nova implementação PostgreSQL/Supabase deve manter os invariantes, as transações e os filtros de acesso e acrescentar RLS. As migrations do projeto anterior não fazem parte desta base.
+Login atual valida email/password via Supabase Auth ou credenciais internas. Sessões OS são tokens aleatórios cujo hash fica no servidor. A consolidação numa única identidade Supabase permanente continua pendente. Sessions, autoria e versões não são fornecidas pelo cliente.
 
-O companion macOS usa AppKit e WKWebView e abre `/painel`. Partilha a fonte de verdade e a API da web; só a sessão de login é própria do WebKit. Não duplica os objetos nem introduz permissões de integração.
+Instantes UTC, datas sem hora YYYY-MM-DD, timezone Europe/Lisbon. Secrets e backups fora do Git; seguir docs/INTEGRATIONS.md para autorização, webhooks, scheduler e reconexão.
+
+
+## Home operacional
+
+`domain/home.ts` deriva as quatro áreas exclusivamente do Snapshot autorizado, sem pedidos adicionais. Eventos agrupados são deduplicados após seleção dos participantes. Relógio local mantém o próximo compromisso atualizado mesmo com respostas ETag 304. Alterações de task reutilizam commands e a fila existente; não existe backend/LLM paralelo.
+
+Continue e nota rápida foram retirados da Home, incluindo o tracking de itens recentes. Notas existentes conservam os fluxos de contexto, pesquisa e Agent. `member.github` valida e associa apenas o próprio username; este campo opcional cabe nos registos JSON existentes do Supabase, sem migração SQL. É identidade de filtragem, nunca autenticação/permissão GitHub.

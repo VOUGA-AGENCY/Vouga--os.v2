@@ -47,7 +47,7 @@ export async function beginGoogleOAuth(
   key: CalendarKey,
 ) {
   if (me.role !== "admin" || !operationalCalendars[key])
-    throw new AppError("Sem autorização.", 403);
+    throw new AppError("Unauthorized.", 403);
   required(ctx.env, "INTEGRATION_ENCRYPTION_KEY");
   required(ctx.env, "GOOGLE_CLIENT_SECRET");
   const state = randomBytes(32).toString("hex"),
@@ -87,7 +87,7 @@ export async function completeGoogleOAuth(
   code: string,
 ) {
   if (!/^[a-f0-9]{64}$/.test(state) || !code || code.length > 4096)
-    throw new AppError("Resposta OAuth inválida.", 400);
+    throw new AppError("Invalid OAuth response.", 400);
   const pending = await ctx.repo.transact((data) => {
     const index = data.oauthStates.findIndex(
       (item) =>
@@ -96,17 +96,17 @@ export async function completeGoogleOAuth(
         item.expiresAt > ctx.now(),
     );
     if (index < 0 || me.role !== "admin")
-      throw new AppError("Pedido OAuth inválido ou expirado.", 403);
+      throw new AppError("Invalid or expired OAuth request.", 403);
     const item = data.oauthStates[index];
     if (item.status === "completed") return { ...item };
     if (item.status === "processing")
       throw new AppError(
-        "A ligação já está a ser concluída. Consulta o estado em Settings antes de voltar a tentar.",
+        "The connection is already being completed. Check its status in Settings before trying again.",
         409,
       );
     if (item.status === "failed")
       throw new AppError(
-        "Este pedido já foi utilizado. Inicia uma nova ligação em Settings.",
+        "This request has already been used. Start a new connection in Settings.",
         409,
       );
     const claimed = { ...item };
@@ -138,12 +138,12 @@ export async function completeGoogleOAuth(
     });
     if (primary.id.toLowerCase() !== calendarId(pending.calendarKey))
       throw new AppError(
-        `Autoriza a conta ${calendarId(pending.calendarKey)}.`,
+        `Authorize the ${calendarId(pending.calendarKey)} account.`,
         403,
       );
     if (!token.refresh_token)
       throw new AppError(
-        "Google não devolveu um refresh token. Volta a autorizar a ligação.",
+        "Google did not return a refresh token. Authorize the connection again.",
       );
     await ctx.repo.transact((data) => {
       const id = `google:${pending.calendarKey}`;
@@ -203,7 +203,7 @@ async function accessToken(ctx: ServiceContext, key: CalendarKey) {
   );
   if (!connection?.credentials)
     throw new AppError(
-      `${operationalCalendars[key].label} ainda não está ligado.`,
+      `${operationalCalendars[key].label} is not connected yet.`,
       503,
     );
   const credentials = unseal<{ refreshToken: string }>(
@@ -233,7 +233,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
   );
   if (!meeting || meeting.calendarKey === "personal") return;
   if (meeting.syncStatus === "conflict")
-    throw new AppError("Conflito de calendário por resolver.", 409);
+    throw new AppError("Unresolved calendar conflict.", 409);
   const key = meeting.calendarKey ?? "office",
     target = calendarId(key);
   const connection = (await ctx.repo.read()).externalConnections.find(
@@ -241,7 +241,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
   );
   if (!connection?.credentials)
     throw new AppError(
-      "Calendário não ligado; alteração guardada localmente.",
+      "Calendar not connected; change saved locally.",
       503,
     );
   try {
@@ -256,7 +256,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
       const oldKey = Object.keys(operationalCalendars).find(
         (k) => calendarId(k as CalendarKey) === meeting.googleCalendarId,
       ) as CalendarKey;
-      if (!oldKey) throw new AppError("Calendário de origem desconhecido.");
+      if (!oldKey) throw new AppError("Unknown source calendar.");
       const oldToken = await accessToken(ctx, oldKey);
       await api(
         ctx,
@@ -382,7 +382,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
             createdBy: event.createdBy,
             ownerId: event.createdBy,
             resolved: false,
-            body: `Conflito no evento ${event.title} (${event.id}). Revê a versão Google antes de voltar a guardar.`,
+            body: `Conflict in event ${event.title} (${event.id}). Review the Google version before saving again.`,
           });
       }
     });
@@ -447,7 +447,7 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
   }
   if (pageToken || !nextSyncToken)
     throw new AppError(
-      "Sincronização incompleta; o cursor não foi avançado.",
+      "Incomplete synchronization; the cursor was not advanced.",
       503,
     );
   await ctx.repo.transact((data) => {
@@ -503,7 +503,7 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
           reminderMinutes: 0,
           visibility: "team",
         }),
-        title: external.summary || "Sem título",
+        title: external.summary || "Untitled",
         body: external.description || "",
         startsAt: new Date(startsAt).toISOString(),
         endsAt: new Date(endsAt).toISOString(),
@@ -693,15 +693,15 @@ export async function resolveGoogleConflict(
   const data = await ctx.repo.read(),
     event = data.meetings.find((item) => item.id === id);
   if (!event || !event.googleEventId || !event.googleCalendarId)
-    throw new AppError("Evento externo não encontrado.", 404);
+    throw new AppError("External event not found.", 404);
   if (
     me.role !== "admin" &&
     event.createdBy !== me.id &&
     event.calendarOwnerId !== me.id
   )
-    throw new AppError("Sem autorização.", 403);
+    throw new AppError("Unauthorized.", 403);
   if (event.calendarKey === "personal")
-    throw new AppError("Este calendário não usa Google.");
+    throw new AppError("This calendar does not use Google.");
   const key = event.calendarKey ?? "office",
     token = await accessToken(ctx, key);
   const remote = await api<GoogleEvent>(
@@ -723,7 +723,7 @@ export async function resolveGoogleConflict(
           job.leaseUntil! > ctx.now(),
       )
     )
-      throw new AppError("Aguarda o fim da sincronização.", 409);
+      throw new AppError("Wait for synchronization to finish.", 409);
     for (const job of store.integrationJobs.filter(
       (job) => job.kind === "calendar.push" && job.payload.meetingId === id,
     )) {
@@ -731,7 +731,7 @@ export async function resolveGoogleConflict(
       job.payload = {};
     }
     if (keep === "google") {
-      current.title = remote.summary || "Sem título";
+      current.title = remote.summary || "Untitled";
       current.body = remote.description || "";
       if (remote.start?.dateTime)
         current.startsAt = new Date(remote.start.dateTime).toISOString();
@@ -768,7 +768,7 @@ export async function resolveGoogleConflict(
       entityId: id,
       projectId: current.projectId,
       companyId: current.organizationId,
-      summary: `${current.title} · escolhida versão ${keep}`,
+      summary: `${current.title} · kept ${keep} version`,
       metadata: { keep },
     });
   });

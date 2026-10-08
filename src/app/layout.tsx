@@ -6,7 +6,7 @@ import "./theme.css";
 import "./mobile.css";
 export const metadata: Metadata = {
   title: "Vouga OS",
-  description: "O essencial da Vouga, num só lugar.",
+  description: "The essentials of Vouga, in one place.",
   icons: { icon: "/vouga-mark-white.png" },
   robots: { index: false, follow: false },
 };
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-PT" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

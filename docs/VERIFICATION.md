@@ -54,7 +54,6 @@ O estado Git da pasta `Vouga--os` foi confirmado limpo. Não foram criados commi
 
 Local integration worker PID 48857 stopped and confirmed absent. Enqueued an Office calendar.pull at 15:22:15 UTC; no manual invocation of the cron endpoint during the test. The public scheduler completed it in one attempt, with Office lastSyncAt 15:23:04 UTC and connected status. The local worker remains stopped. This verifies cloud queue processing independently of the Mac; it does not by itself constitute an end-to-end test of timed Telegram reminder delivery.
 
-
 ## Calendar/privacy update · 2026-09-27
 
 - 93 tests pass: server permissions for private tasks/comments/files/activity, Office isolation, personal calendars, multi-calendar create/update/delete, scoped edits without indirect Google writes to hidden calendars, all-day/recurring occurrence edits, calendar import without Inbox noise, deduplicated reminders, GitHub commit backfill and idempotent cleanup.
@@ -73,3 +72,27 @@ Local integration worker PID 48857 stopped and confirmed absent. Enqueued an Off
 - 105 tests passed, including 11 new notification checks with mocked Telegram only. Typecheck and lint passed. No live Telegram messages were sent for testing.
 - Browser: email sign-in worked against an isolated local fixture; login contains only white Vouga logo, email, password and submit. Login keeps dark contrast even when the workspace preference is light.
 - Requires deployment of the updated public worker/backend before cloud creation notices run. Existing queue/store structures suffice; no SQL migration or new scheduler needed.
+
+## Current local update · 2026-10-04
+
+- Multiple task assignees work across form serialization, Agent queries, personal summaries and Telegram creation notices. Board visibility is restricted server-side to Miguel/Roque, including comments/files/Activity; engineers and other admin IDs are excluded.
+- Existing-record autosave queues/coalesces writes, retains failed drafts and optimistic versions, and flushes before navigation/closing. Creating and deleting remain explicit. Comments/attachments have their own entities and do not invalidate task field versions.
+- Workspace GET authenticates from one read and supports per-user ETags. POST authenticates within the write transaction and returns filtered changes when revisions match, with a full snapshot fallback. No extra post-commit database read. Main navigation reuses client state.
+- UI browser validation could not run: computer-use inventory has no available browsers/apps in this session. HTTP and automated checks are distinct from visual validation. No production deployment or Git push is performed by this update.
+
+- Final validation: TypeScript, ESLint and 127 tests passed. Production build passed. Login responds HTTP 200 on 127.0.0.1:3001.
+- Applied member removal in existing vouga_next: five active profiles, no Patrick OS account or session, seven reassigned records. Protected backup created before mutation; repeat preview reports zero additional reassignment. Legacy Supabase Auth/tables remain unchanged.
+- Read-only payload experiment: full Miguel snapshot 377,931 bytes; one synthetic task title/version patch 562 bytes (not a saved command, so no new Activity row). This measures transfer size, not live latency.
+
+## Home operacional · 2026-10-05
+
+- Implementadas as seis áreas autorizadas: cinco tasks doing/todo (mesmo sem prazo), próximo evento com contexto, Review/PRs/confirmações do Agent, seguimentos existentes vencidos, três itens recentes e nota rápida privada. Inbox continua só para capturas por organizar; resumo abaixo das áreas.
+- O histórico recente guarda IDs/tipos por utilizador/browser, resolve apenas dados ainda autorizados e sincroniza tabs. Eventos terminados/cancelados e confirmações expiradas saem da Home pelo relógio local, sem novas leituras do backend.
+- PR reviews usam o username associado uma vez em Settings → GitHub; nenhuma identidade é inferida pela conta da organização. Campo opcional guardado nos registos JSON existentes, sem SQL novo.
+- TypeScript, ESLint e 135 testes (20 ficheiros) passaram. Casos novos verificam múltiplos responsáveis, ordem/limite, eventos agrupados e tempo, identidade GitHub, datas Lisbon, Activity em start/complete, privacidade/findNotes e histórico inacessível/eliminado.
+- Build de produção passou. Servidor local responde HTTP 200 em 127.0.0.1:3001/login. Validação visual indisponível: inventário computer-use sem apps/browsers e native pipe indisponível. Nenhuma publicação, commit/push ou mensagem Telegram de teste.
+
+
+## Simplificação da Home · 2026-10-05
+
+- Retirados Continue e a entrada de nota rápida por pedido do utilizador, incluindo tracking local e estilos exclusivos. My tasks, Next event, Needs me, Follow-ups, Inbox e resumo permanecem. Notas já guardadas não foram eliminadas.

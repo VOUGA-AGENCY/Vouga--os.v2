@@ -38,18 +38,18 @@ export function CompactPanel({
   return (
     <aside
       className={`compact-panel ${standalone ? "compact-panel-standalone" : ""}`}
-      aria-label="Painel rápido de Hoje"
+      aria-label="Today quick panel"
     >
       <header className="compact-header">
         <span className="compact-brand">
           vouga<span>os</span>
         </span>
-        <span className="row-meta">Hoje</span>
+        <span className="row-meta">Today</span>
         <div className="inline-actions">
           {!standalone && (
             <button
               className="icon-button"
-              aria-label="Abrir painel numa janela"
+              aria-label="Open panel in a window"
               onClick={() => {
                 window.open(
                   "/painel",
@@ -64,7 +64,7 @@ export function CompactPanel({
           {onClose && (
             <button
               className="icon-button"
-              aria-label="Fechar painel rápido"
+              aria-label="Close quick panel"
               onClick={onClose}
             >
               <X size={16} />
@@ -74,8 +74,8 @@ export function CompactPanel({
       </header>
       <div className="compact-body">
         <div className="compact-greeting">
-          <span className="eyebrow">À MÃO, {data.me.name.toUpperCase()}</span>
-          <h2>O essencial, agora.</h2>
+          <span className="eyebrow">AT HAND, {data.me.name.toUpperCase()}</span>
+          <h2>The essentials, now.</h2>
         </div>
         {next ? (
           <button
@@ -83,23 +83,23 @@ export function CompactPanel({
             onClick={() => edit({ type: "meeting", id: next.id })}
           >
             <span className="eyebrow">
-              {next.startsAt <= data.now ? "A DECORRER" : "PRÓXIMO COMPROMISSO"}
+              {next.startsAt <= data.now ? "IN PROGRESS" : "NEXT EVENT"}
             </span>
             <strong>{next.title}</strong>
             <span>
               {dateKey(next.startsAt) === today
-                ? "Hoje"
+                ? "Today"
                 : relativeDate(dateKey(next.startsAt), today)}{" "}
               · {timeLabel(next.startsAt)} — {timeLabel(next.endsAt)}
             </span>
             <ArrowUpRight size={16} />
           </button>
         ) : (
-          <p className="quiet-empty">Sem compromissos a seguir.</p>
+          <p className="quiet-empty">No upcoming events.</p>
         )}
         <section className="compact-section">
           <div className="section-heading">
-            <h3>Precisa de atenção</h3>
+            <h3>Needs attention</h3>
             <span className="section-count">{tasks.length}</span>
           </div>
           {tasks.length ? (
@@ -107,13 +107,13 @@ export function CompactPanel({
               .slice(0, 4)
               .map((t) => <TaskRow key={t.id} task={t} compact />)
           ) : (
-            <p className="quiet-empty">Tudo em dia.</p>
+            <p className="quiet-empty">Everything is up to date.</p>
           )}
         </section>
         {contacts.length > 0 && (
           <section className="compact-section">
             <div className="section-heading">
-              <h3>Retomar contacto</h3>
+              <h3>Follow up</h3>
             </div>
             {contacts.slice(0, 2).map((o) => (
               <button
@@ -131,7 +131,7 @@ export function CompactPanel({
       <footer className="compact-footer">
         <button className="button-primary" onClick={() => capture()}>
           <Plus size={16} />
-          Registar algo
+          Record something
         </button>
         <Link
           className="text-button"
@@ -139,7 +139,7 @@ export function CompactPanel({
           target={standalone ? "_blank" : undefined}
           onClick={onClose}
         >
-          Abrir OS
+          Open OS
           <ArrowUpRight size={14} />
         </Link>
       </footer>

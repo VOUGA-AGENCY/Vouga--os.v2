@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       (channel.resourceId && channel.resourceId !== resource) ||
       !/^\d+$/.test(message)
     )
-      throw new AppError("Canal inválido.", 403);
+      throw new AppError("Invalid channel.", 403);
     await ctx.repo.transact((store) =>
       enqueue(
         store,

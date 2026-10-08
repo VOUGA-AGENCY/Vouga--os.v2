@@ -14,23 +14,30 @@ export default async function Page({
   if (view.length === 1 && ["notas", "inbox"].includes(view[0])) redirect("/");
   if (
     view.length > 1 ||
-    !["", "tasks", "agenda", "trabalho", "contactos", "notas", "inbox", "painel", "settings"].includes(
-      view[0] ?? "",
-    )
+    ![
+      "",
+      "tasks",
+      "agenda",
+      "trabalho",
+      "contactos",
+      "notas",
+      "inbox",
+      "painel",
+      "settings",
+    ].includes(view[0] ?? "")
   )
     notFound();
-  const identity = await sessionIdentity(
-    (await cookies()).get(SESSION_COOKIE)?.value ?? "",
-  );
-  if (!identity) redirect(view[0] === "painel" ? "/login?next=painel" : "/login");
+  const token = (await cookies()).get(SESSION_COOKIE)?.value ?? "";
+  if (!/^[a-f0-9]{64}$/.test(token))
+    redirect(view[0] === "painel" ? "/login?next=painel" : "/login");
+  const data = await repository().read();
+  const identity = await sessionIdentity(token, data);
+  if (!identity)
+    redirect(view[0] === "painel" ? "/login?next=painel" : "/login");
   if (identity.mustChangePassword) redirect("/change-password");
   const me = identity.member;
   if (view[0] === "painel" && me.role !== "admin") redirect("/");
-  const snapshot = workspaceFor(
-    await repository().read(),
-    me,
-    new Date().toISOString(),
-  );
+  const snapshot = workspaceFor(data, me, new Date().toISOString());
   return (
     <Workspace
       key={view[0] ?? "today"}

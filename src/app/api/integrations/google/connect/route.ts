@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       key = choice(
         body.calendarKey,
         ["office", "contacto"] as const,
-        "Calendário",
+        "Calendar",
       );
     return Response.json({ url: await beginGoogleOAuth(runtime(), me, key) });
   } catch (error) {

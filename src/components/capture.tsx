@@ -36,15 +36,15 @@ export function Capture({
     );
   function preview() {
     if (!raw.trim()) {
-      setError("Escreve o que queres registar.");
+      setError("Write what you want to record.");
       return;
     }
     if (raw.trim().split(/\n+/).length > 10) {
-      setError("Usa até 10 linhas de cada vez. O texto continua guardado.");
+      setError("Use up to 10 lines at a time. Your text remains saved.");
       return;
     }
     const parsed = parseCapture(raw, data, data.me, data.now);
-    if (parsed.length > 10) { setError("A captura gerou mais de 10 registos. Divide o texto em duas partes."); return; }
+    if (parsed.length > 10) { setError("The capture generated more than 10 records. Split the text into two parts."); return; }
     if (initialKind && parsed.length === 1) parsed[0].kind = initialKind;
     setDrafts(parsed);
     setError("");
@@ -55,7 +55,7 @@ export function Capture({
     type Recognition = { lang: string; interimResults: boolean; start(): void; stop(): void; onresult: ((event: Result) => void) | null; onerror: (() => void) | null; onend: (() => void) | null };
     const browser = window as Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
     const Constructor = browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
-    if (!Constructor) { setError("Este browser não suporta ditado. Podes continuar por texto."); return; }
+    if (!Constructor) { setError("This browser does not support dictation. You can continue by typing."); return; }
     const recognition = new Constructor();
     recognition.lang = "pt-PT";
     recognition.interimResults = false;
@@ -64,10 +64,10 @@ export function Capture({
       if (transcript) setRaw((old) => old.trim() ? `${old.trim()}\n${transcript}` : transcript);
       setError("");
     };
-    recognition.onerror = () => { setError("Não foi possível captar a voz. Podes escrever o mesmo texto."); setListening(false); };
+    recognition.onerror = () => { setError("Could not capture audio. You can type the same text."); setListening(false); };
     recognition.onend = () => { setListening(false); recognitionRef.current = null; };
     try { recognition.start(); recognitionRef.current = recognition; setListening(true); setError(""); }
-    catch { setError("Não foi possível iniciar o microfone."); }
+    catch { setError("Could not start the microphone."); }
   }
   return (
     <Dialog
@@ -81,10 +81,10 @@ export function Capture({
         {!drafts ? (
           <>
             <p className="muted">Write or speak. One sentence can create several linked actions.</p>
-            <button className={`voice-button ${listening ? "active" : ""}`} onClick={voice} type="button"><Mic size={17}/>{listening ? "A ouvir… tocar para parar" : "Ditar em português"}</button>
+            <button className={`voice-button ${listening ? "active" : ""}`} onClick={voice} type="button"><Mic size={17}/>{listening ? "Listening… tap to stop" : "Dictate in Portuguese"}</button>
             <textarea
               className="capture-input"
-              aria-label="O que queres registar?"
+              aria-label="What do you want to record?"
               autoFocus
               maxLength={10000}
               value={raw}
@@ -110,25 +110,25 @@ export function Capture({
               }}
             />
             <div className="capture-hints">
-              <span>A voz é transcrita pelo browser; revê antes de guardar.</span>
+              <span>Voice is transcribed by the browser; review it before saving.</span>
               <kbd>⌘ ↵</kbd>
             </div>
           </>
         ) : (
           <>
             <p className="muted">
-              Revê o tipo, a pessoa e as datas. As horas são de Lisboa.
+              Review the type, person, and dates. Times use Lisbon time.
             </p>
             {drafts.map((draft, index) => (
               <section className="capture-draft" key={index}>
                 <div className="capture-draft-heading">
                   <span className="eyebrow">
-                    REGISTO {String(index + 1).padStart(2, "0")}
+                    RECORD {String(index + 1).padStart(2, "0")}
                   </span>
                   {drafts.length > 1 && (
                     <button
                       className="icon-button"
-                      aria-label={`Remover registo ${index + 1}`}
+                      aria-label={`Remove record ${index + 1}`}
                       onClick={() =>
                         setDrafts(drafts.filter((_, i) => i !== index))
                       }
@@ -139,7 +139,7 @@ export function Capture({
                 </div>
                 <div className="form-grid">
                   <label>
-                    Tipo
+                    Type
                     <select
                       value={draft.kind}
                       onChange={(e) =>
@@ -156,8 +156,8 @@ export function Capture({
                   {!["note", "update", "inbox", "crm"].includes(draft.kind) && (
                     <label>
                       {["meeting", "event"].includes(draft.kind)
-                        ? "No calendário de"
-                        : "Responsável"}
+                        ? "Calendar owner"
+                        : "Owner"}
                       <select
                         value={draft.ownerId}
                         onChange={(e) =>
@@ -175,7 +175,7 @@ export function Capture({
                 </div>
                 {draft.kind === "update" ? (
                   <label>
-                    Atualização
+                    Update
                     <textarea
                       value={draft.body}
                       maxLength={10000}
@@ -184,7 +184,7 @@ export function Capture({
                   </label>
                 ) : (
                   <label>
-                    {["contact", "crm"].includes(draft.kind) ? "Organização" : "Título"}
+                      {["contact", "crm"].includes(draft.kind) ? "Organization" : "Title"}
                     <input
                       value={draft.title}
                       maxLength={160}
@@ -195,14 +195,14 @@ export function Capture({
                 <div className="form-grid">
                   {!["contact", "reminder", "inbox", "crm"].includes(draft.kind) && (
                     <label>
-                      Projeto
+                      Project
                       <select
                         value={draft.projectId}
                         onChange={(e) =>
                           patch(index, { projectId: e.target.value })
                         }
                       >
-                        <option value="">Sem projeto</option>
+                        <option value="">No project</option>
                         {data.projects
                           .filter((p) => p.status !== "archived")
                           .map((p) => (
@@ -216,8 +216,8 @@ export function Capture({
                   {!["note", "update", "reminder", "inbox"].includes(draft.kind) && (
                     <label>
                       {draft.kind === "contact"
-                        ? "Conversa com organização existente"
-                        : "Organização"}
+                        ? "Conversation with existing organization"
+                        : "Organization"}
                       <select
                         value={draft.organizationId}
                         onChange={(e) => {
@@ -234,8 +234,8 @@ export function Capture({
                       >
                         <option value="">
                           {draft.kind === "contact"
-                            ? "Criar organização"
-                            : "Sem organização"}
+                            ? "Create organization"
+                            : "No organization"}
                         </option>
                         {data.organizations
                           .filter((o) => !o.archived)
@@ -249,14 +249,14 @@ export function Capture({
                   )}
                 </div>
                 {!["note", "update", "reminder", "inbox", "crm"].includes(draft.kind) && !draft.organizationId && (
-                  <label>Nova organização (opcional)
-                    <input value={draft.organizationName} onChange={(e) => patch(index, { organizationName: e.target.value, ...(draft.kind === "contact" ? {title: e.target.value} : {}) })} placeholder="Nome da empresa" />
+                  <label>New organization (optional)
+                      <input value={draft.organizationName} onChange={(e) => patch(index, { organizationName: e.target.value, ...(draft.kind === "contact" ? {title: e.target.value} : {}) })} placeholder="Company name" />
                   </label>
                 )}
                 {!["note", "update", "inbox", "crm"].includes(draft.kind) && (
                   <div className="form-grid">
                     <label>
-                      {draft.kind === "contact" ? "Retomar em" : "Data"}
+                      {draft.kind === "contact" ? "Follow up on" : "Date"}
                       <input
                         type="date"
                         value={draft.date}
@@ -265,7 +265,7 @@ export function Capture({
                     </label>
                     {["meeting", "event", "reminder"].includes(draft.kind) && (
                       <label>
-                        Hora · Lisboa
+                        Time · Lisbon
                         <input
                           type="time"
                           value={draft.time}
@@ -277,7 +277,7 @@ export function Capture({
                     )}
                     {["meeting", "event"].includes(draft.kind) && (
                       <label>
-                        Duração (minutos)
+                        Duration (minutes)
                         <input
                           type="number"
                           min={5}
@@ -295,7 +295,7 @@ export function Capture({
                   <div className="form-grid">
                     {!draft.organizationId && (
                       <label>
-                        Pessoa de contacto
+                        Contact person
                         <input
                           value={draft.person}
                           onChange={(e) =>
@@ -305,7 +305,7 @@ export function Capture({
                       </label>
                     )}
                     <label>
-                      Próximo passo
+                      Next step
                       <input
                         value={draft.nextStep}
                         onChange={(e) =>
@@ -320,12 +320,12 @@ export function Capture({
                     <option value="">Choose status</option>{Object.entries(stages).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
                   </select></label><label>Status note<textarea value={draft.body} onChange={(event) => patch(index, { body: event.target.value })} rows={2}/></label></div>}
                 <details>
-                  <summary>Contexto original</summary>
+                  <summary>Original context</summary>
                   <textarea
                     value={draft.body}
                     maxLength={10000}
                     onChange={(e) => patch(index, { body: e.target.value })}
-                    aria-label={`Contexto do registo ${index + 1}`}
+                    aria-label={`Record context ${index + 1}`}
                   />
                 </details>
               </section>
@@ -336,7 +336,7 @@ export function Capture({
                 onClick={() => setDrafts([...drafts, emptyDraft(data.me)])}
               >
                 <Plus size={15} />
-                Adicionar outro registo
+                Add another record
               </button>
             )}
           </>
@@ -356,7 +356,7 @@ export function Capture({
               onClick={() => setDrafts(null)}
             >
               <ChevronLeft size={15} />
-              Texto original
+              Original text
             </button>
             <button
               className="button-primary"
@@ -374,7 +374,7 @@ export function Capture({
                   setError(
                     e instanceof Error
                       ? e.message
-                      : "Não foi possível guardar.",
+                      : "Could not save.",
                   );
                 } finally {
                   setBusy(false);
@@ -382,19 +382,19 @@ export function Capture({
               }}
             >
               {busy
-                ? "A guardar…"
+                ? "Saving…"
                 : drafts.length > 1
-                  ? `Guardar ${drafts.length} registos`
-                  : "Guardar registo"}
+                  ? `Save ${drafts.length} records`
+                  : "Save record"}
             </button>
           </>
         ) : (
           <>
             <span className="subtle">
-              O texto fica guardado neste separador.
+              The text is saved in this tab.
             </span>
             <button className="button-primary" onClick={preview}>
-              Organizar
+              Organize
               <ArrowRight size={15} />
             </button>
           </>

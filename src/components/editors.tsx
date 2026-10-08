@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, MessageSquare, Plus, X } from "lucide-react";
 import {
   projectStatuses,
   stages,
+  taskSizeLabels,
   taskStatuses,
   type Snapshot,
 } from "@/domain/model";
@@ -11,6 +12,7 @@ import { calendarOptions, calendarTarget } from "@/domain/calendars";
 import { canEditMeeting } from "@/domain/permissions";
 import { addDays, dateKey, localDateTime, shortDate } from "@/domain/time";
 import { useWorkspace, type Editor } from "./context";
+import { flushEdits, formFields, SaveStatus, useAutosave } from "./autosave";
 import { Dialog } from "./dialog";
 import { RelationSelect } from "./relation-select";
 
@@ -68,15 +70,63 @@ function SaveForm({
   action,
   values = {},
   onClose,
-  label = "Guardar",
+  label = "Save",
   extra,
 }: FormProps) {
   const { command } = useWorkspace();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const autosave = useAutosave(
+    action,
+    typeof values.id === "string" ? values.id : undefined,
+    Number(values.version),
+  );
+  const baseline = useRef<Record<string, unknown> | null>(null);
+  function changed(form: HTMLFormElement) {
+    if (!values.id) return;
+    const fields = formFields(form);
+    if (JSON.stringify(fields) === JSON.stringify(baseline.current)) return;
+    baseline.current = fields;
+    autosave.patch({ ...values, ...fields });
+  }
   return (
     <form
       className="record-composer"
+      ref={(form) => {
+        if (form && baseline.current === null)
+          baseline.current = formFields(form);
+      }}
+      onBlur={(event) => {
+        changed(event.currentTarget);
+        void autosave.flush().catch(() => undefined);
+      }}
+      onInput={(event) => {
+        if (!values.id) return;
+        const target = event.target;
+        if (target instanceof HTMLInputElement && target.type === "hidden")
+          changed(event.currentTarget);
+        else if (
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement
+        ) {
+          const fields = formFields(event.currentTarget);
+          if (JSON.stringify(fields) !== JSON.stringify(baseline.current)) {
+            baseline.current = fields;
+            autosave.stage({ ...values, ...fields });
+          }
+        }
+      }}
+      onChange={(event) => {
+        const target = event.target;
+        if (
+          target instanceof HTMLSelectElement ||
+          (target instanceof HTMLInputElement &&
+            ["hidden", "checkbox", "date", "datetime-local"].includes(
+              target.type,
+            ))
+        )
+          changed(event.currentTarget);
+      }}
       onSubmit={async (e) => {
         e.preventDefault();
         if (busy) return;
@@ -89,12 +139,15 @@ function SaveForm({
         setBusy(true);
         setError("");
         try {
-          await command(action, { ...values, ...fields });
-          onClose();
+          if (values.id) {
+            changed(e.currentTarget);
+            await autosave.flush();
+          } else {
+            await command(action, { ...values, ...fields });
+            onClose();
+          }
         } catch (e) {
-          setError(
-            e instanceof Error ? e.message : "Não foi possível guardar.",
-          );
+          setError(e instanceof Error ? e.message : "Could not save.");
         } finally {
           setBusy(false);
         }
@@ -116,12 +169,16 @@ function SaveForm({
             onClick={onClose}
             disabled={busy}
           >
-            Cancelar
+            Cancel
           </button>
         )}
-        <button className="button-primary" disabled={busy}>
-          {busy ? "A guardar…" : label}
-        </button>
+        {values.id ? (
+          <SaveStatus saver={autosave.saver} />
+        ) : (
+          <button className="button-primary" disabled={busy}>
+            {busy ? "Saving…" : label}
+          </button>
+        )}
       </footer>
     </form>
   );
@@ -130,7 +187,7 @@ function Person({
   data,
   name = "ownerId",
   value,
-  label = "Responsável",
+  label = "Owner",
 }: {
   data: Snapshot;
   name?: string;
@@ -166,16 +223,16 @@ function Relations({
       {project && (
         <RelationSelect
           name="projectId"
-          label="Projeto"
-          emptyLabel="Sem projeto"
+          label="Project"
+          emptyLabel="No project"
           defaultValue={projectId ?? ""}
           options={data.projects}
         />
       )}
       <RelationSelect
         name="organizationId"
-        label="Organização"
-        emptyLabel="Sem organização"
+        label="Organization"
+        emptyLabel="No organization"
         defaultValue={organizationId ?? ""}
         options={data.organizations}
       />
@@ -193,9 +250,7 @@ function Members({
 }) {
   return (
     <fieldset>
-      <legend>
-        {name === "memberIds" ? "Equipa do projeto" : "Participantes"}
-      </legend>
+      <legend>{name === "memberIds" ? "Project team" : "Participants"}</legend>
       <input name={`${name}Present`} type="hidden" value="1" />
       <div className="checkbox-group">
         {data.members.map((m) => (
@@ -228,14 +283,14 @@ export function RecordEditor({
   if (type === "task") {
     const item = data.tasks.find((t) => t.id === id);
     return (
-      <Dialog title={item ? "Tarefa" : "Nova tarefa"} onClose={onClose}>
+      <Dialog title={item ? "Task" : "New task"} onClose={onClose}>
         <SaveForm
           action="task.save"
           values={item ? { id, version: item.version } : {}}
           onClose={onClose}
         >
           <label>
-            O que precisa de ser feito?
+            What needs to be done?
             <input
               name="title"
               className="composer-title"
@@ -249,22 +304,43 @@ export function RecordEditor({
           <div className="form-grid">
             <Person data={data} value={item?.ownerId} />
             <label>
-              Visibilidade
+              Visibility
               <select
                 name="visibility"
                 defaultValue={item?.visibility ?? "team"}
               >
-                <option value="team">Equipa</option>
-                <option value="private">Privada · só eu</option>
+                <option value="team">Team</option>
+                <option value="private">Private · just me</option>
               </select>
             </label>
             <label>
-              Prazo
+              Deadline
               <input
                 type="date"
                 name="dueOn"
                 defaultValue={item?.dueOn ?? ""}
               />
+            </label>
+            <label>
+              Priority
+              <select name="priority" defaultValue={item?.priority ?? "none"}>
+                <option value="none">None</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </label>
+            <label>
+              Size
+              <select name="size" defaultValue={item?.size ?? ""}>
+                <option value="">None</option>
+                {Object.entries(taskSizeLabels).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
           <Relations
@@ -273,7 +349,7 @@ export function RecordEditor({
             organizationId={item?.organizationId ?? editor.organizationId}
           />
           <label>
-            Estado
+            Status
             <select name="status" defaultValue={item?.status ?? "todo"}>
               {Object.entries(taskStatuses).map(([k, l]) => (
                 <option key={k} value={k}>
@@ -283,13 +359,13 @@ export function RecordEditor({
             </select>
           </label>
           <label>
-            Contexto
+            Context
             <textarea
               name="body"
               defaultValue={item?.body}
               maxLength={10000}
               rows={4}
-              placeholder="O que é preciso saber para avançar?"
+              placeholder="What needs to be known to move forward?"
             />
           </label>
         </SaveForm>
@@ -304,9 +380,9 @@ export function RecordEditor({
           <div className="dialog-body form-stack">
             <p>
               {localDateTime(item.startsAt).replace("T", " · ")} —{" "}
-              {localDateTime(item.endsAt).slice(11)} · Lisboa
+              {localDateTime(item.endsAt).slice(11)} · Lisbon
             </p>
-            <p>{item.body || "Sem notas adicionais."}</p>
+            <p>{item.body || "No additional notes."}</p>
             {canEditMeeting(data.me, item) && (
               <SaveForm
                 action="meeting.participants"
@@ -322,15 +398,14 @@ export function RecordEditor({
               </SaveForm>
             )}
             <p className="muted">
-              Calendário{" "}
-              {item.calendarKey === "contacto" ? "Contacto" : "Office"}.
-              Participantes:{" "}
+              Calendar {item.calendarKey === "contacto" ? "Contacto" : "Office"}
+              . Participants:{" "}
               {item.participantIds
                 .map(
                   (id) => data.members.find((member) => member.id === id)?.name,
                 )
-                .join(", ") || "Por associar"}
-              . Externos: {item.externalParticipants?.join(", ") || "—"}
+                .join(", ") || "For associating"}
+              . External: {item.externalParticipants?.join(", ") || "—"}
               {item.googleEventUrl && (
                 <a href={item.googleEventUrl} target="_blank" rel="noreferrer">
                   Open Google Calendar
@@ -362,18 +437,18 @@ export function RecordEditor({
               : `personal:${data.me.id}`,
         ];
     return (
-      <SideEditor title={item ? "Evento" : "Novo evento"} onClose={onClose}>
+      <SideEditor title={item ? "Event" : "New event"} onClose={onClose}>
         <SaveForm
           action="meeting.save"
           values={item ? { id, version: item.version } : {}}
           onClose={onClose}
-          label={item ? "Guardar evento" : "Criar evento"}
+          label={item ? "Save event" : "Create event"}
         >
           <input
             className="composer-title"
             name="title"
             aria-label="Event title"
-            placeholder="Título do evento"
+            placeholder="Event title"
             defaultValue={item?.title}
             required
             maxLength={160}
@@ -383,13 +458,13 @@ export function RecordEditor({
             className="composer-description"
             name="body"
             aria-label="Event description"
-            placeholder="Descrição…"
+            placeholder="Event description…"
             defaultValue={item?.body}
             rows={3}
           />
           <div className="event-date-fields">
             <label>
-              Começa
+              Starts
               <input
                 name="startsAt"
                 type="datetime-local"
@@ -398,7 +473,7 @@ export function RecordEditor({
               />
             </label>
             <label>
-              Termina
+              Ends
               <input
                 name="endsAt"
                 type="datetime-local"
@@ -415,10 +490,10 @@ export function RecordEditor({
               name="allDay"
               defaultChecked={item?.allDay}
             />
-            Todo o dia
+            All day
           </label>
           <fieldset>
-            <legend>Calendários</legend>
+            <legend>Calendars</legend>
             <input type="hidden" name="calendarTargetsPresent" value="1" />
             <div className="calendar-selection">
               {calendarOptions(data.me, data.members).map((option) => (
@@ -464,7 +539,9 @@ export function RecordEditor({
           )}
           {item?.syncStatus === "conflict" && (
             <div className="composer-properties">
-              <span>Revê o evento no Google e escolhe a versão a manter.</span>
+              <span>
+                Review the event in Google and choose which version to keep.
+              </span>
               {(["google", "os"] as const).map((keep) => (
                 <button
                   type="button"
@@ -489,12 +566,12 @@ export function RecordEditor({
                       workspace.notify(
                         error instanceof Error
                           ? error.message
-                          : "Falha ao resolver.",
+                          : "Could not resolve.",
                       );
                     }
                   }}
                 >
-                  Manter versão {keep === "google" ? "Google" : "OS"}
+                  Keep {keep === "google" ? "Google" : "OS"} version
                 </button>
               ))}
             </div>
@@ -513,16 +590,21 @@ export function RecordEditor({
               onClick={async () => {
                 if (
                   !item.cancelled &&
-                  !(await workspace.confirm(`Eliminar o evento “${item.title}”?`))
+                  !(await workspace.confirm(`Delete the event “${item.title}”?`, "Delete"))
                 )
                   return;
-                void workspace
-                  .command("meeting.cancel", { id, version: item.version })
+                void flushEdits()
+                  .then(() =>
+                    workspace.command("meeting.cancel", {
+                      id,
+                      version: item.version,
+                    }),
+                  )
                   .then(onClose)
                   .catch((error) => workspace.notify(error.message));
               }}
             >
-              {item.cancelled ? "Restaurar evento" : "Eliminar evento"}
+              {item.cancelled ? "Restore event" : "Delete event"}
             </button>
           )}
         </SaveForm>
@@ -553,15 +635,18 @@ export function RecordEditor({
                   onClick={async () => {
                     if (
                       !(await workspace.confirm(
-                        `Eliminar o projeto “${item.name}” e todas as respetivas tarefas?`,
+                        `Delete the project “${item.name}” and all its tasks?`,
+                        "Delete",
                       ))
                     )
                       return;
-                    void workspace
-                      .command("project.delete", {
-                        id: item.id,
-                        version: item.version,
-                      })
+                    void flushEdits()
+                      .then(() =>
+                        workspace.command("project.delete", {
+                          id: item.id,
+                          version: item.version,
+                        }),
+                      )
                       .then(onClose)
                       .catch((error) => workspace.notify(error.message));
                   }}
@@ -652,10 +737,7 @@ export function RecordEditor({
   }
   const pr = data.pullRequests.find((p) => p.id === id);
   return (
-    <Dialog
-      title={pr ? "Pull request" : "Ligar pull request"}
-      onClose={onClose}
-    >
+    <Dialog title={pr ? "Pull request" : "Link pull request"} onClose={onClose}>
       <SaveForm
         action="pr.save"
         values={pr ? { id, version: pr.version } : {}}
@@ -667,10 +749,15 @@ export function RecordEditor({
                 type="button"
                 className="text-button danger"
                 onClick={async () => {
-                  if (!(await workspace.confirm(`Remover a pull request “${pr.title}”?`, "Remover")))
+                  if (!(await workspace.confirm(`Delete the pull request “${pr.title}”?`, "Delete")))
                     return;
-                  void workspace
-                    .command("pr.delete", { id: pr.id, version: pr.version })
+                  void flushEdits()
+                    .then(() =>
+                      workspace.command("pr.delete", {
+                        id: pr.id,
+                        version: pr.version,
+                      }),
+                    )
                     .then(onClose)
                     .catch((error) => workspace.notify(error.message));
                 }}
@@ -694,7 +781,7 @@ export function RecordEditor({
           value={pr?.projectId ?? editor.projectId}
         />
         <label>
-          Título
+          Title
           <input
             name="title"
             className="composer-title"
@@ -712,21 +799,21 @@ export function RecordEditor({
             type="url"
             defaultValue={pr?.url}
             required
-            placeholder="https://github.com/equipa/repo/pull/123"
+            placeholder="https://github.com/team/repo/pull/123"
           />
         </label>
         <label>
-          Estado
+          Status
           <select name="state" defaultValue={pr?.state ?? "open"}>
-            <option value="open">Aberto</option>
-            <option value="draft">Rascunho</option>
-            <option value="merged">Integrado</option>
-            <option value="closed">Fechado</option>
+            <option value="open">Open</option>
+            <option value="draft">Draft</option>
+            <option value="merged">Merged</option>
+            <option value="closed">Closed</option>
           </select>
         </label>
         <p className="field-hint">
-          O estado é atualizado aqui manualmente. A sincronização com GitHub
-          será ligada numa próxima fase.
+          GitHub updates linked repositories through the App. Links added
+          manually remain available here.
         </p>
       </SaveForm>
     </Dialog>
@@ -790,11 +877,11 @@ function OrganizationEditor({
       </Dialog>
     );
   return (
-    <Dialog title={item?.name ?? "Novo contacto"} onClose={onClose} wide>
+    <Dialog title={item?.name ?? "New contact"} onClose={onClose} wide>
       {item && (
         <div className="organization-summary">
           <div>
-            <span className="row-meta">Pessoas</span>
+            <span className="row-meta">People</span>
             <strong>
               {data.contacts
                 .filter((person) => person.organizationId === id)
@@ -807,7 +894,7 @@ function OrganizationEditor({
               className="text-button"
               onClick={() => setAddingContact(!addingContact)}
             >
-              {addingContact ? "Cancelar" : "+ Pessoa"}
+              {addingContact ? "Cancel" : "+ Person"}
             </button>
           </div>
           {addingContact && (
@@ -824,8 +911,8 @@ function OrganizationEditor({
             >
               <input
                 name="name"
-                aria-label="Nome da pessoa"
-                placeholder="Nome"
+                aria-label="Person name"
+                placeholder="Name"
                 required
               />
               <input
@@ -836,25 +923,25 @@ function OrganizationEditor({
               />
               <input
                 name="phone"
-                aria-label="Telefone da pessoa"
-                placeholder="Telefone"
+                aria-label="Person phone"
+                placeholder="Phone"
               />
-              <button className="button-secondary">Adicionar</button>
+              <button className="button-secondary">Add</button>
             </form>
           )}
           <div>
-            <span className="row-meta">Última interação</span>
+            <span className="row-meta">Last interaction</span>
             <strong>
               {interactions[0] ? shortDate(interactions[0].createdAt) : "—"}
             </strong>
           </div>
           <div>
-            <span className="row-meta">Próximo passo</span>
+            <span className="row-meta">Next step</span>
             <strong>{item.nextStep || "—"}</strong>
             <span className="row-meta">{item.followUpOn || ""}</span>
           </div>
           <div>
-            <span className="row-meta">Projetos</span>
+            <span className="row-meta">Projects</span>
             <strong>
               {data.projects
                 .filter((project) => project.organizationId === id)
@@ -863,7 +950,7 @@ function OrganizationEditor({
             </strong>
           </div>
           <div>
-            <span className="row-meta">Reuniões</span>
+            <span className="row-meta">Meetings</span>
             <strong>
               {
                 data.meetings.filter(
@@ -874,7 +961,7 @@ function OrganizationEditor({
             </strong>
           </div>
           <div>
-            <span className="row-meta">Notas</span>
+            <span className="row-meta">Notes</span>
             <strong>
               {
                 data.notes.filter(
@@ -889,32 +976,41 @@ function OrganizationEditor({
         <div className="editor-tabs">
           <button
             className={tab === "conversation" ? "tab active" : "tab"}
-            onClick={() => setTab("conversation")}
+            onClick={() =>
+              void flushEdits()
+                .then(() => setTab("conversation"))
+                .catch((error) => notify(error.message))
+            }
           >
             <MessageSquare size={14} />
-            Conversa
+            Conversation
           </button>
           <button
             className={tab === "details" ? "tab active" : "tab"}
-            onClick={() => setTab("details")}
+            onClick={() =>
+              void flushEdits()
+                .then(() => setTab("details"))
+                .catch((error) => notify(error.message))
+            }
           >
-            Detalhes
+            Details
           </button>
           <button
             className="text-button"
             onClick={() => edit({ type: "meeting", organizationId: id })}
           >
             <CalendarDays size={14} />
-            Marcar reunião
+            Schedule meeting
           </button>
         </div>
       )}
       {tab === "conversation" && item ? (
         <SaveForm
+          key="conversation"
           action="interaction.add"
           values={{ organizationId: id, version: item.version }}
           onClose={onClose}
-          label="Registar conversa"
+          label="Log conversation"
         >
           {interactions.length > 0 && (
             <div className="interaction-history">
@@ -930,27 +1026,27 @@ function OrganizationEditor({
             </div>
           )}
           <label>
-            O que ficou da conversa?
+            What came out of the conversation?
             <textarea
               name="body"
               required
               rows={3}
               autoFocus
-              placeholder="Regista o essencial."
+              placeholder="Record the essentials."
             />
           </label>
           <div className="form-grid">
             <label>
-              Canal
+              Channel
               <select name="channel">
-                <option value="note">Nota</option>
-                <option value="call">Chamada</option>
+                <option value="note">Note</option>
+                <option value="call">Call</option>
                 <option value="email">Email</option>
-                <option value="meeting">Reunião</option>
+                <option value="meeting">Meeting</option>
               </select>
             </label>
             <label>
-              Estado
+              Status
               <select name="stage" defaultValue={item.stage}>
                 {Object.entries(stages).map(([k, l]) => (
                   <option key={k} value={k}>
@@ -961,7 +1057,7 @@ function OrganizationEditor({
             </label>
           </div>
           <label>
-            Próximo passo
+            Next step
             <input
               name="nextStep"
               defaultValue={item.nextStep}
@@ -969,7 +1065,7 @@ function OrganizationEditor({
             />
           </label>
           <label>
-            Retomar em
+            Follow up on
             <input
               type="date"
               name="followUpOn"
@@ -979,12 +1075,13 @@ function OrganizationEditor({
         </SaveForm>
       ) : (
         <SaveForm
+          key="details"
           action="organization.save"
           values={item ? { id, version: item.version } : {}}
           onClose={onClose}
         >
           <label>
-            Organização
+            Organization
             <input
               name="name"
               defaultValue={item?.name}
@@ -994,7 +1091,7 @@ function OrganizationEditor({
             />
           </label>
           <label>
-            Pessoa de contacto
+            Contact person
             <input name="person" defaultValue={item?.person} maxLength={160} />
           </label>
           <div className="form-grid">
@@ -1003,7 +1100,7 @@ function OrganizationEditor({
               <input type="email" name="email" defaultValue={item?.email} />
             </label>
             <label>
-              Telefone
+              Phone
               <input
                 name="phone"
                 type="tel"
@@ -1015,7 +1112,7 @@ function OrganizationEditor({
           <div className="form-grid">
             <Person data={data} value={item?.ownerId} />
             <label>
-              Estado
+              Status
               <select name="stage" defaultValue={item?.stage ?? "new"}>
                 {Object.entries(stages).map(([k, l]) => (
                   <option key={k} value={k}>
@@ -1026,7 +1123,7 @@ function OrganizationEditor({
             </label>
           </div>
           <label>
-            Próximo passo
+            Next step
             <input
               name="nextStep"
               defaultValue={item?.nextStep}
@@ -1034,7 +1131,7 @@ function OrganizationEditor({
             />
           </label>
           <label>
-            Retomar em
+            Follow up on
             <input
               name="followUpOn"
               type="date"
@@ -1050,7 +1147,7 @@ function OrganizationEditor({
                   name="archived"
                   defaultChecked={item.archived}
                 />
-                Arquivar organização
+                Archive organization
               </label>
             </>
           )}
@@ -1072,20 +1169,20 @@ export function ProjectUpdateForm({
       action="project.update"
       values={{ projectId: id }}
       onClose={onDone}
-      label="Registar atualização"
+      label="Log update"
       extra={
         <span className="subtle">
-          <Plus size={13} /> Contexto para a equipa
+          <Plus size={13} /> Context for the team
         </span>
       }
     >
       <label>
-        O que mudou?
+        What changed?
         <textarea
           name="body"
           required
           rows={3}
-          placeholder="O que avançou, o que falta ou o que está bloqueado."
+          placeholder="Progress, blockers or next steps."
         />
       </label>
     </SaveForm>

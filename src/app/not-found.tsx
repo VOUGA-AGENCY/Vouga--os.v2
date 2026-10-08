@@ -2,10 +2,10 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <main className="standalone">
-      <h1>Este caminho não existe.</h1>
-      <p>Volta ao que precisa da tua atenção.</p>
+      <h1>This path does not exist.</h1>
+      <p>Return to what needs your attention.</p>
       <Link className="button-primary" href="/">
-        Ir para Hoje
+        Go to Today
       </Link>
     </main>
   );

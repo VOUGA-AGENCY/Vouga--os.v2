@@ -10,12 +10,12 @@ export function errorResponse(error: unknown) {
     return Response.json({ error: error.message }, { status: error.status });
   console.error(
     "Vouga local:",
-    error instanceof Error ? error.message : "Erro inesperado",
+    error instanceof Error ? error.message : "Unexpected error",
   );
   return Response.json(
     {
       error:
-        "Não foi possível guardar ou carregar os dados. Tenta novamente; consulta o terminal se persistir.",
+        "Could not save or load the data. Try again; check the terminal if the problem persists.",
     },
     { status: 500 },
   );
@@ -39,6 +39,6 @@ export async function jsonBody(request: Request): Promise<unknown> {
   try {
     return JSON.parse(Buffer.concat(chunks).toString("utf8"));
   } catch {
-    throw new AppError("Pedido inválido.");
+    throw new AppError("Invalid request.");
   }
 }

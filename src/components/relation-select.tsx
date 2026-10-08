@@ -24,10 +24,18 @@ export function RelationSelect({
   options: Option[];
 }) {
   const id = useId();
+  const input = useRef<HTMLInputElement>(null);
+  const previous = useRef(defaultValue);
   const trigger = useRef<HTMLButtonElement>(null);
   const popup = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(defaultValue);
+  useEffect(() => {
+    if (previous.current !== value) {
+      previous.current = value;
+      input.current?.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }, [value]);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -88,7 +96,7 @@ export function RelationSelect({
 
   return (
     <div className="relation-select">
-      <input type="hidden" name={name} value={value} />
+      <input ref={input} type="hidden" name={name} value={value} />
       <button
         ref={trigger}
         type="button"
@@ -142,14 +150,14 @@ export function RelationSelect({
           <input
             ref={search}
             role="combobox"
-            aria-label={`Pesquisar ${label.toLocaleLowerCase("pt")}`}
+            aria-label={`Search ${label.toLocaleLowerCase("en-GB")}`}
             aria-expanded={open}
             aria-controls={`${id}-options`}
             aria-autocomplete="list"
             aria-activedescendant={
               choices[active] ? `${id}-option-${active}` : undefined
             }
-            placeholder="Pesquisar por nome…"
+            placeholder="Search by name…"
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -181,7 +189,7 @@ export function RelationSelect({
               {option.id === value && <Check size={14} aria-hidden="true" />}
             </button>
           ))}
-          {!choices.length && <p role="status">Sem resultados.</p>}
+          {!choices.length && <p role="status">No results found.</p>}
         </div>
       </div>
     </div>
