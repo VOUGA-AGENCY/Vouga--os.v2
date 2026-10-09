@@ -64,6 +64,8 @@ export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
       projects.some((p) => p.id === pr.projectId),
     ),
     reminderReceipts: data.reminderReceipts.filter((r) => r.memberId === me.id),
+    // Routes are shared, like the CRM they belong to.
+    routes: data.routes,
   };
   return {
     ...visible,

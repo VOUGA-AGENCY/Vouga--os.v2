@@ -7,6 +7,7 @@ import type {
   CalendarKey,
   RepositoryLink,
 } from "./integration-model";
+import type { CompanySize, FinancialYear } from "./prospects";
 export type Role = "admin" | "engineer";
 export interface Member {
   id: string;
@@ -45,6 +46,7 @@ export const stages = {
   contacted: "Contacted",
   meeting: "Meeting",
   proposal: "Proposal",
+  partner: "Partner",
   client: "Client",
   dormant: "Dormant",
 } as const;
@@ -123,15 +125,47 @@ export interface Meeting extends Entity {
 
   visibility?: "private" | "team";
 }
+export const siteKinds = {
+  fabrica: "Fábrica",
+  armazem: "Armazém",
+  sede: "Sede",
+  escritorio: "Escritório",
+  delegacao: "Delegação",
+} as const;
+export type SiteKind = keyof typeof siteKinds;
+/** A facility other than the one visited (e.g. the registered seat when visits happen at the warehouse). */
+export interface CompanySite {
+  id: string;
+  kind: SiteKind;
+  address: string;
+  location: string;
+  coordinates?: { lat: number; lng: number };
+}
 export interface Organization extends Entity {
   name: string;
   person: string;
   email: string;
   phone: string;
+  location?: string;
+  /** Street address with postal code, when known. */
+  address?: string;
+  /** Precise position of the address; without it the map uses the municipality centroid. */
+  coordinates?: { lat: number; lng: number };
+  /** Portuguese tax number; identifies the legal entity unambiguously (names repeat). */
+  nif?: string;
+  /** What location/address/coordinates above are: the facility the team visits. */
+  siteKind?: SiteKind;
+  /** Other known facilities. */
+  sites?: CompanySite[];
+  /** Turnover and headcount per year, from a purchased list or entered after checking Racius/eInforma. */
+  financials?: FinancialYear[];
+  /** Free brackets (turnover, its trend, headcount) read from the company's public Iberinform page. */
+  size?: CompanySize;
   stage: Stage;
   ownerId: string;
   nextStep: string;
   followUpOn: string | null;
+  pinned?: boolean;
   archived: boolean;
 }
 export interface Interaction extends Entity {
@@ -198,6 +232,40 @@ export interface PullRequest extends Entity {
   branch?: string;
   reviewRequested?: string[];
 }
+/** A planned stop, fixed when the route is saved (the plan itself is not recomputed later). */
+export interface VisitRouteStop {
+  kind: "crm" | "prospect";
+  /** CRM id, or the prospect id; a prospect turned company is found through `organizationId`. */
+  id: string;
+  name: string;
+  location: string;
+  lat: number;
+  lng: number;
+  arrival: string;
+  departure: string;
+  reasons: string[];
+  organizationId?: string | null;
+}
+export type RouteVisit = {
+  stopId: string;
+  at: string;
+  by: string;
+  note: string;
+} & (
+  | { skipped?: false; organizationId: string; stage: Stage }
+  /** A stop left out during the day (company closed, no time); the route moves on without touching the CRM. */
+  | { skipped: true }
+);
+/** A day of visits, shared with the team; its responsible person registers the visits. */
+export interface VisitRoute extends Entity {
+  name: string;
+  date: string;
+  ownerId: string;
+  stops: VisitRouteStop[];
+  /** Index of the next stop to visit; equal to stops.length when the route is done. */
+  currentIndex: number;
+  visits: RouteVisit[];
+}
 export interface ReminderReceipt {
   key: string;
   memberId: string;
@@ -222,6 +290,7 @@ export interface WorkspaceData {
   reminders: Reminder[];
   pullRequests: PullRequest[];
   reminderReceipts: ReminderReceipt[];
+  routes: VisitRoute[];
 }
 export interface Store extends WorkspaceData {
   schemaVersion: 5;

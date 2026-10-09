@@ -77,6 +77,7 @@ export function createSeed(
     sessions: [],
     captureReceipts: [],
     reminderReceipts: [],
+    routes: [],
     organizations: [
       {
         ...base("vale"),

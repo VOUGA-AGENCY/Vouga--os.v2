@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createSeed } from "@/persistence/seed";
-import { SupabaseWorkspaceRepository } from "@/persistence/supabase/repository";
+import { SupabaseWorkspaceRepository, type WorkspaceCache } from "@/persistence/supabase/repository";
 import { rows, delta } from "@/persistence/supabase/collections";
 const seed=createSeed("test-password-1234","2026-09-27T10:00:00Z");
 const response=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status});
@@ -55,6 +55,51 @@ describe("Supabase persistence",()=>{
  it("cannot replace an already initialized workspace",async()=>{
   const fetcher=vi.fn().mockResolvedValue(response({status:"conflict",revision:90}));
     await expect(new SupabaseWorkspaceRepository(options(fetcher)).initialize(seed)).rejects.toThrow("already has data");
+ });
+ it("does not write when a transaction changes nothing",async()=>{
+  const fetcher=vi.fn().mockResolvedValueOnce(response(seed));
+  expect(await new SupabaseWorkspaceRepository(options(fetcher)).transact(()=>"no job")).toBe("no job");
+  expect(fetcher).toHaveBeenCalledTimes(1);
+ });
+ it("downloads the workspace again only when its revision changed",async()=>{
+  const cache:WorkspaceCache={};
+  const changed=structuredClone(seed);changed.revision++;
+  const fetcher=vi.fn()
+   .mockResolvedValueOnce(response(seed))
+   .mockResolvedValueOnce(response(seed.revision))
+   .mockResolvedValueOnce(response(changed.revision))
+   .mockResolvedValueOnce(response(changed));
+  const repo=()=>new SupabaseWorkspaceRepository(options(fetcher),cache);
+  await repo().read();
+  expect((await repo().read()).revision).toBe(seed.revision);
+  expect((await repo().read()).revision).toBe(changed.revision);
+  const calls=fetcher.mock.calls.map(call=>String(call[0]).split("/").at(-1));
+  expect(calls).toEqual(["vouga_next_read","vouga_next_revision","vouga_next_revision","vouga_next_read"]);
+ });
+ it("keeps its own write as the current state, so the next read downloads nothing",async()=>{
+  const cache:WorkspaceCache={};
+  const fetcher=vi.fn()
+   .mockResolvedValueOnce(response(seed))
+   .mockResolvedValueOnce(response(seed.revision))
+   .mockResolvedValueOnce(response({status:"ok",revision:seed.revision+1}))
+   .mockResolvedValueOnce(response(seed.revision+1));
+  const repo=()=>new SupabaseWorkspaceRepository(options(fetcher),cache);
+  await repo().read();
+  await repo().transact(s=>{s.tasks[0].title="Mine";});
+  const after=await repo().read();
+  expect(after.tasks[0].title).toBe("Mine");
+  expect(after.revision).toBe(seed.revision+1);
+  expect(fetcher).toHaveBeenCalledTimes(4);
+ });
+ it("without the revision function, reuses a recent read for a minute instead of failing",async()=>{
+  const cache:WorkspaceCache={};
+  const fetcher=vi.fn().mockResolvedValueOnce(response(seed)).mockResolvedValueOnce(response({},404));
+  const repo=()=>new SupabaseWorkspaceRepository(options(fetcher),cache);
+  await repo().read();
+  expect((await repo().read()).revision).toBe(seed.revision);
+  await repo().read();
+  // The missing function is not asked for again on every read.
+  expect(fetcher).toHaveBeenCalledTimes(2);
  });
  it("keeps per-user receipts distinct",()=>{
   const data=structuredClone(seed);

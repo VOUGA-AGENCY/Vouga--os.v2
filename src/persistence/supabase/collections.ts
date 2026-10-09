@@ -6,7 +6,7 @@ export const collections = [
   "projects", "tasks", "taskComments", "taskAttachments", "taskActivity", "meetings",
   "updates", "notes", "inbox", "reminders", "pullRequests", "reminderReceipts",
   "activity", "externalConnections", "integrationJobs", "pendingActions",
-  "notificationDeliveries", "oauthStates", "telegramLinks", "agentReceipts", "captureReceipts",
+  "notificationDeliveries", "oauthStates", "telegramLinks", "agentReceipts", "captureReceipts", "routes",
 ] as const satisfies readonly (keyof Store)[];
 export type Collection = typeof collections[number];
 export interface StoredRow { collection: Collection; key: string; position: number; data: Record<string, unknown> }

@@ -848,7 +848,7 @@ function TaskPanelContent({
   projectId?: string;
   onClose: () => void;
 }) {
-  const { data, command, notify, refresh, capture } = useWorkspace();
+  const { data, command, notify, refresh, capture, confirm } = useWorkspace();
   const task = data.tasks.find((item) => item.id === id);
   const comments = data.taskComments.filter((item) => item.taskId === id);
   const files = data.taskAttachments.filter((item) => item.taskId === id);
@@ -1259,8 +1259,8 @@ function TaskPanelContent({
                 type="button"
                 className="task-delete-btn"
                 aria-label="Delete task"
-                onClick={() => {
-                  if (!window.confirm(`Delete the task “${task.title}”?`))
+                onClick={async () => {
+                  if (!(await confirm(`Delete the task “${task.title}”?`, "Delete")))
                     return;
                   void autosave
                     .flush()

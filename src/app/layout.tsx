@@ -30,7 +30,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      {/* Browser extensions (e.g. Grammarly) add attributes to <body> before hydration. */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

@@ -81,7 +81,7 @@ export function NoteComposer({
   editor: Editor;
   onClose: () => void;
 }) {
-  const { data, command, busy } = useWorkspace();
+  const { data, command, busy, confirm } = useWorkspace();
   const note = data.notes.find((item) => item.id === editor.id);
   const autosave = useAutosave("note.save", note?.id, note?.version);
   const writable = !note || note.createdBy === data.me.id;
@@ -129,8 +129,8 @@ export function NoteComposer({
           <button
             type="button"
             className="danger"
-            onClick={() => {
-              if (!window.confirm(`Delete the note “${note.title}”?`)) return;
+            onClick={async () => {
+              if (!(await confirm(`Delete the note “${note.title}”?`, "Delete"))) return;
               void autosave
                 .flush()
                 .then(() =>

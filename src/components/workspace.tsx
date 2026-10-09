@@ -58,6 +58,22 @@ export function Workspace({
     CaptureKind | null | undefined
   >(undefined);
   const [editor, setEditor] = useState<Editor | null>(null);
+  const [confirmation, setConfirmation] = useState<{
+    message: string;
+    action: string;
+    resolve: (value: boolean) => void;
+  } | null>(null);
+  const confirm = useCallback(
+    (message: string, action = "Eliminar") =>
+      new Promise<boolean>((resolve) =>
+        setConfirmation({ message, action, resolve }),
+      ),
+    [],
+  );
+  const settle = (value: boolean) => {
+    confirmation?.resolve(value);
+    setConfirmation(null);
+  };
   const [toast, setToast] = useState("");
   const [project, setProject] = useState<string | null>(null);
   useEffect(() => {
@@ -363,6 +379,7 @@ export function Workspace({
         capture,
         openProject,
         notify: setToast,
+        confirm,
         refresh,
       }}
     >
@@ -620,6 +637,29 @@ export function Workspace({
             }}
           />
         )}
+      {confirmation && (
+        <Dialog title="Confirmar" onClose={() => settle(false)}>
+          <div className="dialog-body">
+            <p className="confirm-message">{confirmation.message}</p>
+          </div>
+          <footer className="dialog-footer">
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => settle(false)}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="button-primary button-danger"
+              onClick={() => settle(true)}
+            >
+              {confirmation.action}
+            </button>
+          </footer>
+        </Dialog>
+      )}
       {toast && (
         <div className="toast" role="status">
           <Check size={16} />

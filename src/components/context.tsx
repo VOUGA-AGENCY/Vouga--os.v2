@@ -21,6 +21,8 @@ export interface WorkspaceContextValue {
   capture: (kind?: CaptureKind) => void;
   openProject: (id: string) => void;
   notify: (message: string) => void;
+  /** In-app confirmation for destructive actions; resolves false when cancelled. */
+  confirm: (message: string, action?: string) => Promise<boolean>;
   refresh: () => Promise<void>;
 }
 export const WorkspaceContext = createContext<WorkspaceContextValue | null>(

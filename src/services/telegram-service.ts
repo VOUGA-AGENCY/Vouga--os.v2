@@ -307,12 +307,22 @@ export function meetingReminders(data: Store, now: string) {
     const todayEvents = events.filter(
       (event) => dateKey(event.startsAt) === today,
     );
-    if (hour === 8 && minute < 15 && todayEvents.length)
+    // The routes of the day this person is responsible for, with the visits still to do.
+    const todayRoutes = (data.routes ?? []).filter((route) => route.ownerId === member.id && route.date === today && route.currentIndex < route.stops.length);
+    if (hour === 8 && minute < 15 && (todayEvents.length || todayRoutes.length))
       jobs.push({
         key: `daily:${member.id}:${today}`,
         memberId: member.id,
         chatId: member.telegramChatId,
-        text: `Hoje\n${todayEvents.map((event) => `${timeLabel(event.startsAt)} · ${event.title}`).join("\n")}`,
+        text: [
+          "Hoje",
+          ...todayEvents.map((event) => `${timeLabel(event.startsAt)} · ${event.title}`),
+          ...todayRoutes.flatMap((route) => [
+            "",
+            `${route.name} · ${route.stops.length - route.currentIndex} visitas`,
+            ...route.stops.slice(route.currentIndex).map((stop) => `${stop.arrival} · ${stop.name} (${stop.location})`),
+          ]),
+        ].join("\n"),
       });
     for (const event of events) {
       const minutes = (Date.parse(event.startsAt) - Date.parse(now)) / 60000;

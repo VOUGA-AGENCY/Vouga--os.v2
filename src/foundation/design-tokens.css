@@ -1,6 +1,24 @@
 :root {
   color-scheme: light;
   --vouga-orange: #d98218;
+  --color-star: #ff7a1a;
+  /* Brand palette from Vouga Living Docs (cover sky, page navy, coral headings, red accent, lit cream). */
+  --vouga-blue: #1b3fe0;
+  --vouga-navy: #081536;
+  --vouga-coral: #f26b4a;
+  --vouga-red: #ff3b1f;
+  --vouga-cream: #efe3d6;
+  --vouga-slate: #7b8294;
+  /* Prospects and the planning area on the company map. */
+  --map-prospect: #8fa5f7;
+  /* CRM stages rise from neutral to a cool, compact palette: cream → amber → coral → muted red → soft blue, with a partner step in between. */
+  --stage-new: #dfe2e8;
+  --stage-contacted: #d8b06d;
+  --stage-meeting: #e48b5a;
+  --stage-proposal: #d96b57;
+  --stage-partner: #7ca7d8;
+  --stage-client: #6d8af8;
+  --stage-dormant: #9aa0ae;
   --color-accent: var(--vouga-orange);
   --color-accent-hover: #ca7511;
   --color-accent-ink: #8c4d0c;

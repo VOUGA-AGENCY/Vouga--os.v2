@@ -22,10 +22,15 @@
     "meetings:migrate": "bun --conditions=react-server scripts/import-meetings.ts --apply",
     "meetings:supabase": "bun --conditions=react-server scripts/import-meetings-supabase.ts",
     "meetings:supabase:apply": "bun --conditions=react-server scripts/import-meetings-supabase.ts --apply",
-    "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts"
+    "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts",
+    "prospects:sync": "bun --conditions=react-server scripts/sync-prospects.ts",
+    "prospects:import": "bun --conditions=react-server scripts/import-prospects.ts",
+    "prospects:migrate": "bun --conditions=react-server scripts/migrate-prospects.ts",
+    "prospects:queries": "bun scripts/maps-queries.ts"
   },
   "dependencies": {
     "lucide-react": "0.575.0",
+    "maplibre-gl": "5.24.0",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -37,8 +42,8 @@
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.10",
+    "prettier": "3.9.5",
     "typescript": "5.9.3",
-    "vitest": "4.1.10",
-    "prettier": "3.9.5"
+    "vitest": "4.1.10"
   }
 }

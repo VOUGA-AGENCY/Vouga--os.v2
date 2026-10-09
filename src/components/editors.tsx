@@ -587,10 +587,10 @@ export function RecordEditor({
             <button
               type="button"
               className="text-button danger"
-              onClick={() => {
+              onClick={async () => {
                 if (
                   !item.cancelled &&
-                  !window.confirm(`Delete the event “${item.title}”?`)
+                  !(await workspace.confirm(`Delete the event “${item.title}”?`, "Delete"))
                 )
                   return;
                 void flushEdits()
@@ -632,11 +632,12 @@ export function RecordEditor({
                 <button
                   type="button"
                   className="text-button danger"
-                  onClick={() => {
+                  onClick={async () => {
                     if (
-                      !window.confirm(
+                      !(await workspace.confirm(
                         `Delete the project “${item.name}” and all its tasks?`,
-                      )
+                        "Delete",
+                      ))
                     )
                       return;
                     void flushEdits()
@@ -747,8 +748,8 @@ export function RecordEditor({
               <button
                 type="button"
                 className="text-button danger"
-                onClick={() => {
-                  if (!window.confirm(`Delete the pull request “${pr.title}”?`))
+                onClick={async () => {
+                  if (!(await workspace.confirm(`Delete the pull request “${pr.title}”?`, "Delete")))
                     return;
                   void flushEdits()
                     .then(() =>
@@ -868,6 +869,10 @@ function OrganizationEditor({
             </label>
             <Person data={data} />
           </div>
+          <label>
+            Localização
+            <input name="location" maxLength={160} placeholder="Ex.: Águeda, Aveiro" />
+          </label>
         </SaveForm>
       </Dialog>
     );

@@ -7,6 +7,7 @@ import type { Entity, Member, PullRequest, Store } from "@/domain/model";
 import {
   captureKinds,
   projectStatuses,
+  siteKinds,
   stages,
   taskSizes,
   taskStatuses,
@@ -401,6 +402,78 @@ function executeCore(
     }
     return meeting.id;
   };
+  const coordinates = (value: unknown) => {
+    if (value === null) return undefined;
+    const { lat, lng } = (value ?? {}) as { lat?: unknown; lng?: unknown };
+    // Mainland Portugal, Madeira and the Azores.
+    if (typeof lat !== "number" || typeof lng !== "number" || lat < 29 || lat > 43 || lng < -32 || lng > -6)
+      throw new AppError("Coordenadas inválidas.");
+    return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) };
+  };
+  const nif = (value: unknown) => {
+    const digits = text(value, "NIF", 20, false).replace(/\s/g, "");
+    if (!digits) return undefined;
+    if (!/^\d{9}$/.test(digits)) throw new AppError("NIF inválido: são 9 dígitos.");
+    const sum = [...digits.slice(0, 8)].reduce((total, digit, index) => total + Number(digit) * (9 - index), 0);
+    const check = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    if (check !== Number(digits[8])) throw new AppError("NIF inválido: o dígito de controlo não confere.");
+    return digits;
+  };
+  const siteKind = (value: unknown) => value ? choice(value, Object.keys(siteKinds), "Tipo de instalação") as keyof typeof siteKinds : undefined;
+  const sites = (value: unknown) => {
+    if (!Array.isArray(value)) throw new AppError("Instalações inválidas.");
+    if (value.length > 10) throw new AppError("Máximo de 10 instalações por empresa.");
+    return value.map((site: Values) => ({
+      id: typeof site.id === "string" && site.id ? site.id : randomUUID(),
+      kind: siteKind(site.kind) ?? "sede",
+      address: text(site.address, "Morada da instalação", 300),
+      location: text(site.location, "Concelho da instalação", 160, false),
+      ...(site.coordinates ? { coordinates: coordinates(site.coordinates) } : {}),
+    }));
+  };
+  const financials = (value: unknown) => {
+    if (!Array.isArray(value)) throw new AppError("Dados financeiros inválidos.");
+    if (value.length > 15) throw new AppError("Máximo de 15 anos de dados financeiros.");
+    const years = value.map((entry: Values) => {
+      const year = Number(entry.year);
+      if (!Number.isInteger(year) || year < 1990 || year > 2100) throw new AppError("Ano inválido nos dados financeiros.");
+      const number = (raw: unknown, label: string) => {
+        if (raw === undefined || raw === null || raw === "") return undefined;
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n < 0) throw new AppError(`${label} inválido.`);
+        return n;
+      };
+      const turnover = number(entry.turnover, "Volume de negócios");
+      const employees = number(entry.employees, "Número de empregados");
+      return { year, ...(turnover !== undefined ? { turnover } : {}), ...(employees !== undefined ? { employees: Math.round(employees) } : {}) };
+    });
+    if (new Set(years.map((y) => y.year)).size !== years.length) throw new AppError("Há anos repetidos nos dados financeiros.");
+    return years.sort((a, b) => a.year - b.year);
+  };
+  const companySize = (value: unknown) => {
+    if (value === null) return undefined;
+    const v = (value ?? {}) as Values;
+    if (v.source !== "Iberinform" || typeof v.url !== "string" || !/^https:\/\/www\.iberinform\.pt\/empresa\//.test(v.url))
+      throw new AppError("Dados de dimensão inválidos.");
+    const bracket = (b: unknown) => {
+      if (b === undefined || b === null) return undefined;
+      const { label, min, max } = b as Values;
+      if (typeof label !== "string" || label.length > 60) throw new AppError("Escalão inválido.");
+      const ok = (n: unknown) => n === undefined || (typeof n === "number" && Number.isFinite(n) && n >= 0);
+      if (!ok(min) || !ok(max)) throw new AppError("Escalão inválido.");
+      return { label, ...(min !== undefined ? { min: min as number } : {}), ...(max !== undefined ? { max: max as number } : {}) };
+    };
+    return {
+      source: "Iberinform" as const,
+      url: v.url,
+      ...(typeof v.nif === "string" && /^\d{9}$/.test(v.nif) ? { nif: v.nif } : {}),
+      ...(v.turnover ? { turnover: bracket(v.turnover) } : {}),
+      ...(v.trend ? { trend: choice(v.trend, ["aumenta", "diminui", "igual"] as const, "Tendência") } : {}),
+      ...(v.employees ? { employees: bracket(v.employees) } : {}),
+      ...(v.capital ? { capital: bracket(v.capital) } : {}),
+      checkedAt: typeof v.checkedAt === "string" && !Number.isNaN(Date.parse(v.checkedAt)) ? new Date(v.checkedAt).toISOString() : new Date().toISOString(),
+    };
+  };
   const saveOrganization = (values: Values) => {
     const existing = values.id ? find(data.organizations, values.id) : null;
     if (existing) version(existing, values.version);
@@ -408,6 +481,10 @@ function executeCore(
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       throw new AppError("Invalid email.");
     const name = text(values.name, "Organization", 160);
+    const location = text(values.location ?? existing?.location, "Location", 160, false);
+    const address = text(values.address ?? existing?.address, "Address", 300, false);
+    // Coordinates follow the address: when either text changes without new coordinates, drop the stale pin.
+    const moved = !!existing && (location !== (existing.location ?? "") || address !== (existing.address ?? ""));
     if (
       !existing &&
       data.organizations.some(
@@ -423,6 +500,19 @@ function executeCore(
       person: text(values.person, "Person", 160, false),
       email,
       phone: text(values.phone, "Phone", 50, false),
+      location,
+      address,
+      nif: values.nif !== undefined ? nif(values.nif) : existing?.nif,
+      siteKind: values.siteKind !== undefined ? siteKind(values.siteKind) : existing?.siteKind,
+      sites: values.sites !== undefined ? sites(values.sites) : existing?.sites,
+      financials: values.financials !== undefined ? financials(values.financials) : existing?.financials,
+      size: values.size !== undefined ? companySize(values.size) : existing?.size,
+      coordinates:
+        values.coordinates !== undefined
+          ? coordinates(values.coordinates)
+          : moved
+            ? undefined
+            : existing?.coordinates,
       stage: choice(
         values.stage ?? "new",
         Object.keys(stages),
@@ -431,8 +521,11 @@ function executeCore(
       ownerId: member(values.ownerId ?? me.id),
       nextStep: text(values.nextStep, "Next step", 500, false),
       followUpOn: day(values.followUpOn),
+      pinned: boolean(values.pinned, existing?.pinned ?? false),
       archived: boolean(values.archived, existing?.archived ?? false),
     };
+    if (item.nif && data.organizations.some((o) => o.id !== item.id && o.nif === item.nif))
+      throw new AppError("Já existe uma empresa com este NIF.");
     if (existing && item.stage !== existing.stage) {
       const statusNote = text(values.statusNote, "Status note", 10000);
       data.interactions.push({
@@ -447,7 +540,13 @@ function executeCore(
     if (existing) {
       Object.assign(existing, item);
       touch(existing);
-    } else data.organizations.push(item);
+    } else {
+      data.organizations.push(item);
+      // A company created from a prospect keeps where it came from in its timeline.
+      const initialNote = text(values.initialNote, "Nota inicial", 2000, false);
+      if (initialNote)
+        data.interactions.push({ ...base(), organizationId: item.id, channel: "note", body: initialNote });
+    }
     return item.id;
   };
   const saveNote = (values: Values) => {
@@ -504,6 +603,25 @@ function executeCore(
       touch(existing);
     } else data.notes.push(item);
     return item.id;
+  };
+  const clockTime = /^([01]\d|2[0-3]):[0-5]\d$/;
+  // One visit of a route, as planned (route.save) or added during the day (route.replan).
+  const visitStop = (value: unknown) => {
+    const stop = record(value);
+    const lat = Number(stop.lat), lng = Number(stop.lng);
+    const arrival = text(stop.arrival, "Hora de chegada", 5), departure = text(stop.departure, "Hora de saída", 5);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180)
+      throw new AppError("Posição inválida numa visita.");
+    if (!clockTime.test(arrival) || !clockTime.test(departure)) throw new AppError("Horário inválido numa visita.");
+    const kind = choice(stop.kind, ["crm", "prospect"] as const, "Tipo de visita");
+    const id = text(stop.id, "Empresa", 200);
+    return {
+      kind, id, lat, lng, arrival, departure,
+      name: text(stop.name, "Empresa", 160),
+      location: text(stop.location, "Localização", 160, false),
+      reasons: (Array.isArray(stop.reasons) ? stop.reasons : []).slice(0, 8).map((reason) => text(reason, "Motivo", 200)),
+      organizationId: kind === "crm" ? organizationId(id) : null,
+    };
   };
   switch (action) {
     case "member.github": {
@@ -777,8 +895,7 @@ function executeCore(
       };
     }
     case "organization.save":
-      saveOrganization(v);
-      return { message: "Contact saved." };
+      return { message: "Contact saved.", ids: [saveOrganization(v)] };
     case "organization.delete": {
       const organization = find(data.organizations, v.id);
       version(organization, v.version);
@@ -826,6 +943,17 @@ function executeCore(
       organization.stage = stage;
       touch(organization);
       return { message: "Status and note saved." };
+    }
+    case "organization.pin": {
+      const organization = find(data.organizations, v.id);
+      version(organization, v.version);
+      organization.pinned = !organization.pinned;
+      touch(organization);
+      return {
+        message: organization.pinned
+          ? "Empresa destacada no topo do CRM."
+          : "Empresa retirada dos destaques.",
+      };
     }
     case "organization.note": {
       const organization = find(data.organizations, v.id);
@@ -1260,6 +1388,112 @@ function executeCore(
           ids.length === 1 ? "Record saved." : `${ids.length} records saved.`,
         ids,
       };
+    }
+    case "route.save": {
+      const date = day(v.date);
+      if (!date) throw new AppError("Escolhe o dia das visitas.");
+      if (!Array.isArray(v.stops) || !v.stops.length || v.stops.length > 12)
+        throw new AppError("Uma rota tem entre 1 e 12 visitas.");
+      const stops = v.stops.map(visitStop);
+      const route = {
+        ...base(),
+        name: text(v.name, "Nome da rota", 120),
+        date,
+        ownerId: v.ownerId ? member(v.ownerId) : me.id,
+        stops,
+        currentIndex: 0,
+        visits: [],
+      };
+      data.routes.push(route);
+      return { message: "Rota guardada.", ids: [route.id] };
+    }
+    case "route.owner": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id || route.createdBy === me.id);
+      version(route, v.version);
+      route.ownerId = member(v.ownerId);
+      touch(route);
+      return { message: "Responsável da rota atualizado." };
+    }
+    case "route.visit": {
+      const route = find(data.routes, v.id);
+      // The responsible person registers the visits; an admin can step in on any route.
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      const stop = route.stops[route.currentIndex];
+      if (!stop) throw new AppError("Esta rota já está concluída.");
+      // A prospect becomes a company when the visits are scheduled or it is added to the CRM; names are unique there.
+      const organization =
+        data.organizations.find((o) => o.id === (stop.organizationId ?? (stop.kind === "crm" ? stop.id : null))) ??
+        data.organizations.find((o) => !o.archived && o.name.toLocaleLowerCase("pt") === stop.name.toLocaleLowerCase("pt"));
+      if (!organization)
+        throw new AppError("Esta visita é a um prospeto que ainda não está no CRM. Marca a rota no calendário ou adiciona a empresa ao CRM primeiro.");
+      const stage = choice(v.stage, Object.keys(stages), "Estado") as keyof typeof stages;
+      const note = text(v.note, "Resumo da visita", 10000);
+      data.interactions.push({
+        ...base(),
+        organizationId: organization.id,
+        channel: "note",
+        body: `Visita em rota: ${note}`,
+        ...(stage !== organization.stage ? { stageFrom: organization.stage, stageTo: stage } : {}),
+      });
+      organization.stage = stage;
+      // Next step and follow-up date are optional: only what was filled in replaces the company's current ones.
+      const nextStep = text(v.nextStep, "Próximo passo", 500, false);
+      const followUpOn = day(v.followUpOn);
+      if (nextStep) organization.nextStep = nextStep;
+      if (followUpOn) organization.followUpOn = followUpOn;
+      touch(organization);
+      stop.organizationId = organization.id;
+      route.visits.push({ stopId: stop.id, organizationId: organization.id, at: now, by: me.id, stage, note });
+      route.currentIndex++;
+      touch(route);
+      return {
+        message: route.currentIndex >= route.stops.length ? "Visita registada. Rota concluída." : "Visita registada.",
+      };
+    }
+    case "route.skip": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      const stop = route.stops[route.currentIndex];
+      if (!stop) throw new AppError("Esta rota já está concluída.");
+      route.visits.push({ stopId: stop.id, at: now, by: me.id, note: text(v.note, "Motivo", 500, false), skipped: true });
+      route.currentIndex++;
+      touch(route);
+      return { message: `${stop.name} ficou fora da rota.` };
+    }
+    case "route.replan": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      // A company added during the day joins the visits still to do; the plan must then contain it too.
+      const added = v.add === undefined ? null : visitStop(v.add);
+      if (added && route.stops.some((stop) => stop.id === added.id || (!!added.organizationId && stop.organizationId === added.organizationId)))
+        throw new AppError(`${added.name} já está nesta rota.`);
+      if (added && route.stops.length >= 20) throw new AppError("Uma rota tem no máximo 20 visitas.");
+      const remaining = [...route.stops.slice(route.currentIndex), ...(added ? [added] : [])];
+      if (!Array.isArray(v.stops) || v.stops.length !== remaining.length)
+        throw new AppError("O novo plano tem de ter as mesmas visitas que faltam.");
+      const used = new Set<string>();
+      const reordered = v.stops.map((value) => {
+        const item = record(value);
+        const stop = remaining.find((candidate) => candidate.id === item.id && !used.has(candidate.id));
+        if (!stop) throw new AppError("O novo plano tem de ter as mesmas visitas que faltam.");
+        used.add(stop.id);
+        const arrival = text(item.arrival, "Hora de chegada", 5), departure = text(item.departure, "Hora de saída", 5);
+        if (!clockTime.test(arrival) || !clockTime.test(departure)) throw new AppError("Horário inválido no novo plano.");
+        return { ...stop, arrival, departure };
+      });
+      route.stops = [...route.stops.slice(0, route.currentIndex), ...reordered];
+      touch(route);
+      return { message: added ? `${added.name} acrescentada à rota.` : "Rota replaneada a partir daqui." };
+    }
+    case "route.delete": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id || route.createdBy === me.id);
+      data.routes = data.routes.filter((item) => item.id !== route.id);
+      return { message: "Rota apagada." };
     }
     default:
       throw new AppError("Unknown action.");

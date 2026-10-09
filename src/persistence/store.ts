@@ -1,5 +1,5 @@
 import "server-only";
-import { SupabaseWorkspaceRepository } from "./supabase/repository";
+import { SupabaseWorkspaceRepository, sharedWorkspaceCache } from "./supabase/repository";
 import { supabaseOptions } from "./supabase/client";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -98,6 +98,8 @@ export class LocalWorkspaceRepository implements WorkspaceRepository {
       }
       for (const project of data.projects) project.repositories ??= [];
     }
+    // Collections added within schema 5 start empty; the file is rewritten on the next transaction.
+    data.routes ??= [];
     if (
       data.schemaVersion !== 5 ||
       !Array.isArray(data.members) ||
@@ -150,7 +152,8 @@ export class LocalWorkspaceRepository implements WorkspaceRepository {
 }
 
 export function repository(): WorkspaceRepository {
-  if (process.env.VOUGA_STORAGE === "supabase") return new SupabaseWorkspaceRepository(supabaseOptions());
+  // The shared cache keeps Supabase egress to a revision check per read (see supabase/repository.ts).
+  if (process.env.VOUGA_STORAGE === "supabase") return new SupabaseWorkspaceRepository(supabaseOptions(), sharedWorkspaceCache());
   if (process.env.VOUGA_STORAGE && process.env.VOUGA_STORAGE !== "local") throw new Error("Invalid VOUGA_STORAGE.");
   if (process.env.VOUGA_LOCAL_MODE !== "1")
     throw new Error("Run bun run setup to configure this local edition.");
