@@ -10,8 +10,14 @@ const source = "prospects";
 const token = (name: string, fallback: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
+/**
+ * False once the map has been removed: MapLibre deletes its style there, and every call below would throw.
+ * React runs the cleanups of components that unmount with the map after the map itself is gone, so they ask here.
+ */
+const live = (map: MapLibre) => !!(map as Partial<MapLibre>).style;
+
 export function addProspectLayer(map: MapLibre) {
-  if (map.getSource(source)) return;
+  if (!live(map) || map.getSource(source)) return;
   map.addSource(source, { type: "geojson", data: { type: "FeatureCollection", features: [] }, promoteId: "id" });
   map.addLayer({
     id: prospectLayer,
@@ -31,6 +37,7 @@ export function addProspectLayer(map: MapLibre) {
 }
 
 export function setProspectData(map: MapLibre, prospects: Prospect[]) {
+  if (!live(map)) return;
   (map.getSource(source) as GeoJSONSource | undefined)?.setData({
     type: "FeatureCollection",
     features: prospects.map((p) => ({
@@ -44,7 +51,7 @@ export function setProspectData(map: MapLibre, prospects: Prospect[]) {
 
 /** While a route stop is selected, prospects become targets for a swap: coral, like the route. */
 export function highlightProspects(map: MapLibre, on: boolean) {
-  if (!map.getLayer(prospectLayer)) return;
+  if (!live(map) || !map.getLayer(prospectLayer)) return;
   map.setPaintProperty(prospectLayer, "circle-stroke-color", on
     ? token("--vouga-coral", "#f26b4a")
     : ["case", ["get", "unconfirmed"], token("--stage-contacted", "#d8b06d"), token("--map-prospect", "#8fa5f7")]);
@@ -52,5 +59,5 @@ export function highlightProspects(map: MapLibre, on: boolean) {
 
 /** True when a map click landed on a prospect, so map-wide click handlers can leave it to the layer. */
 export function hitsProspect(map: MapLibre, event: MapMouseEvent) {
-  return !!map.getLayer(prospectLayer) && map.queryRenderedFeatures(event.point, { layers: [prospectLayer] }).length > 0;
+  return live(map) && !!map.getLayer(prospectLayer) && map.queryRenderedFeatures(event.point, { layers: [prospectLayer] }).length > 0;
 }

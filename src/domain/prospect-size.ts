@@ -23,7 +23,9 @@ const normalize = (value: string) => value.normalize("NFD").replace(/\p{Diacriti
 
 /** Businesses that are not industrial producers, whatever their sector words (shops, traders, services). */
 export const outsideTarget =
-  /\b(loja|store|shop|sapataria|retalh|comercio|revenda|atacadista|grossista|distribuidor|armazem|importacao e exportacao|stand|reparacao automovel|oficina auto|car repair|auto repair|pneus|restaurante|cafe|snack|pastelaria|padaria|talho|mercearia|supermercado|cabeleireiro|imobiliaria|escola|instituicao escolar|clinica|farmacia|hotel|alojamento|igreja|associacao|junta de freguesia|camara municipal|bomba de gasolina|posto de abastecimento|construtor civil|empreiteiro|agencia de emprego|escritorio|engenheiro)\b/;
+  /\b(loja|store|shop|sapataria|retalh|comercio|revenda|atacadista|grossista|distribuidor|armazem|importacao e exportacao|stand|reparacao automovel|oficina auto|car repair|auto repair|pneus|restaurante|cafe|snack|pastelaria|padaria|talho|mercearia|supermercado|cabeleireiro|imobiliaria|escola|instituicao escolar|clinica|farmacia|hotel|alojamento|igreja|associacao|junta de freguesia|camara municipal|bomba de gasolina|posto de abastecimento|construtor civil|empreiteiro|agencia de emprego|escritorio|engenheiro|textil|vestuario|confecao|confeccao|eletricista|instalacoes eletricas|instalacoes electricas)\b/;
+/** Clear non-target activities that show in the company name even when the Maps category does not say so. */
+export const outsideByName = /\b(textil|texteis|vestuario|confecao|confeccao|confecoes|instalacoes eletricas|instalacoes electricas)\b/;
 // Word stems, so plurals and variants count too (fábrica/fabricante, cortiça/cortiças, molde/moldes).
 const producer =
   /\b(fabric|manufactur|factory|industri|metalurg|metalomecan|fundic|estampag|molde|injec|maquinaria|maquinas industriais|equipamentos industriais|caldeirar|estruturas metalicas|tratamento de superficies|galvaniz|conservas|transformac|cortic|serrac|palete|calcad|componentes)/;

@@ -10,7 +10,7 @@
 //   --relatorio  prints the result and a sample per size band with its reasons, without saving anything.
 import { readFile } from "node:fs/promises";
 import { caeGroups, classify, groupForCae, icpFit, type CaeGroup, type Prospect } from "../src/domain/prospects";
-import { likelySize, outsideTarget } from "../src/domain/prospect-size";
+import { likelySize, outsideByName, outsideTarget } from "../src/domain/prospect-size";
 import { saveToBase } from "./prospect-base";
 import { locateMunicipality, municipalities, nearestMunicipality } from "../src/domain/municipalities";
 
@@ -116,7 +116,7 @@ for (const row of rows) {
   const cae = pick(row, "cae", "cae principal", "cae_principal");
   const category = pick(row, "category", "categoria", "atividade", "actividade", "descricao cae");
   if (/closed|fechad|encerrad/i.test(pick(row, "status"))) { dropped.fechadas++; continue; }
-  if (outsideTarget.test(norm(category))) { dropped.foraDoAlvo++; continue; }
+  if (outsideTarget.test(norm(category)) || outsideByName.test(norm(name))) { dropped.foraDoAlvo++; continue; }
   // gosom repeats the search id; "metal:Águeda" names the sector that was searched for.
   const searched = pick(row, "input_id").split(":")[0];
   const group = groupForCae(cae) ?? classify(name, category) ?? (searched in caeGroups ? (searched as CaeGroup) : null);

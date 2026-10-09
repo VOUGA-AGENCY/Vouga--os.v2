@@ -33,3 +33,12 @@ describe("likely company size from Google Maps signals", () => {
     expect(likelySize({ name: "Metal Comércio de Máquinas Lda", category: "Fabricante", ...base }).band).not.toBe("alta");
   });
 });
+
+describe("non-target activities in the company name", () => {
+  it("catches textile and electrical installers named as such, without excluding trade words in industrial names", async () => {
+    const { outsideByName } = await import("@/domain/prospect-size");
+    expect(outsideByName.test("cbi industria de vestuario sa")).toBe(true);
+    expect(outsideByName.test("matelfe - instalacoes electricas, s.a.")).toBe(true);
+    expect(outsideByName.test("metal comercio e industria, lda")).toBe(false);
+  });
+});

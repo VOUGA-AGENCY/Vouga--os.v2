@@ -1,6 +1,6 @@
 // Writes the Google Maps searches for gosom/google-maps-scraper: every sector term in every municipality of the
 // chosen area (default: mainland Norte and Centro, i.e. north of latitude 39.2). Each line carries an id
-// "<sector>:<municipality>" that gosom returns as input_id, so the import knows which search found a company.
+// "<sector>:<term>:<municipality>" that gosom returns as input_id, so the import knows which search found a company.
 // Usage: bun run prospects:queries [--sul=39.2] [--setores=metal,calcado]   → .local/maps-queries.txt
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -25,7 +25,8 @@ const sectors = (option("setores")?.split(",") ?? Object.keys(caeGroups)).filter
 // Mainland only: the islands sit far west of -9.6.
 const area = Object.entries(municipalities).filter(([, [lat, lng]]) => lat >= south && lng > -9.6).map(([name]) => name).sort((a, b) => a.localeCompare(b, "pt"));
 
-const lines = sectors.flatMap((sector) => terms[sector].flatMap((term) => area.map((municipality) => `${term} em ${municipality} #!# ${sector}:${municipality}`)));
+// The id is unique per search (sector, term number, municipality); the import reads the sector from its first part.
+const lines = sectors.flatMap((sector) => terms[sector].flatMap((term, index) => area.map((municipality) => `${term} em ${municipality} #!# ${sector}:${index + 1}:${municipality}`)));
 const file = path.resolve(process.env.VOUGA_DATA_DIR || ".local", "maps-queries.txt");
 await mkdir(path.dirname(file), { recursive: true });
 await writeFile(file, `${lines.join("\n")}\n`);
