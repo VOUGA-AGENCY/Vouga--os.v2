@@ -12,6 +12,8 @@ export default async function Page({
 }) {
   const { view = [] } = await params;
   if (view.length === 1 && ["notas", "inbox"].includes(view[0])) redirect("/");
+  // Routes are a CRM view (the route toggle next to the map), not a page of their own.
+  if (view.length === 1 && view[0] === "rotas") redirect("/contactos");
   if (
     view.length > 1 ||
     ![

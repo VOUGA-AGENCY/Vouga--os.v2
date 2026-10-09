@@ -2,33 +2,45 @@
 import { useEffect, useRef, useState } from "react";
 import type { Feature } from "geojson";
 import type { GeoJSONSource, Map as MapLibre, MapMouseEvent, Marker } from "maplibre-gl";
-import { CalendarPlus, ExternalLink, Route, Sparkles, X } from "lucide-react";
+import { CalendarPlus, ExternalLink, Route, Save, Sparkles, X } from "lucide-react";
 import { caeGroups, vougaBase, type CaeGroup } from "@/domain/prospects";
-import type { RouteStop } from "@/domain/routing";
+import { haversineKm, type RouteStop } from "@/domain/routing";
+import { addDays, dateKey, shortDate } from "@/domain/time";
 import { useWorkspace } from "./context";
+import { highlightProspects, hitsProspect } from "./prospect-layer";
 
 type Plan = {
   stops: RouteStop[]; returnAt?: string; driveMinutes?: number; km?: number; lunchAt?: string; left?: number; considered: number;
   geometry?: [number, number][]; googleMaps?: string; provider?: string; warning?: string; message?: string; estimated?: boolean;
   unknownSector?: number; sectors?: string[]; overtime?: number;
-  alternatives?: { id: string; name: string; location: string }[];
-  suggestions?: { remove: string; removeName: string; add: string; addName: string; saves: number }[];
+  alternatives?: { id: string; name: string; location: string; lat: number; lng: number; kind: "crm" | "prospect" }[];
+  suggestions?: { remove: string; removeName: string; add: string; addName: string; saves: number; lat: number; lng: number; kind: "crm" | "prospect"; location: string }[];
 };
-const tomorrow = () => { const d = new Date(Date.now() + 86_400_000); return d.toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" }); };
+const tomorrow = () => addDays(dateKey(), 1);
+// MapLibre paints with literal colours, so the layers read the design tokens.
+const token = (name: string, fallback: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 const circle = (lat: number, lng: number, km: number): [number, number][] =>
   Array.from({ length: 65 }, (_, i) => {
     const a = (i / 64) * 2 * Math.PI;
     return [lng + (km / (111.32 * Math.cos((lat * Math.PI) / 180))) * Math.cos(a), lat + (km / 110.57) * Math.sin(a)];
   });
 
-export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; lib: typeof import("maplibre-gl"); sectors: CaeGroup[]; onClose: () => void }) {
+export function RoutePlanner({ map, lib, sectors, onClose, onSaveRoute, pickRef }: {
+  map: MapLibre; lib: typeof import("maplibre-gl"); sectors: CaeGroup[]; onClose: () => void;
+  onSaveRoute?: (route: { name: string; date: string; stops: RouteStop[] }) => void;
+  /** Set by the planner: the map's company and prospect markers offer their id here first; true means it was used. */
+  pickRef?: React.RefObject<((id: string) => boolean) | null>;
+}) {
   const { notify, refresh } = useWorkspace();
   const [center, setCenter] = useState(() => { const c = map.getCenter(); return { lat: c.lat, lng: c.lng }; });
-  const [form, setForm] = useState({ date: tomorrow(), start: "09:00", end: "18:30", count: 6, radiusKm: 20, visitMinutes: 45, lunch: true, crm: true, prospects: true });
+  const [form, setForm] = useState({ date: tomorrow(), start: "09:00", end: "18:30", count: 6, radiusKm: 20, visitMinutes: 25, lunch: true, crm: true, prospects: true });
   const [plan, setPlan] = useState<Plan | null>(null);
+  const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const markers = useRef<Marker[]>([]);
+  // Map markers call the latest swap, which is declared further down and changes every render.
+  const swapLatest = useRef<(out: string, inn: string) => void>(() => {});
   // A plan computed for other sectors is no longer valid.
   const sectorKey = sectors.join(",");
   const [planSectors, setPlanSectors] = useState(sectorKey);
@@ -36,11 +48,22 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
 
   // Clicking the map moves the centre of the area.
   useEffect(() => {
-    const pick = (event: MapMouseEvent) => { setCenter({ lat: event.lngLat.lat, lng: event.lngLat.lng }); setPlan(null); };
+    const pick = (event: MapMouseEvent) => {
+      // A click on a prospect is handled by the prospect layer (open it, or swap it into the route).
+      if (hitsProspect(map, event)) return;
+      const hit = plan?.stops.find((stop) => haversineKm({ lat: event.lngLat.lat, lng: event.lngLat.lng }, stop) < 0.15);
+      if (hit) {
+        setSelectedStopId(hit.id);
+        return;
+      }
+      setSelectedStopId(null);
+      setCenter({ lat: event.lngLat.lat, lng: event.lngLat.lng });
+      setPlan(null);
+    };
     map.on("click", pick);
     map.getCanvas().style.cursor = "crosshair";
     return () => { map.off("click", pick); map.getCanvas().style.cursor = ""; };
-  }, [map]);
+  }, [map, plan]);
 
   // Area circle, route line and numbered stops.
   useEffect(() => {
@@ -55,15 +78,36 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
     };
     set("route-area", area);
     set("route-line", line);
-    if (!map.getLayer("route-area-fill")) map.addLayer({ id: "route-area-fill", type: "fill", source: "route-area", paint: { "fill-color": "#8fa5f7", "fill-opacity": 0.06 } });
-    if (!map.getLayer("route-area-edge")) map.addLayer({ id: "route-area-edge", type: "line", source: "route-area", paint: { "line-color": "#8fa5f7", "line-opacity": 0.5, "line-dasharray": [2, 2] } });
-    if (!map.getLayer("route-line")) map.addLayer({ id: "route-line", type: "line", source: "route-line", layout: { "line-join": "round", "line-cap": "round" }, paint: { "line-color": "#f26b4a", "line-width": 3, "line-opacity": 0.9 } });
+    const areaColor = token("--map-prospect", "#8fa5f7"), coral = token("--vouga-coral", "#f26b4a");
+    if (!map.getLayer("route-area-fill")) map.addLayer({ id: "route-area-fill", type: "fill", source: "route-area", paint: { "fill-color": areaColor, "fill-opacity": 0.06 } });
+    if (!map.getLayer("route-area-edge")) map.addLayer({ id: "route-area-edge", type: "line", source: "route-area", paint: { "line-color": areaColor, "line-opacity": 0.5, "line-dasharray": [2, 2] } });
+    if (!map.getLayer("route-line")) map.addLayer({ id: "route-line", type: "line", source: "route-line", layout: { "line-join": "round", "line-cap": "round" }, paint: { "line-color": coral, "line-width": 3, "line-opacity": 0.9 } });
     markers.current.forEach((m) => m.remove());
     markers.current = [];
     const badge = (text: string, className: string) => { const el = document.createElement("span"); el.className = className; el.textContent = text; return el; };
     markers.current.push(new lib.Marker({ element: badge("V", "route-base") }).setLngLat([vougaBase.lng, vougaBase.lat]).addTo(map));
-    plan?.stops.forEach((stop, index) => markers.current.push(new lib.Marker({ element: badge(String(index + 1), "route-stop") }).setLngLat([stop.lng, stop.lat]).addTo(map)));
-  }, [map, lib, center, form.radiusKm, plan]);
+    plan?.stops.forEach((stop, index) => {
+      const selected = selectedStopId === stop.id;
+      const marker = new lib.Marker({ element: badge(String(index + 1), selected ? "route-stop route-stop-selected-marker" : "route-stop") })
+        .setLngLat([stop.lng, stop.lat])
+        .addTo(map);
+      // The map's own click would select the stop again by distance, so a second click could never unselect it.
+      marker.getElement().addEventListener("click", (event) => { event.stopPropagation(); setSelectedStopId((current) => current === stop.id ? null : stop.id); });
+      markers.current.push(marker);
+    });
+    if (selectedStopId) {
+      const swaps = plan?.suggestions?.filter((item) => item.remove === selectedStopId) ?? [];
+      swaps.forEach((swapItem) => {
+        const ring = document.createElement("button");
+        ring.type = "button";
+        ring.className = "route-swap-marker";
+        ring.title = `${swapItem.addName} · ${swapItem.saves > 0 ? "ganha" : "perde"} ${Math.abs(swapItem.saves)} min`;
+        ring.addEventListener("click", (event) => { event.stopPropagation(); swapLatest.current(swapItem.remove, swapItem.add); });
+        const marker = new lib.Marker({ element: ring }).setLngLat([swapItem.lng, swapItem.lat]).addTo(map);
+        markers.current.push(marker);
+      });
+    }
+  }, [map, lib, center, form.radiusKm, plan, selectedStopId, busy]);
 
   // Remove everything this planner drew when it closes.
   useEffect(() => () => {
@@ -87,6 +131,7 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
     if (!sectors.length) { setError("Seleciona pelo menos um setor por baixo do mapa."); return; }
     const inc = next.include ?? include, exc = next.exclude ?? exclude;
     setInclude(inc); setExclude(exc);
+    setSelectedStopId(null);
     setBusy(true); setError("");
     try {
       const result = (await call("plan", { ...form, center, sectors, include: inc, exclude: exc })) as Plan;
@@ -100,20 +145,52 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
     finally { setBusy(false); }
   }
   const kept = () => plan?.stops.map((s) => s.id) ?? [];
+  const suggestionsForSelected = selectedStopId ? (plan?.suggestions ?? []).filter((item) => item.remove === selectedStopId) : [];
   // x on a stop: the others stay, that one leaves, and the planner fills the gap.
   const remove = (id: string) => void calculate({ include: kept().filter((x) => x !== id), exclude: [...exclude, id] });
   // Choosing a company for a stop: it replaces that stop.
   const swap = (out: string, inn: string) => void calculate({ include: [...kept().filter((x) => x !== out), inn], exclude: [...exclude.filter((x) => x !== inn), out] });
+  useEffect(() => { swapLatest.current = swap; });
+  // With a stop selected, clicking any company or prospect on the map puts it in that stop's place.
+  useEffect(() => {
+    if (!pickRef) return;
+    pickRef.current = (id) => {
+      if (!selectedStopId) return false;
+      if (busy) return true;
+      if (id === selectedStopId) setSelectedStopId(null);
+      else if (plan?.stops.some((stop) => stop.id === id)) setSelectedStopId(id);
+      else swap(selectedStopId, id);
+      return true;
+    };
+    return () => { pickRef.current = null; };
+  });
+  useEffect(() => {
+    const container = map.getContainer();
+    container.classList.toggle("is-route-picking", !!selectedStopId);
+    highlightProspects(map, !!selectedStopId);
+    return () => { container.classList.remove("is-route-picking"); highlightProspects(map, false); };
+  }, [map, selectedStopId]);
   const fresh = () => void calculate({ include: [], exclude: [] });
+  // One key per plan: a repeated click, or a retry after a lost response, does not mark the visits twice.
+  const scheduleKey = useRef<{ plan: Plan; key: string } | null>(null);
   async function scheduleVisits() {
     if (!plan?.stops.length) return;
+    if (scheduleKey.current?.plan !== plan) scheduleKey.current = { plan, key: crypto.randomUUID() };
     setBusy(true); setError("");
     try {
-      const result = await call("schedule", { date: form.date, stops: plan.stops });
+      const result = await call("schedule", { key: scheduleKey.current.key, date: form.date, stops: plan.stops });
       notify(result.message);
       await refresh();
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível marcar as visitas."); }
     finally { setBusy(false); }
+  }
+  function saveRoute() {
+    if (!plan?.stops.length || !onSaveRoute) return;
+    onSaveRoute({
+      name: `Rota · ${shortDate(form.date)}`,
+      date: form.date,
+      stops: plan.stops,
+    });
   }
   const field = <K extends keyof typeof form>(key: K) => ({
     value: form[key] as string | number,
@@ -149,24 +226,36 @@ export function RoutePlanner({ map, lib, sectors, onClose }: { map: MapLibre; li
       ? <p className="route-hint">{plan.message ?? "Não há empresas elegíveis nesta área."}</p>
       : <div className="route-result">
           <p className="route-summary">{plan.stops.length} visitas · {plan.km} km · regresso às {plan.returnAt}{plan.overtime ? <span className="route-late"> (+{plan.overtime} min)</span> : null}</p>
-          <ol>{plan.stops.map((stop) => <li key={stop.id}>
+          <ol>{plan.stops.map((stop) => <li key={stop.id} className={selectedStopId === stop.id ? "route-stop-selected" : ""} onClick={() => setSelectedStopId((current) => current === stop.id ? null : stop.id)}>
             <span className="route-time">{stop.arrival}</span>
             <span className="route-name"><strong>{stop.name}</strong><small>{stop.location}</small></span>
             <span className="route-stop-actions">
-              {!!plan.alternatives?.length && <select aria-label={`Trocar ${stop.name}`} value="" disabled={busy} onChange={(e) => { if (e.target.value) swap(stop.id, e.target.value); }}>
-                <option value="">Trocar</option>
-                {plan.alternatives.map((alt) => <option key={alt.id} value={alt.id}>{alt.name} · {alt.location}</option>)}
-              </select>}
               <button type="button" aria-label={`Tirar ${stop.name}`} title="Tirar da rota" disabled={busy} onClick={() => remove(stop.id)}><X size={13}/></button>
             </span>
           </li>)}</ol>
-          {!!plan.suggestions?.length && <div className="route-suggestions">
-            <p><Sparkles size={13}/>Para chegar mais cedo</p>
+          {selectedStopId && <div className="route-suggestions">
+            <p><Sparkles size={13}/>Sugestão para a paragem selecionada</p>
+            <small className="route-pick-hint">Ou clica numa empresa no mapa para a pôr no lugar desta paragem.</small>
+            {suggestionsForSelected.length ? suggestionsForSelected.map((sg) => (
+              <div key={`${sg.remove}>${sg.add}`} className="route-suggestion-confirm">
+                <button type="button" disabled={busy} onClick={() => swap(sg.remove, sg.add)}>
+                  <span>Trocar <b>{sg.removeName}</b> por <b>{sg.addName}</b></span>
+                  <em>{sg.saves > 0 ? `ganha ${sg.saves} min` : `perde ${Math.abs(sg.saves)} min`}</em>
+                </button>
+                <small>Estimativa: a viagem fica {sg.saves > 0 ? `mais curta em ${sg.saves} minutos` : `mais longa em ${Math.abs(sg.saves)} minutos`}.</small>
+              </div>
+            )) : <div className="route-suggestion-confirm">
+              <small>Sem melhoria clara para esta paragem. Tenta escolher outra ou manter o percurso atual.</small>
+            </div>}
+          </div>}
+          {!selectedStopId && !!plan.suggestions?.length && <div className="route-suggestions">
+            <p><Sparkles size={13}/>Melhorias do percurso</p>
             {plan.suggestions.map((sg) => <button key={`${sg.remove}>${sg.add}`} type="button" disabled={busy} onClick={() => swap(sg.remove, sg.add)}><span>Trocar <b>{sg.removeName}</b> por <b>{sg.addName}</b></span><em>−{sg.saves} min</em></button>)}
           </div>}
           {plan.warning && <p className="route-warning">{plan.warning}</p>}
           <div className="route-actions">
             {plan.googleMaps && <a href={plan.googleMaps} target="_blank" rel="noopener noreferrer"><ExternalLink size={13}/>Google Maps</a>}
+            {onSaveRoute && <button type="button" disabled={busy} onClick={saveRoute}><Save size={13}/>Guardar rota</button>}
             <button type="button" disabled={busy} onClick={() => void scheduleVisits()}><CalendarPlus size={13}/>Marcar no calendário</button>
           </div>
         </div>)}

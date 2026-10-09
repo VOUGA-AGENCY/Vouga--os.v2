@@ -9,12 +9,14 @@
   --vouga-red: #ff3b1f;
   --vouga-cream: #efe3d6;
   --vouga-slate: #7b8294;
-  /* CRM stages warm up as the deal progresses: cream (untouched) → amber (contacted) → coral (meeting)
-     → red (proposal), then Vouga blue once they are a client. Tones are lifted so small labels keep 4.5:1 on the dark workspace. */
-  --stage-new: var(--vouga-cream);
-  --stage-contacted: #f2b45a;
-  --stage-meeting: var(--vouga-coral);
-  --stage-proposal: var(--vouga-red);
+  /* Prospects and the planning area on the company map. */
+  --map-prospect: #8fa5f7;
+  /* CRM stages rise from neutral to a cool, compact palette: cream → amber → coral → muted red → soft blue, with a partner step in between. */
+  --stage-new: #dfe2e8;
+  --stage-contacted: #d8b06d;
+  --stage-meeting: #e48b5a;
+  --stage-proposal: #d96b57;
+  --stage-partner: #7ca7d8;
   --stage-client: #6d8af8;
   --stage-dormant: #9aa0ae;
   --color-accent: var(--vouga-orange);
