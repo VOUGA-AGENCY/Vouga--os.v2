@@ -23,8 +23,10 @@
     "meetings:supabase": "bun --conditions=react-server scripts/import-meetings-supabase.ts",
     "meetings:supabase:apply": "bun --conditions=react-server scripts/import-meetings-supabase.ts --apply",
     "integrations:check": "bun --conditions=react-server scripts/check-integrations.ts",
-    "prospects:sync": "bun scripts/sync-prospects.ts",
-    "prospects:import": "bun scripts/import-prospects.ts"
+    "prospects:sync": "bun --conditions=react-server scripts/sync-prospects.ts",
+    "prospects:import": "bun --conditions=react-server scripts/import-prospects.ts",
+    "prospects:migrate": "bun --conditions=react-server scripts/migrate-prospects.ts",
+    "prospects:queries": "bun scripts/maps-queries.ts"
   },
   "dependencies": {
     "lucide-react": "0.575.0",

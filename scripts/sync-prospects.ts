@@ -6,12 +6,13 @@
 //   3. the company's own website: the municipality of the addresses it publishes;
 //   4. closed or disused companies are dropped and duplicates (same name within 500 m) merged.
 // Each prospect gets check.status "verificado" | "provavel" | "a-confirmar" with the evidence.
-// Replaces the OSM part of data/prospects.json (tracked in Git, shared with the team); CSV imports stay.
+// Writes them into the shared prospect base (see scripts/prospect-base.ts); CSV imports and app edits stay.
 // Usage: bun run prospects:sync [district ...]   (default: Porto Aveiro Braga)
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { classify, type LocationCheck, type Prospect } from "../src/domain/prospects";
 import { locateMunicipality, nearestMunicipality } from "../src/domain/municipalities";
+import { saveToBase } from "./prospect-base";
 
 const districts = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const targets = districts.length ? districts : ["Porto", "Aveiro", "Braga"];
@@ -147,12 +148,9 @@ for (const draft of merged) {
 await mkdir(dataDir, { recursive: true });
 await writeFile(cacheFile, JSON.stringify(cache));
 
-// Shared through Git so every computer has the same prospect base.
-const file = path.resolve("data", "prospects.json");
-await mkdir(path.dirname(file), { recursive: true });
-let kept: Prospect[] = [];
-try { kept = (JSON.parse(await readFile(file, "utf8")).items as Prospect[]).filter((p) => p.source !== "osm"); } catch { /* first run */ }
-await writeFile(file, JSON.stringify({ updatedAt: new Date().toISOString(), attribution: "© OpenStreetMap contributors (ODbL)", items: [...kept, ...prospects] }, null, 1));
+// Into the shared prospect base, so every member sees the same prospects.
+const saved = await saveToBase(prospects);
 const count = (s: string) => prospects.filter((p) => p.check?.status === s).length;
 console.log(`OpenStreetMap: ${prospects.length} prospetos em ${targets.join(", ")} (${drafts.length - merged.length} duplicados juntos).`);
+console.log(`Base partilhada: ${saved.written} gravados; ${saved.kept} mantidos por terem sido corrigidos na app ou já estarem no CRM.`);
 console.log(`Localização: ${count("verificado")} verificados, ${count("provavel")} prováveis, ${count("a-confirmar")} a confirmar.`);

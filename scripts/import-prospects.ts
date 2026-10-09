@@ -2,16 +2,23 @@
 // scraper — whoever produces the file is responsible for having the right to use it). Recognised columns
 // (any of the names): name/title/nome/empresa · nif/contribuinte · cae · category/categoria/atividade ·
 // address/complete_address/morada/endereço · latitude/lat · longitude/lng/lon · website/site · phone/telefone ·
-// email/emails · place_id. Rows outside the priority sectors are skipped unless --all is passed.
-// Usage: bun run prospects:import <file.csv> [--all]
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { classify, groupForCae, type Prospect } from "../src/domain/prospects";
+// email/emails · place_id · review_count · status · input_id (gosom). Rows outside the priority sectors are
+// skipped unless --all is passed. Closed businesses, shops/services and repeated places are always left out.
+// Without turnover/headcount columns, each company gets a "likely size" score (src/domain/prospect-size.ts) and
+// only those at or above --min (default 40) are kept; with real accounts, the ICP decides instead.
+// Usage: bun run prospects:import <file.csv> [--all] [--min=40] [--relatorio]
+//   --relatorio  prints the result and a sample per size band with its reasons, without saving anything.
+import { readFile } from "node:fs/promises";
+import { caeGroups, classify, groupForCae, icpFit, type CaeGroup, type Prospect } from "../src/domain/prospects";
+import { likelySize, outsideTarget } from "../src/domain/prospect-size";
+import { saveToBase } from "./prospect-base";
 import { locateMunicipality, municipalities, nearestMunicipality } from "../src/domain/municipalities";
 
 const source = process.argv[2];
 if (!source) throw new Error("Indica o ficheiro: bun run prospects:import leads.csv");
 const all = process.argv.includes("--all");
+const report = process.argv.includes("--relatorio");
+const minScore = Number(process.argv.find((arg) => arg.startsWith("--min="))?.split("=")[1] ?? 40);
 const raw = (await readFile(source, "utf8")).replace(/^﻿/, "");
 
 function parse(text: string) {
@@ -88,15 +95,32 @@ function financials(row: string[]) {
   return byYear.size ? [...byYear.values()].sort((a, b) => a.year - b.year) : undefined;
 }
 
-const imported: Prospect[] = [];
-let skipped = 0, approximate = 0;
+// The same company found at several places (plants, warehouses) hints at a larger business.
+const nameKey = (value: string) => norm(value).replace(/[^a-z0-9]+/g, " ").replace(/\b(lda|sa|s a|unipessoal)\b/g, "").trim();
+const placesByName = new Map<string, Set<string>>();
 for (const row of rows) {
   const name = pick(row, "name", "title", "nome", "empresa", "denominacao", "denominacao social");
-  if (!name) { skipped++; continue; }
+  if (!name) continue;
+  const places = placesByName.get(nameKey(name)) ?? new Set<string>();
+  places.add(pick(row, "place_id", "cid", "data_id") || pick(row, "complete_address", "address", "morada"));
+  placesByName.set(nameKey(name), places);
+}
+
+const imported: Prospect[] = [];
+const seen = new Set<string>();
+const dropped = { semNome: 0, fechadas: 0, foraDoAlvo: 0, semSetor: 0, duplicadas: 0, foraDoIcp: 0, dimensaoBaixa: 0, semPosicao: 0 };
+let approximate = 0;
+for (const row of rows) {
+  const name = pick(row, "name", "title", "nome", "empresa", "denominacao", "denominacao social");
+  if (!name) { dropped.semNome++; continue; }
   const cae = pick(row, "cae", "cae principal", "cae_principal");
   const category = pick(row, "category", "categoria", "atividade", "actividade", "descricao cae");
-  const group = groupForCae(cae) ?? classify(name, category);
-  if (!group && !all) { skipped++; continue; }
+  if (/closed|fechad|encerrad/i.test(pick(row, "status"))) { dropped.fechadas++; continue; }
+  if (outsideTarget.test(norm(category))) { dropped.foraDoAlvo++; continue; }
+  // gosom repeats the search id; "metal:Águeda" names the sector that was searched for.
+  const searched = pick(row, "input_id").split(":")[0];
+  const group = groupForCae(cae) ?? classify(name, category) ?? (searched in caeGroups ? (searched as CaeGroup) : null);
+  if (!group && !all) { dropped.semSetor++; continue; }
   const address = readableAddress(pick(row, "complete_address", "address", "morada", "endereco", "morada completa"));
   let lat = Number(pick(row, "latitude", "lat").replace(",", "."));
   let lng = Number(pick(row, "longitude", "lng", "lon").replace(",", "."));
@@ -104,7 +128,7 @@ for (const row of rows) {
   let approximatePosition = false;
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || !lat || !lng) {
     // No coordinates in the file: place it at its municipality centroid, flagged as approximate.
-    if (!municipality) { skipped++; continue; }
+    if (!municipality) { dropped.semPosicao++; continue; }
     [lat, lng] = municipalities[municipality];
     approximate++;
     approximatePosition = true;
@@ -117,8 +141,23 @@ for (const row of rows) {
       : [`Coordenadas da lista importada${municipality ? `, coerentes com ${municipality}` : ""}.`];
   const status = approximatePosition || (municipality && municipality !== nearest) ? "a-confirmar" : "provavel";
   const placeId = pick(row, "place_id", "cid", "data_id");
+  const id = `csv:${placeId || norm(`${name}|${address}`).replace(/[^a-z0-9|]+/g, "-")}`;
+  // The same place comes back from several searches (neighbouring municipalities, similar terms).
+  if (seen.has(id)) { dropped.duplicadas++; continue; }
+  seen.add(id);
+  const website = pick(row, "website", "site", "web") || undefined;
+  const email = pick(row, "emails", "email", "e-mail").replace(/[[\]"']/g, "").split(/[,;\s]+/).find((value) => value.includes("@"));
+  const accounts = financials(row);
+  // Real accounts decide; without them, the public Maps signals give an estimate.
+  if (accounts && icpFit(accounts) === "fora") { dropped.foraDoIcp++; continue; }
+  const size = accounts ? undefined : likelySize({
+    name, category, website, email,
+    reviews: Number(pick(row, "review_count", "reviews", "avaliacoes")) || 0,
+    places: placesByName.get(nameKey(name))?.size ?? 1,
+  });
+  if (size && size.score < minScore) { dropped.dimensaoBaixa++; continue; }
   imported.push({
-    id: `csv:${placeId || norm(`${name}|${address}`).replace(/[^a-z0-9|]+/g, "-")}`,
+    id,
     name,
     source: "csv",
     category: category || (cae ? `CAE ${cae}` : ""),
@@ -129,19 +168,29 @@ for (const row of rows) {
     location: municipality ?? nearestMunicipality(lat, lng),
     lat: Number(lat.toFixed(6)),
     lng: Number(lng.toFixed(6)),
-    website: pick(row, "website", "site", "web") || undefined,
+    website,
     phone: pick(row, "phone", "telefone", "telemovel", "contacto") || undefined,
-    email: pick(row, "emails", "email", "e-mail").split(/[,;\s]+/)[0] || undefined,
-    financials: financials(row),
+    email,
+    financials: accounts,
+    likelySize: size,
     check: { status, evidence },
   });
 }
 
-const file = path.resolve("data", "prospects.json");
-await mkdir(path.dirname(file), { recursive: true });
-let existing: { items: Prospect[]; attribution?: string } = { items: [] };
-try { existing = JSON.parse(await readFile(file, "utf8")); } catch { /* first import */ }
-const byId = new Map(existing.items.map((p) => [p.id, p]));
-for (const prospect of imported) byId.set(prospect.id, prospect);
-await writeFile(file, JSON.stringify({ ...existing, updatedAt: new Date().toISOString(), items: [...byId.values()] }, null, 1));
-console.log(`Importadas ${imported.length} empresas (${approximate} colocadas no centro do concelho por falta de coordenadas); ${skipped} linhas ignoradas.`);
+const bands = { alta: 0, media: 0, baixa: 0 };
+for (const item of imported) if (item.likelySize) bands[item.likelySize.band]++;
+console.log(`${rows.length} linhas → ${imported.length} empresas a importar (${approximate} no centro do concelho por falta de coordenadas).`);
+console.log(`Dimensão provável: ${bands.alta} alta, ${bands.media} média, ${bands.baixa} baixa; ${imported.length - bands.alta - bands.media - bands.baixa} com contas reais.`);
+console.log(`Ignoradas: ${Object.entries(dropped).filter(([, n]) => n).map(([reason, n]) => `${n} ${reason}`).join(", ") || "nenhuma"}.`);
+if (report) {
+  // Calibration: a sample per band with its reasons, to check the score against what the team knows.
+  for (const band of ["alta", "media", "baixa"] as const) {
+    console.log(`\n${band.toUpperCase()}`);
+    for (const item of imported.filter((p) => p.likelySize?.band === band).sort((a, b) => b.likelySize!.score - a.likelySize!.score).slice(0, 15))
+      console.log(`  ${item.likelySize!.score.toString().padStart(3)}  ${item.name} (${item.location}) — ${item.likelySize!.reasons.join("; ")}`);
+  }
+  console.log("\nRelatório apenas: nada foi gravado. Repete sem --relatorio para gravar na base partilhada.");
+} else {
+  const saved = await saveToBase(imported);
+  console.log(`Base partilhada: ${saved.written} gravadas; ${saved.kept} mantidas por terem sido corrigidas na app ou já estarem no CRM.`);
+}
