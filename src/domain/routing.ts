@@ -71,7 +71,56 @@ export function estimateMatrix(points: { lat: number; lng: number }[]): TravelMa
 }
 
 const minutes = (hhmm: string) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
-const clock = (total: number) => `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(Math.round(total % 60)).padStart(2, "0")}`;
+// Rounded first, so 599.7 minutes reads "10:00" and never "09:60".
+const clock = (total: number) => { const t = Math.round(total); return `${String(Math.floor(t / 60) % 24).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`; };
+
+export function routeSwapDelta(from: Pick<RoutePlan, "returnAt">, to: Pick<RoutePlan, "returnAt">) {
+  return Math.round(minutes(to.returnAt) - minutes(from.returnAt));
+}
+
+/**
+ * Reorders the visits still to do from where the person is now, ending at the base, and gives them new times.
+ * `matrix` covers [origin, ...stops, base]. Each stop keeps the visit length it had in the plan. Up to 7 stops
+ * every order is tried; beyond that, nearest-next followed by 2-opt.
+ */
+export function replanFrom<T extends { arrival: string; departure: string }>(stops: T[], matrix: TravelMatrix, start: string) {
+  const d = matrix.durations, end = stops.length + 1;
+  const visit = stops.map((s) => Math.max(15, minutes(s.departure) - minutes(s.arrival)) * 60);
+  const cost = (order: number[]) => order.reduce((total, node, i) => total + d[i ? order[i - 1] : 0][node], 0) + d[order.at(-1) ?? 0][end];
+  const nodes = stops.map((_, i) => i + 1);
+  let best = nodes;
+  if (nodes.length <= 7) {
+    const permute = (rest: number[], prefix: number[]): void => {
+      if (!rest.length) { if (cost(prefix) < cost(best)) best = prefix; return; }
+      rest.forEach((node, i) => permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...prefix, node]));
+    };
+    permute(nodes, []);
+  } else {
+    const left = new Set(nodes);
+    best = [];
+    for (let at = 0; left.size;) {
+      const next = [...left].reduce((a, b) => (d[at][a] <= d[at][b] ? a : b));
+      best.push(next); left.delete(next); at = next;
+    }
+    for (let improved = true; improved;) {
+      improved = false;
+      for (let i = 0; i < best.length - 1; i++)
+        for (let k = i + 1; k < best.length; k++) {
+          const candidate = [...best.slice(0, i), ...best.slice(i, k + 1).reverse(), ...best.slice(k + 1)];
+          if (cost(candidate) < cost(best) - 1) { best = candidate; improved = true; }
+        }
+    }
+  }
+  let now = minutes(start) * 60, at = 0;
+  const ordered = best.map((node) => {
+    now += d[at][node];
+    const arrival = clock(now / 60);
+    now += visit[node - 1];
+    at = node;
+    return { ...stops[node - 1], arrival, departure: clock(now / 60) };
+  });
+  return { stops: ordered, returnAt: clock((now + d[at][end]) / 60) };
+}
 
 /**
  * Chooses and orders the visits. `matrix` covers [base, ...candidates] (base is index 0 and the return point).

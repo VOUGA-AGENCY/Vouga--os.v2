@@ -4,6 +4,8 @@ import {
   runAgent,
   decideAction,
   summarizeMyWork,
+  prepareApproach,
+  readApproachInput,
 } from "@/services/agent-service";
 import { errorResponse, jsonBody } from "@/foundation/http";
 import { record, text } from "@/domain/validation";
@@ -21,6 +23,15 @@ export async function POST(request: Request) {
           me,
           text(body.pendingId, "Action", 100),
           body.confirm === true,
+        ),
+      );
+    if (body.approach !== undefined)
+      return Response.json(
+        await prepareApproach(
+          ctx,
+          me,
+          readApproachInput(body.approach),
+          text(body.key, "Pedido", 150),
         ),
       );
     const context = record(body.context ?? {});

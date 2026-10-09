@@ -1,3 +1,5 @@
+import type { LikelySize } from "./prospect-size";
+
 /** Where visits start and end: the Vouga office at PORTIC (P.Porto, Asprela). */
 export const vougaBase = {
   name: "Vouga · PORTIC",
@@ -5,6 +7,18 @@ export const vougaBase = {
   lat: 41.1752,
   lng: -8.6059,
 } as const;
+
+/** Why a prospect is not worth pursuing; kept so the team does not reconsider it and to calibrate the size estimate. */
+export const discardReasons = {
+  pequena: "Demasiado pequena",
+  grande: "Demasiado grande",
+  setor: "Fora do setor",
+  fechou: "Fechou ou não existe",
+  "sem-interesse": "Sem interesse",
+  duplicada: "Duplicada",
+  outro: "Outro motivo",
+} as const;
+export type DiscardReason = keyof typeof discardReasons;
 
 /** Priority sectors from the Start Here guide (CAE divisions). */
 export const caeGroups = {
@@ -117,10 +131,19 @@ export function icpFit(financials: FinancialYear[] | undefined, size?: CompanySi
 }
 
 export interface Prospect {
-  /** Stable id from the source ("osm:node/123", "csv:<place_id or name+address>"). */
+  /** Stable id from the source ("osm:node/123", "csv:<place_id or name+address>", "manual:<uuid>"). */
   id: string;
   name: string;
-  source: "osm" | "csv";
+  source: "osm" | "csv" | "manual";
+  /** Who added or last corrected it in the app; source syncs never overwrite a corrected prospect. */
+  editedBy?: string;
+  editedAt?: string;
+  /** Set when the prospect became a CRM company; it then leaves the prospect map. */
+  organizationId?: string;
+  /** Left out by someone in the team, with the reason; hidden from the map and routes until restored. */
+  discarded?: { reason: DiscardReason; note?: string; by: string; at: string };
+  /** Free brackets read from the company's public Iberinform page, as for CRM companies. */
+  size?: CompanySize;
   /** Source category, e.g. OSM craft=metal_construction or the Google Maps category text. */
   category: string;
   group: CaeGroup;
@@ -137,6 +160,8 @@ export interface Prospect {
   parish?: string;
   financials?: FinancialYear[];
   check?: LocationCheck;
+  /** Estimate from public Maps signals when the list has no turnover/headcount (see prospect-size.ts). */
+  likelySize?: LikelySize;
 }
 
 // Order matters: footwear before rubber (soles), rubber before metal (moulds for plastics).
@@ -176,12 +201,22 @@ const domain = (website?: string) => {
 };
 const key = (name: string) => normalize(name).replace(/\b(lda|limitada|s\.?a|unipessoal|sociedade|industria|industrias|de|e|&)\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
 
+/**
+ * Index of known companies: names, NIFs and websites are normalised once, so checking thousands of prospects
+ * is one lookup each instead of re-normalising every company for every prospect.
+ */
+export function knownIndex(companies: { name: string; nif?: string; website?: string }[]) {
+  const nifs = new Set(companies.flatMap((c) => (c.nif ? [c.nif] : [])));
+  const sites = new Set(companies.map((c) => domain(c.website)).filter(Boolean));
+  const names = new Set(companies.map((c) => key(c.name)));
+  return (prospect: Pick<Prospect, "name" | "nif" | "website">) => {
+    const name = key(prospect.name);
+    const site = domain(prospect.website);
+    return (!!prospect.nif && nifs.has(prospect.nif)) || (!!site && sites.has(site)) || (name.length > 3 && names.has(name));
+  };
+}
+
 /** True when the prospect is already a CRM company (same NIF, same website, or same name). */
 export function isKnown(prospect: Pick<Prospect, "name" | "nif" | "website">, companies: { name: string; nif?: string; website?: string }[]) {
-  const site = domain(prospect.website);
-  const name = key(prospect.name);
-  return companies.some((company) =>
-    (!!prospect.nif && company.nif === prospect.nif) ||
-    (!!site && domain(company.website) === site) ||
-    (name.length > 3 && key(company.name) === name));
+  return knownIndex(companies)(prospect);
 }

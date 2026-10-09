@@ -604,6 +604,25 @@ function executeCore(
     } else data.notes.push(item);
     return item.id;
   };
+  const clockTime = /^([01]\d|2[0-3]):[0-5]\d$/;
+  // One visit of a route, as planned (route.save) or added during the day (route.replan).
+  const visitStop = (value: unknown) => {
+    const stop = record(value);
+    const lat = Number(stop.lat), lng = Number(stop.lng);
+    const arrival = text(stop.arrival, "Hora de chegada", 5), departure = text(stop.departure, "Hora de saída", 5);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180)
+      throw new AppError("Posição inválida numa visita.");
+    if (!clockTime.test(arrival) || !clockTime.test(departure)) throw new AppError("Horário inválido numa visita.");
+    const kind = choice(stop.kind, ["crm", "prospect"] as const, "Tipo de visita");
+    const id = text(stop.id, "Empresa", 200);
+    return {
+      kind, id, lat, lng, arrival, departure,
+      name: text(stop.name, "Empresa", 160),
+      location: text(stop.location, "Localização", 160, false),
+      reasons: (Array.isArray(stop.reasons) ? stop.reasons : []).slice(0, 8).map((reason) => text(reason, "Motivo", 200)),
+      organizationId: kind === "crm" ? organizationId(id) : null,
+    };
+  };
   switch (action) {
     case "member.github": {
       allow(!v.memberId || v.memberId === me.id);
@@ -876,8 +895,7 @@ function executeCore(
       };
     }
     case "organization.save":
-      saveOrganization(v);
-      return { message: "Contact saved." };
+      return { message: "Contact saved.", ids: [saveOrganization(v)] };
     case "organization.delete": {
       const organization = find(data.organizations, v.id);
       version(organization, v.version);
@@ -1370,6 +1388,112 @@ function executeCore(
           ids.length === 1 ? "Record saved." : `${ids.length} records saved.`,
         ids,
       };
+    }
+    case "route.save": {
+      const date = day(v.date);
+      if (!date) throw new AppError("Escolhe o dia das visitas.");
+      if (!Array.isArray(v.stops) || !v.stops.length || v.stops.length > 12)
+        throw new AppError("Uma rota tem entre 1 e 12 visitas.");
+      const stops = v.stops.map(visitStop);
+      const route = {
+        ...base(),
+        name: text(v.name, "Nome da rota", 120),
+        date,
+        ownerId: v.ownerId ? member(v.ownerId) : me.id,
+        stops,
+        currentIndex: 0,
+        visits: [],
+      };
+      data.routes.push(route);
+      return { message: "Rota guardada.", ids: [route.id] };
+    }
+    case "route.owner": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id || route.createdBy === me.id);
+      version(route, v.version);
+      route.ownerId = member(v.ownerId);
+      touch(route);
+      return { message: "Responsável da rota atualizado." };
+    }
+    case "route.visit": {
+      const route = find(data.routes, v.id);
+      // The responsible person registers the visits; an admin can step in on any route.
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      const stop = route.stops[route.currentIndex];
+      if (!stop) throw new AppError("Esta rota já está concluída.");
+      // A prospect becomes a company when the visits are scheduled or it is added to the CRM; names are unique there.
+      const organization =
+        data.organizations.find((o) => o.id === (stop.organizationId ?? (stop.kind === "crm" ? stop.id : null))) ??
+        data.organizations.find((o) => !o.archived && o.name.toLocaleLowerCase("pt") === stop.name.toLocaleLowerCase("pt"));
+      if (!organization)
+        throw new AppError("Esta visita é a um prospeto que ainda não está no CRM. Marca a rota no calendário ou adiciona a empresa ao CRM primeiro.");
+      const stage = choice(v.stage, Object.keys(stages), "Estado") as keyof typeof stages;
+      const note = text(v.note, "Resumo da visita", 10000);
+      data.interactions.push({
+        ...base(),
+        organizationId: organization.id,
+        channel: "note",
+        body: `Visita em rota: ${note}`,
+        ...(stage !== organization.stage ? { stageFrom: organization.stage, stageTo: stage } : {}),
+      });
+      organization.stage = stage;
+      // Next step and follow-up date are optional: only what was filled in replaces the company's current ones.
+      const nextStep = text(v.nextStep, "Próximo passo", 500, false);
+      const followUpOn = day(v.followUpOn);
+      if (nextStep) organization.nextStep = nextStep;
+      if (followUpOn) organization.followUpOn = followUpOn;
+      touch(organization);
+      stop.organizationId = organization.id;
+      route.visits.push({ stopId: stop.id, organizationId: organization.id, at: now, by: me.id, stage, note });
+      route.currentIndex++;
+      touch(route);
+      return {
+        message: route.currentIndex >= route.stops.length ? "Visita registada. Rota concluída." : "Visita registada.",
+      };
+    }
+    case "route.skip": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      const stop = route.stops[route.currentIndex];
+      if (!stop) throw new AppError("Esta rota já está concluída.");
+      route.visits.push({ stopId: stop.id, at: now, by: me.id, note: text(v.note, "Motivo", 500, false), skipped: true });
+      route.currentIndex++;
+      touch(route);
+      return { message: `${stop.name} ficou fora da rota.` };
+    }
+    case "route.replan": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id);
+      version(route, v.version);
+      // A company added during the day joins the visits still to do; the plan must then contain it too.
+      const added = v.add === undefined ? null : visitStop(v.add);
+      if (added && route.stops.some((stop) => stop.id === added.id || (!!added.organizationId && stop.organizationId === added.organizationId)))
+        throw new AppError(`${added.name} já está nesta rota.`);
+      if (added && route.stops.length >= 20) throw new AppError("Uma rota tem no máximo 20 visitas.");
+      const remaining = [...route.stops.slice(route.currentIndex), ...(added ? [added] : [])];
+      if (!Array.isArray(v.stops) || v.stops.length !== remaining.length)
+        throw new AppError("O novo plano tem de ter as mesmas visitas que faltam.");
+      const used = new Set<string>();
+      const reordered = v.stops.map((value) => {
+        const item = record(value);
+        const stop = remaining.find((candidate) => candidate.id === item.id && !used.has(candidate.id));
+        if (!stop) throw new AppError("O novo plano tem de ter as mesmas visitas que faltam.");
+        used.add(stop.id);
+        const arrival = text(item.arrival, "Hora de chegada", 5), departure = text(item.departure, "Hora de saída", 5);
+        if (!clockTime.test(arrival) || !clockTime.test(departure)) throw new AppError("Horário inválido no novo plano.");
+        return { ...stop, arrival, departure };
+      });
+      route.stops = [...route.stops.slice(0, route.currentIndex), ...reordered];
+      touch(route);
+      return { message: added ? `${added.name} acrescentada à rota.` : "Rota replaneada a partir daqui." };
+    }
+    case "route.delete": {
+      const route = find(data.routes, v.id);
+      allow(me.role === "admin" || route.ownerId === me.id || route.createdBy === me.id);
+      data.routes = data.routes.filter((item) => item.id !== route.id);
+      return { message: "Rota apagada." };
     }
     default:
       throw new AppError("Unknown action.");

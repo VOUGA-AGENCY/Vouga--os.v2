@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { estimateMatrix, googleMapsLink, haversineKm, planRoute, type RouteCandidate, type RouteRequest } from "@/domain/routing";
+import { estimateMatrix, googleMapsLink, haversineKm, planRoute, routeSwapDelta, type RouteCandidate, type RouteRequest } from "@/domain/routing";
 
 vi.mock("server-only", () => ({}));
 
@@ -61,6 +61,15 @@ describe("route planning", () => {
     const plan = planRoute(line, estimateMatrix([base, ...line]), { ...request, count: 4 });
     const ids = plan.stops.map((s) => s.id);
     expect(ids.join()).toMatch(/^(n1,n2,n3,n4|n4,n3,n2,n1)$/);
+  });
+
+  it("reports swap deltas even when the route still fits the day", () => {
+    const pool = [candidate("a", 41.24, -8.60, 4), candidate("b", 41.28, -8.58, 4), candidate("c", 41.32, -8.56, 4), candidate("d", 41.20, -8.66, 8)];
+    const original = planRoute(pool, estimateMatrix([base, ...pool]), { ...request, count: 3 });
+    const trial = planRoute(pool, estimateMatrix([base, ...pool]), { ...request, count: 3 }, ["a", "d", "c"]);
+    const delta = routeSwapDelta(original, trial);
+    expect(Number.isFinite(delta)).toBe(true);
+    expect(Math.abs(delta)).toBeGreaterThanOrEqual(0);
   });
 
   it("builds a Google Maps link with at most 9 waypoints", () => {
