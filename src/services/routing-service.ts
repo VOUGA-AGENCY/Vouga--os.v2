@@ -3,7 +3,7 @@ import { estimateMatrix, type TravelMatrix } from "@/domain/routing";
 
 // OpenRouteService (HeiGIT): road travel times and route geometry. The key stays on the server (ORS_API_KEY).
 // Without a key, or if the provider fails, callers get the straight-line estimate and plans say so.
-const base = "https://api.openrouteservice.org/v2";
+const base = "https://api.heigit.org/openrouteservice/v2";
 type Point = { lat: number; lng: number };
 
 export function routingConfigured(env = process.env) {

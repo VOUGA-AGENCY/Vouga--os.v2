@@ -7,6 +7,7 @@ import { executeCommand } from "@/application/commands";
 import { convertProspect, openProspects, readProspect } from "@/application/prospects";
 import { LocalProspectRepository } from "@/persistence/prospects";
 import { workspaceFor } from "@/projections/workspace";
+import { applySnapshotPatch, snapshotChanges } from "@/projections/changes";
 import type { Member, Store } from "@/domain/model";
 import type { Prospect } from "@/domain/prospects";
 
@@ -78,6 +79,17 @@ describe("shared routes", () => {
     const route = data.routes.find((r) => r.id === id)!;
     expect(route.currentIndex).toBe(2);
     expect(route.stops[1].organizationId).toBe(data.organizations.find((o) => o.name === "prospeto sem crm")?.id);
+  });
+  // A saved or deleted route has to travel in the write response itself, or the list only catches up on a reload.
+  it("reach the interface through the workspace patch, without a reload", () => {
+    const before = structuredClone(workspaceFor(data, admin, now));
+    const id = saveRoute(admin);
+    data.revision++;
+    const saved = applySnapshotPatch(before, snapshotChanges(before, workspaceFor(data, admin, now)));
+    expect(saved.routes.map((route) => route.id)).toEqual([id]);
+    run("route.delete", { id });
+    data.revision++;
+    expect(applySnapshotPatch(saved, snapshotChanges(saved, workspaceFor(data, admin, now))).routes).toEqual([]);
   });
   it("can be deleted by its people or an admin, not by anyone else", () => {
     const id = saveRoute(engineer);

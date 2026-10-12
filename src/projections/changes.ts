@@ -18,6 +18,7 @@ export const snapshotCollections = [
   "reminderReceipts",
   "activity",
   "pendingActions",
+  "routes",
 ] as const;
 type Collection = (typeof snapshotCollections)[number];
 type Row = { id?: string; key?: string; memberId?: string };
