@@ -287,7 +287,7 @@ describe("Agent domain tools", () => {
   });
 });
 describe("Telegram timing, pairing and delivery", () => {
-  it("produces one daily summary per participant in Lisbon, summer and winter", () => {
+  it("produces one morning summary per linked user in Lisbon, summer and winter, even on empty days", () => {
     data.members[0].telegramChatId = "1";
     data.members[1].telegramChatId = "2";
     data.meetings = data.meetings.slice(0, 2);
@@ -295,13 +295,15 @@ describe("Telegram timing, pairing and delivery", () => {
       event.participantIds = ["miguel"];
     });
     const jobs = meetingReminders(data, now);
-    expect(jobs).toHaveLength(1);
+    expect(jobs).toHaveLength(2);
+    expect(jobs[0].text).toContain("Bom dia, Miguel!");
     expect(jobs[0].text).toContain("10:00");
     expect(jobs[0].text).toContain("15:00");
+    expect(jobs[1].text).toContain("Não tens nada planeado para hoje.");
     const winter = "2026-12-24T08:00:00.000Z";
     data.meetings[0].startsAt = "2026-12-24T10:00:00.000Z";
     data.meetings[1].startsAt = "2026-12-24T15:00:00.000Z";
-    expect(meetingReminders(data, winter)).toHaveLength(1);
+    expect(meetingReminders(data, winter)).toHaveLength(2);
   });
   it("targets only assigned users one hour before and excludes cancelled events", () => {
     data.members[0].telegramChatId = "1";
@@ -314,7 +316,7 @@ describe("Telegram timing, pairing and delivery", () => {
     data.meetings[0].cancelled = true;
     expect(meetingReminders(data, "2026-09-26T08:00:00.000Z")).toEqual([]);
   });
-  it("reminds across midnight while keeping the daily summary scoped to today", () => {
+  it("reminds across midnight and excludes all-day events", () => {
     data.members[0].telegramChatId = "1";
     data.meetings = data.meetings.slice(0, 1);
     const event = data.meetings[0];
@@ -324,7 +326,9 @@ describe("Telegram timing, pairing and delivery", () => {
     expect(jobs).toHaveLength(1);
     expect(jobs[0].key).toMatch(/^hour:miguel:/);
     expect(jobs[0].text).toContain("00:30");
-    expect(meetingReminders(data, "2026-09-26T07:00:00.000Z")).toEqual([]);
+    const morning = meetingReminders(data, "2026-09-26T07:00:00.000Z");
+    expect(morning).toHaveLength(1);
+    expect(morning[0].text).not.toContain(event.title);
     event.allDay = true;
     expect(meetingReminders(data, "2026-09-26T22:30:00.000Z")).toEqual([]);
   });

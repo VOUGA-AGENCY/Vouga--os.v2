@@ -43,6 +43,8 @@ Instantes UTC, datas sem hora YYYY-MM-DD, timezone Europe/Lisbon. Secrets e back
 
 ## Home operacional
 
-`domain/home.ts` deriva as quatro áreas exclusivamente do Snapshot autorizado, sem pedidos adicionais. Eventos agrupados são deduplicados após seleção dos participantes. Relógio local mantém o próximo compromisso atualizado mesmo com respostas ETag 304. Alterações de task reutilizam commands e a fila existente; não existe backend/LLM paralelo.
+`domain/home.ts` projeta a agenda de hoje e dos próximos sete dias apenas a partir do Snapshot autorizado. Tasks usam todas as tarefas já autorizadas na projeção, sem filtrar por assignee; reuniões usam todos os calendários autorizados, sem filtrar por participantes. Não consulta o backend nem usa IA. `quickTaskDueOn` calcula os três presets por data de Lisboa. Reuniões agrupadas são deduplicadas após autorização por calendário; limites dos dias e fim exclusivo usam instantes de Lisboa para respeitar DST e eventos de vários dias.
 
-Continue e nota rápida foram retirados da Home, incluindo o tracking de itens recentes. Notas existentes conservam os fluxos de contexto, pesquisa e Agent. `member.github` valida e associa apenas o próprio username; este campo opcional cabe nos registos JSON existentes do Supabase, sem migração SQL. É identidade de filtragem, nunca autenticação/permissão GitHub.
+O composer inline reutiliza task.save, com criação explícita, rascunhos conservados em erro e permissões privadas/Team/Board existentes. As linhas reutilizam task.status e os editores globais. O relógio atualiza a agenda mesmo com ETags 304. Não existe store, API ou sistema de tarefas paralelo para a Home.
+
+`member.github` permanece como configuração opcional de identidade GitHub em Settings, sem conceder permissões e sem migração SQL.

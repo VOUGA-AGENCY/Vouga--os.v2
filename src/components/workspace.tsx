@@ -5,9 +5,9 @@ import Image from "next/image";
 import {
   CalendarDays,
   Check,
-  ChevronRight,
   Settings,
   House,
+  FolderOpen,
   ListTodo,
   LogOut,
   Plus,
@@ -510,17 +510,30 @@ export function Workspace({
           </aside>
           <div className="workspace-frame">
             <header className="workspace-header">
-              <span className="breadcrumb">
-                Workspace
-                <ChevronRight size={12} />
-                <span>
-                  {(project
-                    ? data.projects.find((p) => p.id === project)?.name
-                    : navigation.find((n) => n.path === view)?.label) ??
-                    (view === "settings" ? "Settings" : "Workspace")}
-                </span>
+              <span className="workspace-header-brand">
+                <Image
+                  src="/vouga-mark-white.png"
+                  alt="Vouga"
+                  width={20}
+                  height={20}
+                  className="workspace-mark"
+                />
               </span>
               <div className="header-actions">
+                <button
+                  className="icon-button mobile-header-action"
+                  aria-label="Ask or capture"
+                  onClick={() => capture()}
+                >
+                  <Plus size={18} />
+                </button>
+                <Link
+                  className="icon-button mobile-header-action"
+                  href="/settings"
+                  aria-label="Settings"
+                >
+                  <Settings size={18} />
+                </Link>
                 <button
                   className="icon-button"
                   aria-label="Search workspace"
@@ -546,7 +559,7 @@ export function Workspace({
               ) : view === "settings" ? (
                 <IntegrationSettings />
               ) : view === "tasks" ? (
-                <div className="compact-page">
+                <div className="compact-page tasks-page">
                   <header className="compact-heading">
                     <div>
                       <h1>Tasks</h1>
@@ -572,6 +585,13 @@ export function Workspace({
           </div>
           <nav className="bottom-navigation" aria-label="Mobile navigation">
             {links}
+            <Link
+              href="/trabalho"
+              className={`navigation-item ${view === "trabalho" || project ? "active" : ""}`}
+            >
+              <FolderOpen size={18} />
+              <span>Projects</span>
+            </Link>
           </nav>
         </div>
       )}
@@ -593,6 +613,7 @@ export function Workspace({
           key={editor.id ?? "new"}
           id={editor.id}
           projectId={editor.projectId}
+          initialStatus={editor.taskStatus}
           onClose={() => {
             void flushEdits()
               .then(() => setEditor(null))

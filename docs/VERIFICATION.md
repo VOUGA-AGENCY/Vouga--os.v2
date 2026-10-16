@@ -96,3 +96,40 @@ Local integration worker PID 48857 stopped and confirmed absent. Enqueued an Off
 ## Simplificação da Home · 2026-10-05
 
 - Retirados Continue e a entrada de nota rápida por pedido do utilizador, incluindo tracking local e estilos exclusivos. My tasks, Next event, Needs me, Follow-ups, Inbox e resumo permanecem. Notas já guardadas não foram eliminadas.
+
+## Telegram daily greeting · 2026-10-16
+
+- Restored 08:00 Europe/Lisbon daily templates: only that person's meetings today and unfinished assigned tasks due today, respecting task/calendar visibility. Empty days still send; routes/PRs/overdue tasks are excluded. All 50 busy-day and 19 empty-day phrases supplied by the user are present; selection is stable per member/day. No AI or transcription calls.
+- Recovery window runs until 09:00 exclusive. Existing daily receipt keys prevent duplicates, including the earlier implementation's receipts. Hour-before and creation notices remain. Long digests split without truncating entries. One recipient's failure no longer blocks other recipients; uncertain sends retain the no-automatic-resend policy.
+- Read-only live check: Telegram getWebhookInfo returned HTTP 200/ok, expected production webhook, zero pending incoming updates. All five active members are linked. Stored daily receipts for Miguel/Roque/Vasco on 2026-10-15 around 08:00 Lisbon are sent; zero non-sent daily receipts were found. This confirms API acceptance, not human reading. Prior code suppressed empty days and did not include due tasks. No live Telegram message was sent for this diagnostic.
+- Current cron execution cannot be established from application receipts alone. The app's server key does not grant cron/net operational SQL access; a read-only audit is available in supabase/operations/check-integration-cron.sql. No scheduler, Vault secret or production deployment was changed.
+- TypeScript, lint and 225 tests passed (32 files), including privacy, DST/date selection, empty days, random phrase pools, multipart completeness, per-recipient failures and deduplication.
+
+## Home agenda rebuild · 2026-10-16
+
+- Replaced dashboard sections with an open personal agenda: Today and tomorrow through today + 7, separate task/meeting columns and a seven-date filter. Removed Home Inbox, reviews, CRM follow-ups and summary controls without deleting their data or global tools.
+- Inline quick task presets Today/This week/No date set dueOn automatically in Lisbon. Week defaults to Friday, or Sunday on weekends. Only title, optional description, assignees and visibility are requested; errors keep drafts, Private defaults to self, Board remains Miguel/Roque only.
+- TypeScript, ESLint, 225 tests and production build passed. Home tests cover presets, midnight/DST, exact horizon, shared assignments, privacy, multi-day exclusive event ends and creation/completion commands.
+- Visual validation completed in Chrome using cua_repl. Inspected the actual local Home at 127.0.0.1:3001. Interaction checks used a separate local file-backed instance at localhost:3002, with all external integrations disabled and synthetic records only. Created a private today task, confirmed it appeared and could be completed; created an undated task and verified dueOn=null and absence from agenda. Day filtering reduced both lists correctly. Test tab was closed afterwards; main tab/draft preserved. No real Supabase records or Telegram messages were created during QA.
+
+
+### Home — simplificação da hierarquia (16 outubro 2026)
+
+Substituída a grelha de quatro listas e faixa semanal por duas colunas: Hoje (tasks e meetings separadas) e próximos sete dias por data, omitindo dias vazios. A criação rápida fica agrupada junto ao cabeçalho, com largura de leitura limitada, sem contadores vazios. Validação visual em Chrome no estado real vazio/parcial e com composer aberto; datas e permissões continuam a usar o domínio existente. TypeScript, ESLint e 225 testes passaram.
+
+
+### Home autorizada e apresentação de Tasks (16 outubro 2026)
+
+Home passou a incluir todas as tasks do Snapshot autorizado no intervalo, independentemente do assignee. Teste cobre tarefas de projeto atribuídas a outros, Private, Board e um admin que não é Miguel/Roque. Reuniões mostram fotos dos participantes; recuperadas as camadas originais do fundo raiado. A apresentação de Tasks foi limitada à página Tasks, mantendo filtros, drag-and-drop, comandos e editores. Validado em Chrome com dados existentes, sem criar/alterar registos: board com descrição/prioridade/fotos e Home com avatares de reuniões. TypeScript, ESLint, 226 testes e build passaram.
+
+
+### Calendários na Home e quatro estados (16 outubro 2026)
+
+Removido o filtro por participante da Home: usa apenas a autorização de calendário do Snapshot. Conferência read-only na base e no Chrome confirmou os oito eventos próximos indicados pelo utilizador, com A Metalúrgica deduplicada entre Office/Contacto. Testes cobrem admin com calendários pessoais de terceiros, Office sem participantes e engineer sem acesso a Office/pessoais alheios.
+
+Migradas 8 tasks Backlog → To Do no Supabase ligado, preservando IDs, conteúdo, responsáveis, comentários e relações; 28 tasks antes e depois. Backup privado em .local/backups/before-backlog-to-do-1792158817923.json. Migração idempotente via scripts/migrate-task-backlog.ts, Activity por alteração, sem envios Telegram. UI e Agent apresentam apenas To Do / In Progress / In Review / Done; clientes antigos são normalizados no backend. Botão + no topo de cada coluna passa o estado inicial ao editor. Quatro colunas e botões confirmados no Chrome. Typecheck, lint, 227 testes e build passaram.
+
+
+### Composição mobile e CRM neutro (16 outubro 2026)
+
+Validação em Chrome com emulação iPhone 16 (393 × 852): Board sem scroll horizontal, mudança To Do → In Progress e abertura de nova task com In Progress predefinido (fechada sem guardar). Calendar Month seleciona 19 outubro e mostra as três reuniões; mudar para Week conserva o dia e apresenta os mesmos eventos, incluindo pessoal Pedro e Office. Home compactada sem remover títulos, horários, participantes ou agrupamentos; cartões CRM sólidos e neutros confirmados. Nenhum registo foi criado/alterado durante a validação. TypeScript, ESLint, 227 testes e build passaram.

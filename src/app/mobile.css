@@ -581,7 +581,10 @@
   .control-popover-content {
     position: fixed;
     inset: auto var(--space-3)
-      calc(var(--bottom-navigation-height) + env(safe-area-inset-bottom, 0px) + var(--space-2))
+      calc(
+        var(--bottom-navigation-height) + env(safe-area-inset-bottom, 0px) +
+          var(--space-2)
+      )
       var(--space-3);
     width: auto;
     max-height: 62dvh;
@@ -626,5 +629,654 @@
   }
   .task-board {
     grid-template-columns: repeat(5, minmax(86vw, 1fr));
+  }
+}
+
+/* Phone composition: status tabs, date picker + agenda, and thumb-accessible actions. */
+@media (max-width: 63.99rem) {
+  .mobile-header-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-actions .icon-button {
+    min-width: var(--control-height);
+    min-height: var(--control-height);
+  }
+  .breadcrumb {
+    min-width: 0;
+  }
+  .breadcrumb > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+@media (max-width: 47.99rem) {
+  .task-board,
+  .task-workspace .task-board {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+  }
+  .task-board-column,
+  .task-workspace .task-board-column {
+    display: none;
+    min-height: 0;
+    padding: var(--space-3);
+  }
+  .task-board-column.mobile-active {
+    display: block;
+  }
+  .mobile-task-states {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .mobile-task-states button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: var(--space-10);
+    padding: var(--space-2) var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    border-bottom: calc(2 * var(--border-width)) solid transparent;
+  }
+  .mobile-task-states button[aria-pressed="true"] {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-ink);
+  }
+  .mobile-task-states small {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .task-board-column > header {
+    display: none;
+  }
+  .task-board-add,
+  .task-workspace .task-board-add {
+    min-height: var(--control-height);
+  }
+  .task-board-card {
+    min-width: 0;
+  }
+  .task-board-card-title {
+    overflow-wrap: anywhere;
+  }
+  .task-quick-filters {
+    display: flex;
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .task-quick-filters button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: var(--control-height-small);
+    padding: var(--space-2) var(--space-1);
+    font-size: var(--text-xs);
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    background: transparent;
+  }
+  .task-quick-filters button.active {
+    background: var(--color-surface-active);
+    color: var(--color-ink);
+  }
+  .task-toolbar > .task-search {
+    flex: 1 1 40%;
+    order: 0;
+    min-width: 0;
+  }
+  .task-search input {
+    font-size: 1rem;
+  }
+  .task-line {
+    flex-wrap: wrap;
+  }
+  .task-line-title {
+    white-space: normal;
+    flex-basis: 60%;
+  }
+  .task-line-date {
+    margin-left: auto;
+  }
+  .task-board-card .task-size-badge {
+    display: inline-flex;
+  }
+  .tasks-page .compact-heading > div > span {
+    display: none;
+  }
+
+  .calendar-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2);
+  }
+  .calendar-range {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  .calendar-range strong {
+    flex-basis: 100%;
+    margin: var(--space-1) 0 0;
+  }
+  .calendar-view-switch {
+    align-self: start;
+  }
+  .calendar-range button,
+  .calendar-view-switch button {
+    min-height: var(--control-height);
+    padding-inline: var(--space-2);
+  }
+  .calendar-filter-toolbar {
+    margin-block: var(--space-2);
+  }
+  .calendar-filter-toolbar > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .calendar-time-scroll {
+    display: none;
+  }
+  .calendar-month-days {
+    height: auto;
+    min-height: 0;
+    grid-auto-rows: var(--space-10);
+    gap: var(--space-1);
+  }
+  .calendar-month-days > button {
+    min-height: 0;
+    padding: var(--space-1);
+    justify-items: center;
+    align-content: center;
+    border-color: transparent;
+    background: transparent;
+    gap: 0;
+  }
+  .calendar-month-days > button > strong {
+    width: var(--control-height-small);
+    height: var(--control-height-small);
+  }
+  .calendar-month-days > button > span,
+  .calendar-month-days > button > small {
+    display: none;
+  }
+  .calendar-month-days > button > .calendar-mobile-count {
+    display: block;
+    min-height: var(--space-4);
+    line-height: var(--space-4);
+    background: transparent;
+    padding: 0;
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+  .calendar-month-days > button.mobile-selected {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
+  }
+  .calendar-mobile-agenda {
+    display: block;
+    margin-top: var(--space-5);
+    padding-bottom: var(--space-5);
+  }
+  .calendar-mobile-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-1);
+    margin-bottom: var(--space-5);
+  }
+  .calendar-mobile-week button {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+  }
+  .calendar-mobile-week button[aria-pressed="true"] {
+    background: var(--color-surface-hover);
+    color: var(--color-ink);
+  }
+  .calendar-mobile-week span,
+  .calendar-mobile-week small {
+    font-size: var(--text-xs);
+  }
+  .calendar-mobile-week strong {
+    font-size: var(--text-md);
+    font-weight: 500;
+  }
+  .calendar-mobile-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    border-top: var(--border-width) solid var(--color-border);
+    padding-top: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .calendar-mobile-heading h2 {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+  }
+  .calendar-mobile-heading button {
+    display: grid;
+    place-items: center;
+    width: var(--control-height);
+    height: var(--control-height);
+  }
+  .calendar-mobile-event {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    width: 100%;
+    text-align: left;
+    padding-block: var(--space-4);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .calendar-mobile-time {
+    display: grid;
+    gap: var(--space-1);
+    min-width: var(--space-9);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-sm);
+  }
+  .calendar-mobile-time small {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .calendar-mobile-event-copy {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .calendar-mobile-event-copy strong {
+    font-size: var(--text-base);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .calendar-mobile-event-copy small {
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+  .calendar-mobile-event .task-card-assignees {
+    max-width: var(--space-10);
+    flex-wrap: wrap;
+  }
+  .calendar-mobile-empty {
+    color: var(--color-muted);
+    padding-block: var(--space-4);
+    font-size: var(--text-meta);
+  }
+  .calendar-mobile-deadlines {
+    margin-top: var(--space-5);
+  }
+  .calendar-mobile-deadlines h3 {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+  .calendar-mobile-deadlines button {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+    text-align: left;
+    min-height: var(--control-height);
+    padding-block: var(--space-2);
+  }
+
+  .company-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .company-card-open {
+    min-height: 0;
+    gap: var(--space-3);
+  }
+  .company-star {
+    opacity: 1;
+  }
+  .company-table-open {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: var(--space-6);
+    gap: var(--space-2);
+  }
+  .company-table-open > strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .company-table-open .company-stage-cell {
+    justify-self: start;
+  }
+  .company-details-form > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .company-details-heading {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .company-racius {
+    flex-wrap: wrap;
+  }
+  .toolbar-controls {
+    flex-wrap: wrap;
+  }
+  .crm-layout-toggle button {
+    width: var(--control-height);
+    height: var(--control-height);
+  }
+  .side-panel-header {
+    flex-shrink: 0;
+  }
+  .side-panel-scroll {
+    min-height: 0;
+    overscroll-behavior: contain;
+  }
+  .task-select-trigger {
+    min-height: var(--control-height);
+    max-width: 100%;
+  }
+  .task-select-value {
+    min-width: 0;
+  }
+  .task-select-dropdown {
+    max-width: calc(100vw - var(--space-8));
+  }
+  .composer-properties,
+  .task-detail-properties {
+    gap: var(--space-2);
+  }
+  .record-composer .composer-properties label {
+    flex-wrap: wrap;
+    border-radius: var(--radius-sm);
+  }
+  .record-composer .dialog-footer {
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+  .daybook {
+    padding: var(--space-5) var(--space-4);
+  }
+  .daybook-timing {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+  .daybook-timing button {
+    min-height: var(--control-height);
+    padding-inline: var(--space-2);
+    justify-content: center;
+  }
+  .daybook-capture-top {
+    width: 100%;
+  }
+  .daybook-task-title > span,
+  .daybook-meeting-copy strong {
+    overflow-wrap: anywhere;
+  }
+  .daybook-meeting {
+    flex-wrap: wrap;
+  }
+  .daybook-title-field input,
+  .daybook-composer > textarea {
+    font-size: 1rem;
+  }
+}
+
+/* Home on phones: one compact agenda, with all existing context retained. */
+@media (max-width: 47.99rem) {
+  .daybook {
+    padding: var(--space-4);
+  }
+  .daybook-header {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .daybook-header h1 {
+    font-size: var(--text-base);
+  }
+  .daybook-header > span {
+    font-size: var(--text-xs);
+  }
+  .daybook-capture {
+    padding-bottom: var(--space-3);
+  }
+  .daybook-capture-top {
+    gap: var(--space-2);
+  }
+  .daybook-capture-top > span {
+    font-size: var(--text-xs);
+  }
+  .daybook-timing {
+    gap: var(--space-2);
+  }
+  .daybook-timing button {
+    font-size: var(--text-sm);
+    border-radius: var(--radius-sm);
+  }
+  .daybook-agenda {
+    margin-top: var(--space-4);
+    gap: var(--space-6);
+  }
+  .daybook-today {
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .daybook-today > .daybook-section-header {
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .daybook-today > .daybook-section-header h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+  }
+  .daybook-section-header {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .daybook-section-header h2 {
+    font-size: var(--text-base);
+  }
+  .daybook-section-header > span {
+    font-size: var(--text-xs);
+  }
+  .daybook-list-heading {
+    margin-bottom: var(--space-1);
+    gap: var(--space-1);
+  }
+  .daybook-list-heading h3 {
+    font-size: var(--text-sm);
+  }
+  .daybook-list-heading svg {
+    width: var(--space-3);
+    height: var(--space-3);
+  }
+  .daybook-list + .daybook-list {
+    margin-top: var(--space-3);
+  }
+  .daybook-empty {
+    padding-block: var(--space-1);
+    font-size: var(--text-sm);
+  }
+  .daybook-upcoming {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .daybook-upcoming > .daybook-section-header {
+    margin-bottom: var(--space-4);
+  }
+  .daybook-upcoming > .daybook-section-header h2 {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+  .daybook-date-group {
+    background: color-mix(in srgb, var(--color-bg) 15%, transparent);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .daybook-upcoming-list {
+    padding: var(--space-2) var(--space-3);
+  }
+  .daybook-date-heading {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border-bottom: var(--border-width) solid var(--color-border);
+    font-size: var(--text-sm);
+    justify-content: space-between;
+  }
+  .daybook-date-group + .daybook-date-group {
+    margin-top: var(--space-3);
+    padding-top: 0;
+    border-top: 0;
+  }
+  .daybook-upcoming-list + .daybook-upcoming-list {
+    margin-top: var(--space-2);
+  }
+  .daybook-upcoming-list h4 {
+    margin-bottom: 0;
+  }
+  .daybook-meeting {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    min-height: var(--control-height);
+    align-items: center;
+  }
+  .daybook-event-time {
+    width: var(--space-9);
+    padding-top: 0;
+    font-size: var(--text-xs);
+  }
+  .daybook-meeting-copy {
+    gap: 0;
+  }
+  .daybook-meeting-copy strong {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  .daybook-meeting-copy small {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+  }
+  .daybook-meeting > svg {
+    width: var(--space-3);
+    margin-top: 0;
+  }
+  .daybook-assignees {
+    padding-right: 0;
+    max-width: var(--space-10);
+    flex-wrap: wrap;
+    row-gap: var(--space-1);
+  }
+  .daybook-assignees .person-avatar {
+    width: var(--space-5);
+    height: var(--space-5);
+    min-width: var(--space-5);
+  }
+  .daybook-task {
+    display: grid;
+    grid-template-columns: var(--control-height-small) minmax(0, 1fr) auto;
+    column-gap: var(--space-1);
+    row-gap: 0;
+    padding-block: var(--space-1);
+    min-height: var(--control-height);
+  }
+  .daybook-complete {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    min-height: var(--control-height);
+  }
+  .daybook-task-title {
+    grid-column: 2;
+    padding: 0;
+    gap: 0;
+  }
+  .daybook-task-title > span {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  .daybook-task .daybook-status {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    line-height: 1.4;
+  }
+  .daybook-task .daybook-assignees {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+  .daybook-composer {
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+/* Soft colour cues for the three mobile quick-task deadlines. */
+@media (max-width: 47.99rem) {
+  .daybook-timing button:nth-child(1) {
+    --timing-color: var(--vouga-orange);
+  }
+  .daybook-timing button:nth-child(2) {
+    --timing-color: var(--vouga-blue);
+  }
+  .daybook-timing button:nth-child(3) {
+    --timing-color: var(--color-success);
+  }
+  .daybook-timing button {
+    background: color-mix(
+      in srgb,
+      var(--timing-color) 18%,
+      var(--color-surface)
+    );
+    border-color: color-mix(
+      in srgb,
+      var(--timing-color) 30%,
+      var(--color-border)
+    );
+    color: var(--color-ink);
+  }
+  .daybook-timing button:hover,
+  .daybook-timing button[aria-pressed="true"] {
+    background: color-mix(
+      in srgb,
+      var(--timing-color) 28%,
+      var(--color-surface)
+    );
+    border-color: color-mix(
+      in srgb,
+      var(--timing-color) 55%,
+      var(--color-border-strong)
+    );
   }
 }

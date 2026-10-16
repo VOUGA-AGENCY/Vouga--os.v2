@@ -233,10 +233,13 @@ describe("private tasks and calendar destinations", () => {
       },
       now,
     );
-    const daily = meetingReminders(data, now);
-    expect(daily).toHaveLength(2);
-    expect(daily[0].text.split("Shared appointment")).toHaveLength(2);
-    expect(meetingReminders(data, "2026-09-27T08:00:00.000Z")).toHaveLength(2);
+    const morning = meetingReminders(data, now);
+    expect(morning).toHaveLength(2);
+    expect(morning[0].text.split("Shared appointment")).toHaveLength(2);
+    const reminders = meetingReminders(data, "2026-09-27T08:00:00.000Z");
+    expect(reminders).toHaveLength(2);
+    expect(reminders[0].text.split("Shared appointment")).toHaveLength(2);
+    expect(reminders.every((item) => item.key.startsWith("hour:"))).toBe(true);
   });
   it("cleans generated Inbox and archives only the demo account, retaining history, idempotently", () => {
     const data = structuredClone(fixture),

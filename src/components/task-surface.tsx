@@ -21,6 +21,8 @@ import {
   taskSizes,
   taskSizeLabels,
   taskStatuses,
+  activeTaskStatuses,
+  normalizeTaskStatus,
   type Task,
   type TaskPriority,
   type TaskSize,
@@ -34,13 +36,7 @@ import { ActivityFeed } from "./activity";
 import { Popover } from "./popover";
 import { PersonAvatar } from "./person-avatar";
 
-const boardStatuses: TaskStatus[] = [
-  "backlog",
-  "todo",
-  "doing",
-  "review",
-  "done",
-];
+const boardStatuses: TaskStatus[] = ["todo", "doing", "review", "done"];
 const boardLabels = taskStatuses;
 const priorities: Record<TaskPriority, string> = {
   none: "None",
@@ -64,8 +60,7 @@ const sizeRank: Record<string, number> = {
   xl: 4,
   none: 5,
 };
-const boardStatus = (status: TaskStatus): TaskStatus =>
-  status === "blocked" ? "backlog" : status;
+const boardStatus = normalizeTaskStatus;
 
 export interface SelectOption {
   value: string;
@@ -411,6 +406,7 @@ export function TaskSurface({
   onModeChange?: (mode: "list" | "board") => void;
 }) {
   const { data, command, edit, notify } = useWorkspace();
+  const [mobileStatus, setMobileStatus] = useState<TaskStatus>("todo");
   const [localView, setLocalView] = useState<"list" | "board">("board");
   const view = mode ?? localView;
   const setView = onModeChange ?? setLocalView;
@@ -518,7 +514,7 @@ export function TaskSurface({
     }
   }
   return (
-    <div className="task-surface">
+    <div className={`task-surface ${!projectId ? "task-workspace" : ""}`}>
       <div className="task-toolbar">
         <div className="task-quick-filters">
           <button
@@ -570,7 +566,7 @@ export function TaskSurface({
               onChange={(event) => setStatusFilter(event.target.value)}
             >
               <option value="">Any status</option>
-              {Object.entries(taskStatuses).map(([key, label]) => (
+              {Object.entries(activeTaskStatuses).map(([key, label]) => (
                 <option key={key} value={key}>
                   {label}
                 </option>
@@ -695,119 +691,179 @@ export function TaskSurface({
           )}
         </div>
       ) : (
-        <div className="task-board">
-          {boardStatuses.map((status) => {
-            const column = tasks.filter(
-              (task) => boardStatus(task.status) === status,
-            );
-            return (
-              <section
-                className="task-board-column"
+        <>
+          <div
+            className="mobile-task-states"
+            role="group"
+            aria-label="Board status"
+          >
+            {boardStatuses.map((status) => (
+              <button
                 key={status}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  void move(event.dataTransfer.getData("text/task-id"), status);
-                }}
+                type="button"
+                aria-pressed={mobileStatus === status}
+                onClick={() => setMobileStatus(status)}
               >
-                <header>
-                  <span className={`task-state task-state-${status}`} />
-                  {boardLabels[status]} <span>{column.length}</span>
-                </header>
-                {column.map((task) => {
-                  const comments = data.taskComments.filter(
-                    (item) => item.taskId === task.id,
-                  ).length;
-                  const files = data.taskAttachments.filter(
-                    (item) => item.taskId === task.id,
-                  ).length;
-                  const pr = task.pullRequestId
-                    ? data.pullRequests.find(
-                        (item) => item.id === task.pullRequestId,
-                      )
-                    : null;
-                  return (
-                    <button
-                      key={task.id}
-                      className="task-board-card"
-                      draggable
-                      onDragStart={(event) => {
-                        event.dataTransfer.setData("text/task-id", task.id);
-                        event.dataTransfer.effectAllowed = "move";
-                      }}
-                      onClick={() => edit({ type: "task", id: task.id })}
-                    >
-                      <span className="task-board-card-title">
-                        <GripVertical size={13} />
-                        {task.title}
-                      </span>
-                      {pr ? (
-                        <small className="task-card-pr">
-                          <GitPullRequest size={11} />
-                          {`PR #${pr.number} · ${pr.state}`}
-                        </small>
-                      ) : task.issueNumber ? (
-                        <small className="task-card-issue">
-                          <CircleDot size={11} />
-                          {`Issue #${task.issueNumber}`}
-                        </small>
-                      ) : null}
-                      <span className="task-board-card-meta">
-                        <span className="task-card-assignees">
-                          {(task.assigneeIds?.length
-                            ? task.assigneeIds
-                            : [task.ownerId]
-                          )
-                            .map((id) =>
-                              data.members.find((item) => item.id === id),
-                            )
-                            .filter(Boolean)
-                            .map((m) => (
-                              <PersonAvatar key={m!.id} member={m!} />
-                            ))}
-                        </span>
-                        {task.dueOn && (
-                          <span>
-                            <CalendarDays size={12} />
-                            {shortDate(task.dueOn)}
-                          </span>
-                        )}
-                        {task.priority && task.priority !== "none" && (
-                          <span>{priorities[task.priority]}</span>
-                        )}
-                        {task.size && (
-                          <span
-                            className={`task-size-badge task-size-${task.size}`}
-                          >
-                            {task.size.toUpperCase()}
-                          </span>
-                        )}
-                        {comments > 0 && (
-                          <span>
-                            <MessageSquare size={12} />
-                            {comments}
-                          </span>
-                        )}
-                        {files > 0 && (
-                          <span>
-                            <Paperclip size={12} />
-                            {files}
-                          </span>
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-                <button
-                  className="task-board-add"
-                  onClick={() => edit({ type: "task", projectId })}
+                <span>{boardLabels[status]}</span>
+                <small>
+                  {
+                    tasks.filter((task) => boardStatus(task.status) === status)
+                      .length
+                  }
+                </small>
+              </button>
+            ))}
+          </div>
+          <div className="task-board">
+            {boardStatuses.map((status) => {
+              const column = tasks.filter(
+                (task) => boardStatus(task.status) === status,
+              );
+              return (
+                <section
+                  className={`task-board-column ${mobileStatus === status ? "mobile-active" : ""}`}
+                  key={status}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    void move(
+                      event.dataTransfer.getData("text/task-id"),
+                      status,
+                    );
+                  }}
                 >
-                  <Plus size={13} /> Add task
-                </button>
-              </section>
-            );
-          })}
-        </div>
+                  <header>
+                    <span className={`task-state task-state-${status}`} />
+                    {boardLabels[status]} <span>{column.length}</span>
+                  </header>
+                  <button
+                    className="task-board-add"
+                    aria-label={`New task · ${boardLabels[status]}`}
+                    title={`New task · ${boardLabels[status]}`}
+                    onClick={() =>
+                      edit({ type: "task", projectId, taskStatus: status })
+                    }
+                  >
+                    <Plus size={15} />
+                  </button>
+                  {column.map((task) => {
+                    const comments = data.taskComments.filter(
+                      (item) => item.taskId === task.id,
+                    ).length;
+                    const files = data.taskAttachments.filter(
+                      (item) => item.taskId === task.id,
+                    ).length;
+                    const pr = task.pullRequestId
+                      ? data.pullRequests.find(
+                          (item) => item.id === task.pullRequestId,
+                        )
+                      : null;
+                    return (
+                      <button
+                        key={task.id}
+                        className="task-board-card"
+                        draggable
+                        onDragStart={(event) => {
+                          event.dataTransfer.setData("text/task-id", task.id);
+                          event.dataTransfer.effectAllowed = "move";
+                        }}
+                        onClick={() => edit({ type: "task", id: task.id })}
+                      >
+                        {!projectId &&
+                          ((task.priority && task.priority !== "none") ||
+                            task.projectId) && (
+                            <span className="task-card-labels">
+                              {task.priority && task.priority !== "none" && (
+                                <span
+                                  className={`task-card-priority task-card-priority-${task.priority}`}
+                                >
+                                  {priorities[task.priority]}
+                                </span>
+                              )}
+                              {task.projectId && (
+                                <span className="task-card-project">
+                                  {
+                                    data.projects.find(
+                                      (p) => p.id === task.projectId,
+                                    )?.name
+                                  }
+                                </span>
+                              )}
+                            </span>
+                          )}
+                        <span className="task-board-card-title">
+                          <GripVertical size={13} />
+                          {task.title}
+                        </span>
+                        {!projectId && task.body.trim() && (
+                          <span className="task-card-description">
+                            {task.body}
+                          </span>
+                        )}
+                        {pr ? (
+                          <small className="task-card-pr">
+                            <GitPullRequest size={11} />
+                            {`PR #${pr.number} · ${pr.state}`}
+                          </small>
+                        ) : task.issueNumber ? (
+                          <small className="task-card-issue">
+                            <CircleDot size={11} />
+                            {`Issue #${task.issueNumber}`}
+                          </small>
+                        ) : null}
+                        <span className="task-board-card-meta">
+                          <span className="task-card-assignees">
+                            {(task.assigneeIds?.length
+                              ? task.assigneeIds
+                              : [task.ownerId]
+                            )
+                              .map((id) =>
+                                data.members.find((item) => item.id === id),
+                              )
+                              .filter(Boolean)
+                              .map((m) => (
+                                <PersonAvatar key={m!.id} member={m!} />
+                              ))}
+                          </span>
+                          {task.dueOn && (
+                            <span>
+                              <CalendarDays size={12} />
+                              {shortDate(task.dueOn)}
+                            </span>
+                          )}
+                          {projectId &&
+                            task.priority &&
+                            task.priority !== "none" && (
+                              <span>{priorities[task.priority]}</span>
+                            )}
+                          {task.size && (
+                            <span
+                              className={`task-size-badge task-size-${task.size}`}
+                            >
+                              {task.size.toUpperCase()}
+                            </span>
+                          )}
+                          {comments > 0 && (
+                            <span>
+                              <MessageSquare size={12} />
+                              {comments}
+                            </span>
+                          )}
+                          {files > 0 && (
+                            <span>
+                              <Paperclip size={12} />
+                              {files}
+                            </span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </section>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );
@@ -816,10 +872,12 @@ export function TaskSurface({
 export function TaskPanel({
   id,
   projectId,
+  initialStatus = "todo",
   onClose,
 }: {
   id?: string;
   projectId?: string;
+  initialStatus?: TaskStatus;
   onClose: () => void;
 }) {
   return (
@@ -830,9 +888,10 @@ export function TaskPanel({
       }}
     >
       <TaskPanelContent
-        key={id ?? "new"}
+        key={id ?? `new-${initialStatus}`}
         id={id}
         projectId={projectId}
+        initialStatus={initialStatus}
         onClose={onClose}
       />
     </div>
@@ -842,10 +901,12 @@ export function TaskPanel({
 function TaskPanelContent({
   id,
   projectId,
+  initialStatus = "todo",
   onClose,
 }: {
   id?: string;
   projectId?: string;
+  initialStatus?: TaskStatus;
   onClose: () => void;
 }) {
   const { data, command, notify, refresh, capture, confirm } = useWorkspace();
@@ -883,7 +944,9 @@ function TaskPanelContent({
   const [comment, setComment] = useState("");
 
   // Controlled form property values (fresh per key)
-  const [status, setStatus] = useState<TaskStatus>(task?.status ?? "todo");
+  const [status, setStatus] = useState<TaskStatus>(
+    normalizeTaskStatus(task?.status ?? initialStatus),
+  );
   const [priority, setPriority] = useState<TaskPriority>(
     task?.priority ?? "none",
   );
@@ -905,7 +968,7 @@ function TaskPanelContent({
   const [prUrlInput, setPrUrlInput] = useState("");
   const [linkingPr, setLinkingPr] = useState(false);
 
-  const isBacklogOrTodo = status === "backlog" || status === "todo";
+  const isBacklogOrTodo = status === "todo";
 
   async function taskAction(action: string, fields: Record<string, unknown>) {
     await autosave.flush();
@@ -942,7 +1005,7 @@ function TaskPanelContent({
   }
 
   // Option lists for SelectBoxes
-  const statusOptions: SelectOption[] = Object.entries(taskStatuses).map(
+  const statusOptions: SelectOption[] = Object.entries(activeTaskStatuses).map(
     ([key, label]) => ({
       value: key,
       label,
@@ -1260,7 +1323,12 @@ function TaskPanelContent({
                 className="task-delete-btn"
                 aria-label="Delete task"
                 onClick={async () => {
-                  if (!(await confirm(`Delete the task “${task.title}”?`, "Delete")))
+                  if (
+                    !(await confirm(
+                      `Delete the task “${task.title}”?`,
+                      "Delete",
+                    ))
+                  )
                     return;
                   void autosave
                     .flush()

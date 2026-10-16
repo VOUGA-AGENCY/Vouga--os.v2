@@ -36,7 +36,7 @@
 :root[data-theme="light"] .company-map-pin { border-color: #fff; }
 :root[data-theme="light"] { --map-prospect: var(--vouga-blue); }
 :root[data-theme="light"] .company-map-pin::after { background: #fff; }
-:root[data-theme="light"] .company-card { background: linear-gradient(180deg, var(--color-panel) 40%, color-mix(in srgb, var(--vouga-blue) 6%, var(--color-panel)) 100%); }
+:root[data-theme="light"] .company-card { background: var(--color-surface); }
 :root[data-theme="light"] .side-panel-backdrop,
 :root[data-theme="light"] .dialog::backdrop,
 :root[data-theme="light"] .note-composer-dialog::backdrop { background: var(--color-backdrop); }
@@ -85,3 +85,5 @@
 .appearance-settings { margin-bottom: var(--space-7); }
 .theme-options { display: flex; gap: var(--space-2); }
 .theme-options button[aria-pressed="true"] { background: var(--color-surface-active); border-color: var(--color-border-strong); color: var(--color-ink); }
+
+:root[data-theme="light"] .company-card:hover { background: var(--color-surface-hover); }

@@ -128,7 +128,7 @@ export const agentTools = [
       id: string,
       status: {
         type: "string",
-        enum: ["backlog", "todo", "doing", "review", "done", "blocked"],
+        enum: ["todo", "doing", "review", "done"],
       },
     },
     ["id", "status"],

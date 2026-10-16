@@ -105,16 +105,16 @@ describe("routes in the Agent and Telegram", () => {
     expect(current(id).currentIndex).toBe(1);
     await expect(executeAgentTool(ctx, data.members[3], "registerRouteVisit", { id, note: "x", stage: "meeting" })).rejects.toThrow("You do not have access");
   });
-  it("adds today's route to the 08:00 summary of its responsible person, even without meetings", () => {
+  it("sends a morning message but excludes routes", () => {
     route(engineer);
     data.meetings = [];
     engineer.telegramChatId = "9";
     data.members.find((m) => m.id === engineer.id)!.telegramChatId = "9";
-    const jobs = meetingReminders(data, now);
+    const jobs = meetingReminders(data, now).filter(job=>job.memberId===engineer.id);
     expect(jobs).toHaveLength(1);
-    expect(jobs[0]).toMatchObject({ memberId: engineer.id });
-    expect(jobs[0].text).toContain("Rota · 26 set · 3 visitas");
-    expect(jobs[0].text).toContain("09:30 · norte");
+    expect(jobs[0].text.startsWith(`Bom dia, ${engineer.name}!`)).toBe(true);
+    expect(jobs[0].text).not.toContain("3 visitas");
+    expect(jobs[0].text).not.toContain("09:30 · norte");
   });
 });
 

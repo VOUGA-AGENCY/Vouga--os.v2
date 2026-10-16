@@ -7,7 +7,17 @@ import "./mobile.css";
 export const metadata: Metadata = {
   title: "Vouga OS",
   description: "The essentials of Vouga, in one place.",
-  icons: { icon: "/vouga-mark-white.png" },
+  manifest: "/manifest.webmanifest",
+  applicationName: "Vouga OS",
+  appleWebApp: { capable: true, title: "Vouga OS", statusBarStyle: "default" },
+  icons: {
+    icon: [
+      { url: "/icons/vouga-black-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/vouga-black-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/icons/vouga-black-32.png",
+    apple: { url: "/icons/vouga-black-180.png", sizes: "180x180", type: "image/png" },
+  },
   robots: { index: false, follow: false },
 };
 export const viewport: Viewport = {

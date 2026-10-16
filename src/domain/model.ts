@@ -26,14 +26,22 @@ export interface Entity {
   updatedAt: string;
   createdBy: string;
 }
-export const taskStatuses = {
-  backlog: "Backlog",
-  todo: "To do",
-  doing: "In progress",
-  review: "Review",
-  blocked: "Blocked",
+export const activeTaskStatuses = {
+  todo: "To Do",
+  doing: "In Progress",
+  review: "In Review",
   done: "Done",
 } as const;
+// Retained for reading historical records and old clients; no longer offered in the UI.
+export const taskStatuses = {
+  ...activeTaskStatuses,
+  backlog: "Backlog",
+  blocked: "Blocked",
+} as const;
+export const normalizeTaskStatus = (
+  status: TaskStatus,
+): keyof typeof activeTaskStatuses =>
+  status === "backlog" || status === "blocked" ? "todo" : status;
 export const projectStatuses = {
   planned: "Planned",
   active: "In progress",

@@ -1,10 +1,11 @@
 "use client";
 import { createContext, useContext } from "react";
-import type { CaptureKind, Snapshot } from "@/domain/model";
+import type { CaptureKind, Snapshot, TaskStatus } from "@/domain/model";
 export type Editor = {
   type: "task" | "meeting" | "organization" | "project" | "note" | "pr";
   id?: string;
   projectId?: string;
+  taskStatus?: TaskStatus;
   organizationId?: string;
   date?: string;
   time?: string;

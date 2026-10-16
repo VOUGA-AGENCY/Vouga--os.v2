@@ -20,7 +20,7 @@ O servidor valida sessões e permissões. O login atual aceita email/password at
 
 ## Fluxos
 
-- **Home:** My tasks (cinco, In progress → To do, incluindo sem prazo), Next event com contexto, Needs me (Review/PRs/Agent) e Follow-ups vencidos. Inbox apenas para capturas por organizar. Resumo manual abaixo; sem centro de notificações nem parede de notas. Em Settings → GitHub, associar o username uma vez para identificar PR reviews.
+- **Home:** criação rápida Today / This week / No date, com prazo automático e apenas título, descrição, responsáveis e visibilidade. Agenda de hoje e dos próximos sete dias com todas as tarefas visíveis ao perfil, com tarefas e reuniões separadas, listas abertas e próximos dias agrupados por data. Sem cards de dashboard.
 - **Tasks:** vários responsáveis, estado, prioridade, dimensão, prazo e contexto opcionais. Board por defeito, List, filtros, drag-and-drop, comentários, anexos e Activity. `ownerId` conserva o primeiro responsável para compatibilidade; `assigneeIds` é a lista efetiva usada nos filtros, Agent, resumo e Telegram.
 - **Visibility:** `Team` segue as permissões do projeto e atribuição; `Private` é uma task pessoal só do utilizador; `Board` é visível exclusivamente a Miguel e Roque, atribuída a um deles ou aos dois, sem projeto. Board é uma visibilidade, distinta da vista Kanban.
 - **Calendar:** Month por defeito e Week. Office/Contacto sincronizam com Google; calendários pessoais ficam no OS. Um evento pode ter vários destinos. Admin vê todos; engineer vê Contacto e o próprio pessoal. Participantes internos definem My Day e destinatários Telegram.

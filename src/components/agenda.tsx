@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, Plus, X, ListFilter } from "lucide-react";
 import {
   addDays,
@@ -18,6 +18,7 @@ import {
 import type { Meeting } from "@/domain/model";
 import { useWorkspace } from "./context";
 import { Popover } from "./popover";
+import { PersonAvatar } from "./person-avatar";
 
 const firstHour = 7;
 const lastHour = 21;
@@ -29,6 +30,12 @@ export function Agenda() {
   const { data, edit } = useWorkspace();
   const today = dateKey(data.now);
   const [selected, setSelected] = useState(today);
+  const [mobileDay, setMobileDay] = useState(today);
+  const isPhone = () => window.matchMedia("(max-width: 47.99rem)").matches;
+  function inspectDay(day: string) {
+    if (isPhone()) setMobileDay(day);
+    else setInspectedDay(day);
+  }
   const [view, setView] = useState<"week" | "month">("month");
   const [inspectedDay, setInspectedDay] = useState<string | null>(null);
   useEffect(() => {
@@ -84,15 +91,19 @@ export function Agenda() {
       (task) =>
         task.dueOn === day &&
         task.status !== "done" &&
-        (task.ownerId === data.me.id || (task.assigneeIds?.includes(data.me.id) ?? false)),
+        (task.ownerId === data.me.id ||
+          (task.assigneeIds?.includes(data.me.id) ?? false)),
     ).length;
   const shift = (direction: number) => {
     setInspectedDay(null);
-    if (view === "week") setSelected(addDays(selected, direction * 7));
-    else {
+    if (view === "week") {
+      setSelected(addDays(selected, direction * 7));
+      setMobileDay(addDays(mobileDay, direction * 7));
+    } else {
       const month = new Date(`${selected.slice(0, 7)}-01T12:00Z`);
       month.setUTCMonth(month.getUTCMonth() + direction);
       setSelected(month.toISOString().slice(0, 10));
+      setMobileDay(month.toISOString().slice(0, 10));
     }
   };
   function slotUp(day: string, index: number) {
@@ -129,14 +140,25 @@ export function Agenda() {
             }).format(new Date(`${selected}T12:00Z`))}
           </span>
         </div>
-        <button onClick={() => edit({ type: "meeting", date: selected })}>
+        <button
+          onClick={() =>
+            edit({ type: "meeting", date: isPhone() ? mobileDay : selected })
+          }
+        >
           <Plus size={15} />
           New event
         </button>
       </header>
       <div className="calendar-controls">
         <div className="calendar-range">
-          <button onClick={() => setSelected(today)}>Today</button>
+          <button
+            onClick={() => {
+              setSelected(today);
+              setMobileDay(today);
+            }}
+          >
+            Today
+          </button>
           <button aria-label="Previous period" onClick={() => shift(-1)}>
             <ChevronLeft size={16} />
           </button>
@@ -154,7 +176,11 @@ export function Agenda() {
             <button
               className={view === option ? "active" : ""}
               key={option}
-              onClick={() => setView(option)}
+              onClick={() => {
+                setView(option);
+                if (isPhone()) setSelected(mobileDay);
+                else setMobileDay(selected);
+              }}
             >
               {option[0].toUpperCase() + option.slice(1)}
             </button>
@@ -212,18 +238,27 @@ export function Agenda() {
           </div>
           <div
             className="calendar-month-days"
-            style={{ minHeight: `${(days.length / 7) * 5.25}rem` }}
+            style={
+              { "--calendar-month-rows": days.length / 7 } as CSSProperties
+            }
           >
             {days.map((day) => (
               <button
                 key={day}
-                aria-label={`Open agenda ${day}`}
-                className={`${day === inspectedDay ? "is-selected" : ""} ${day === today ? "is-today" : ""} ${day.slice(0, 7) !== selected.slice(0, 7) ? "outside" : ""}`}
+                aria-label={`Open agenda ${day}, ${meetingsOn(day).length} events, ${dueOn(day)} tasks due`}
+                className={`${day === mobileDay ? "mobile-selected" : ""} ${day === inspectedDay ? "is-selected" : ""} ${day === today ? "is-today" : ""} ${day.slice(0, 7) !== selected.slice(0, 7) ? "outside" : ""}`}
                 onClick={() => {
-                  setInspectedDay(day);
+                  inspectDay(day);
                 }}
               >
                 <strong>{Number(day.slice(-2))}</strong>
+                <span className="calendar-mobile-count" aria-hidden="true">
+                  {meetingsOn(day).length > 0
+                    ? `${meetingsOn(day).length}`
+                    : dueOn(day) > 0
+                      ? "·"
+                      : ""}
+                </span>
                 {meetingsOn(day)
                   .slice(0, 1)
                   .map((meeting) => (
@@ -264,7 +299,7 @@ export function Agenda() {
                   key={day}
                   className={day === today ? "is-today" : ""}
                   onClick={() => {
-                    setInspectedDay(day);
+                    inspectDay(day);
                   }}
                 >
                   {new Intl.DateTimeFormat("en", {
@@ -353,6 +388,111 @@ export function Agenda() {
           </div>
         </div>
       )}
+      <div className="calendar-mobile-agenda">
+        {view === "week" && (
+          <div
+            className="calendar-mobile-week"
+            role="group"
+            aria-label="Choose a day"
+          >
+            {days.map((day) => (
+              <button
+                key={day}
+                aria-pressed={day === mobileDay}
+                onClick={() => setMobileDay(day)}
+              >
+                <span>
+                  {new Intl.DateTimeFormat("en-GB", {
+                    weekday: "short",
+                    timeZone: "UTC",
+                  }).format(new Date(`${day}T12:00Z`))}
+                </span>
+                <strong>{Number(day.slice(-2))}</strong>
+                <small>{meetingsOn(day).length || "—"}</small>
+              </button>
+            ))}
+          </div>
+        )}
+        <header className="calendar-mobile-heading">
+          <h2>
+            {new Intl.DateTimeFormat("en-GB", {
+              weekday: "long",
+              day: "numeric",
+              month: "short",
+              timeZone: "UTC",
+            }).format(new Date(`${mobileDay}T12:00Z`))}
+          </h2>
+          <button
+            aria-label="New event on selected day"
+            onClick={() => edit({ type: "meeting", date: mobileDay })}
+          >
+            <Plus size={18} />
+          </button>
+        </header>
+        <div className="calendar-mobile-events">
+          {meetingsOn(mobileDay)
+            .sort(
+              (a, b) =>
+                Number(!!b.allDay) - Number(!!a.allDay) ||
+                a.startsAt.localeCompare(b.startsAt),
+            )
+            .map((meeting) => (
+              <button
+                className="calendar-mobile-event"
+                key={meeting.id}
+                onClick={() => edit({ type: "meeting", id: meeting.id })}
+              >
+                <span className="calendar-mobile-time">
+                  {meeting.allDay ? "All day" : timeLabel(meeting.startsAt)}
+                  {!meeting.allDay && (
+                    <small>{timeLabel(meeting.endsAt)}</small>
+                  )}
+                </span>
+                <span className="calendar-mobile-event-copy">
+                  <strong>{meeting.title}</strong>
+                  <small>{calendarLabel(meeting, data.members)}</small>
+                </span>
+                <span className="task-card-assignees">
+                  {data.members
+                    .filter(
+                      (member) =>
+                        meeting.participantIds.includes(member.id) ||
+                        (meeting.calendarKey === "personal" &&
+                          meeting.calendarOwnerId === member.id),
+                    )
+                    .map((member) => (
+                      <PersonAvatar key={member.id} member={member} />
+                    ))}
+                </span>
+              </button>
+            ))}
+          {!meetingsOn(mobileDay).length && (
+            <p className="calendar-mobile-empty">No events scheduled.</p>
+          )}
+        </div>
+        {dueOn(mobileDay) > 0 && (
+          <section className="calendar-mobile-deadlines">
+            <h3>Task deadlines</h3>
+            {data.tasks
+              .filter(
+                (task) =>
+                  task.dueOn === mobileDay &&
+                  task.status !== "done" &&
+                  (task.ownerId === data.me.id ||
+                    task.assigneeIds?.includes(data.me.id)),
+              )
+              .map((task) => (
+                <button
+                  key={task.id}
+                  onClick={() => edit({ type: "task", id: task.id })}
+                >
+                  {task.title}
+                  <ChevronRight size={14} />
+                </button>
+              ))}
+          </section>
+        )}
+      </div>
       {inspectedDay && (
         <div
           className="side-panel-backdrop"
@@ -425,7 +565,8 @@ export function Agenda() {
                       (task) =>
                         task.dueOn === inspectedDay &&
                         task.status !== "done" &&
-                        (task.ownerId === data.me.id || (task.assigneeIds?.includes(data.me.id) ?? false)),
+                        (task.ownerId === data.me.id ||
+                          (task.assigneeIds?.includes(data.me.id) ?? false)),
                     )
                     .map((task) => (
                       <button

@@ -5,7 +5,8 @@ import { uniqueEvents, calendarLabel } from "@/domain/calendars";
 import { randomBytes } from "node:crypto";
 import type { Member, Store } from "@/domain/model";
 import { AppError } from "@/domain/validation";
-import { dateKey, timeLabel } from "@/domain/time";
+import { dateKey, localDateTime, timeLabel } from "@/domain/time";
+import { dailySummary, dailySummaryParts } from "@/domain/daily-summary";
 import {
   api,
   hash,
@@ -277,14 +278,8 @@ export async function sendOnce(
   }
 }
 export function meetingReminders(data: Store, now: string) {
+  const morning = localDateTime(now).slice(11, 13) === "08";
   const today = dateKey(now);
-  const localTime = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Lisbon",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).format(new Date(now));
-  const [hour, minute] = localTime.split(":").map(Number);
   const jobs: {
     key: string;
     memberId: string;
@@ -293,6 +288,15 @@ export function meetingReminders(data: Store, now: string) {
   }[] = [];
   for (const member of data.members) {
     if (!member.telegramChatId || !isActiveMember(member)) continue;
+    if (morning) {
+      const parts = dailySummaryParts(dailySummary(data, member, now, () => parseInt(hash(`daily:${member.id}:${today}`).slice(0, 8), 16) / 0x100000000), member.name);
+      parts.forEach((text, index) => jobs.push({
+        key: `daily:${member.id}:${today}${index ? `:part:${index + 1}` : ""}`,
+        memberId: member.id,
+        chatId: member.telegramChatId!,
+        text,
+      }));
+    }
     const events = uniqueEvents(
       data.meetings
         .filter(
@@ -304,26 +308,6 @@ export function meetingReminders(data: Store, now: string) {
         )
         .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
     );
-    const todayEvents = events.filter(
-      (event) => dateKey(event.startsAt) === today,
-    );
-    // The routes of the day this person is responsible for, with the visits still to do.
-    const todayRoutes = (data.routes ?? []).filter((route) => route.ownerId === member.id && route.date === today && route.currentIndex < route.stops.length);
-    if (hour === 8 && minute < 15 && (todayEvents.length || todayRoutes.length))
-      jobs.push({
-        key: `daily:${member.id}:${today}`,
-        memberId: member.id,
-        chatId: member.telegramChatId,
-        text: [
-          "Hoje",
-          ...todayEvents.map((event) => `${timeLabel(event.startsAt)} · ${event.title}`),
-          ...todayRoutes.flatMap((route) => [
-            "",
-            `${route.name} · ${route.stops.length - route.currentIndex} visitas`,
-            ...route.stops.slice(route.currentIndex).map((stop) => `${stop.arrival} · ${stop.name} (${stop.location})`),
-          ]),
-        ].join("\n"),
-      });
     for (const event of events) {
       const minutes = (Date.parse(event.startsAt) - Date.parse(now)) / 60000;
       if (minutes > 55 && minutes <= 60)
@@ -339,8 +323,12 @@ export function meetingReminders(data: Store, now: string) {
 }
 export async function deliverReminders(ctx: ServiceContext) {
   if (!ctx.env.TELEGRAM_BOT_TOKEN) return;
-  for (const job of meetingReminders(await ctx.repo.read(), ctx.now()))
-    await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId);
+  const failures: string[] = [];
+  for (const job of meetingReminders(await ctx.repo.read(), ctx.now())) {
+    try { await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId); }
+    catch { failures.push(`${job.memberId}:${job.key.startsWith("daily:") ? "daily" : "hour"}`); }
+  }
+  if (failures.length) throw new Error(`Telegram reminders failed for ${failures.join(", ")}; inspect notification deliveries.`);
 }
 
 export async function deliverCreationNotice(

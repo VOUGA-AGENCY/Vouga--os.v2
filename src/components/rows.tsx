@@ -7,7 +7,7 @@ import {
   GitPullRequest,
 } from "lucide-react";
 import type { Meeting, Organization, Project, Task } from "@/domain/model";
-import { projectStatuses, stages, taskStatuses } from "@/domain/model";
+import { projectStatuses, stages, activeTaskStatuses } from "@/domain/model";
 import { dateKey, relativeDate, shortDate, timeLabel } from "@/domain/time";
 import { useWorkspace } from "./context";
 export function Empty({
@@ -214,7 +214,7 @@ export function StatusSelect({
       onChange={(e) => onChange(e.target.value as Task["status"])}
       disabled={disabled}
     >
-      {Object.entries(taskStatuses).map(([key, label]) => (
+      {Object.entries(activeTaskStatuses).map(([key, label]) => (
         <option key={key} value={key}>
           {label}
         </option>

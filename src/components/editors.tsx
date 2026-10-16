@@ -5,7 +5,7 @@ import {
   projectStatuses,
   stages,
   taskSizeLabels,
-  taskStatuses,
+  activeTaskStatuses,
   type Snapshot,
 } from "@/domain/model";
 import { calendarOptions, calendarTarget } from "@/domain/calendars";
@@ -351,7 +351,7 @@ export function RecordEditor({
           <label>
             Status
             <select name="status" defaultValue={item?.status ?? "todo"}>
-              {Object.entries(taskStatuses).map(([k, l]) => (
+              {Object.entries(activeTaskStatuses).map(([k, l]) => (
                 <option key={k} value={k}>
                   {l}
                 </option>
