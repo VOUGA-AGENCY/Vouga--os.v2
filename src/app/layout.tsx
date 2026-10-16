@@ -12,11 +12,12 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Vouga OS", statusBarStyle: "default" },
   icons: {
     icon: [
-      { url: "/icons/vouga-black-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/vouga-black-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48", type: "image/x-icon" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
     ],
-    shortcut: "/icons/vouga-black-32.png",
-    apple: { url: "/icons/vouga-black-180.png", sizes: "180x180", type: "image/png" },
+    shortcut: "/favicon.ico",
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
   },
   robots: { index: false, follow: false },
 };
