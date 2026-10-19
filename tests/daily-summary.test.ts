@@ -211,4 +211,15 @@ describe("personal daily Telegram templates", () => {
     ).toBe(true);
     for (const t of data.tasks) expect(parts.join("\n")).toContain(t.title);
   });
+  it("sends morning summary on weekdays (Mon-Fri) and omits it on weekends (Sat-Sun)", () => {
+    const data = fixture();
+    // 2026-10-16 is Friday (summer time Lisbon: 07:00Z is 08:00 Lisbon) -> sent
+    expect(meetingReminders(data, "2026-10-16T07:00:00Z")).toHaveLength(1);
+    // 2026-10-17 is Saturday -> omitted
+    expect(meetingReminders(data, "2026-10-17T07:00:00Z")).toEqual([]);
+    // 2026-10-18 is Sunday -> omitted
+    expect(meetingReminders(data, "2026-10-18T07:00:00Z")).toEqual([]);
+    // 2026-10-19 is Monday -> sent
+    expect(meetingReminders(data, "2026-10-19T07:00:00Z")).toHaveLength(1);
+  });
 });

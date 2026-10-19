@@ -294,7 +294,10 @@ describe("Telegram timing, pairing and delivery", () => {
     data.meetings.forEach((event) => {
       event.participantIds = ["miguel"];
     });
-    const jobs = meetingReminders(data, now);
+    const summerWeekday = "2026-09-25T07:00:00.000Z"; // Friday 08:00 Lisbon
+    data.meetings[0].startsAt = "2026-09-25T09:00:00.000Z";
+    data.meetings[1].startsAt = "2026-09-25T14:00:00.000Z";
+    const jobs = meetingReminders(data, summerWeekday);
     expect(jobs).toHaveLength(2);
     expect(jobs[0].text).toContain("Bom dia, Miguel!");
     expect(jobs[0].text).toContain("10:00");
@@ -304,6 +307,7 @@ describe("Telegram timing, pairing and delivery", () => {
     data.meetings[0].startsAt = "2026-12-24T10:00:00.000Z";
     data.meetings[1].startsAt = "2026-12-24T15:00:00.000Z";
     expect(meetingReminders(data, winter)).toHaveLength(2);
+    expect(meetingReminders(data, now)).toEqual([]); // Saturday -> no morning summary
   });
   it("targets only assigned users one hour before and excludes cancelled events", () => {
     data.members[0].telegramChatId = "1";
@@ -321,16 +325,16 @@ describe("Telegram timing, pairing and delivery", () => {
     data.meetings = data.meetings.slice(0, 1);
     const event = data.meetings[0];
     event.participantIds = ["miguel"];
-    event.startsAt = "2026-09-26T23:30:00.000Z"; // 00:30 next day in Lisbon
-    const jobs = meetingReminders(data, "2026-09-26T22:30:00.000Z");
+    event.startsAt = "2026-09-25T23:30:00.000Z"; // 00:30 next day in Lisbon
+    const jobs = meetingReminders(data, "2026-09-25T22:30:00.000Z");
     expect(jobs).toHaveLength(1);
     expect(jobs[0].key).toMatch(/^hour:miguel:/);
     expect(jobs[0].text).toContain("00:30");
-    const morning = meetingReminders(data, "2026-09-26T07:00:00.000Z");
+    const morning = meetingReminders(data, "2026-09-25T07:00:00.000Z");
     expect(morning).toHaveLength(1);
     expect(morning[0].text).not.toContain(event.title);
     event.allDay = true;
-    expect(meetingReminders(data, "2026-09-26T22:30:00.000Z")).toEqual([]);
+    expect(meetingReminders(data, "2026-09-25T22:30:00.000Z")).toEqual([]);
   });
   it("never resends an ambiguous network delivery automatically", async () => {
     vi.mocked(ctx.fetch).mockRejectedValue(new Error("network"));

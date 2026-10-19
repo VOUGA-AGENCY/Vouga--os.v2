@@ -5,7 +5,7 @@ import { uniqueEvents, calendarLabel } from "@/domain/calendars";
 import { randomBytes } from "node:crypto";
 import type { Member, Store } from "@/domain/model";
 import { AppError } from "@/domain/validation";
-import { dateKey, localDateTime, timeLabel } from "@/domain/time";
+import { dateKey, isWeekday, localDateTime, timeLabel } from "@/domain/time";
 import { dailySummary, dailySummaryParts } from "@/domain/daily-summary";
 import {
   api,
@@ -278,8 +278,8 @@ export async function sendOnce(
   }
 }
 export function meetingReminders(data: Store, now: string) {
-  const morning = localDateTime(now).slice(11, 13) === "08";
   const today = dateKey(now);
+  const morning = localDateTime(now).slice(11, 13) === "08" && isWeekday(today);
   const jobs: {
     key: string;
     memberId: string;

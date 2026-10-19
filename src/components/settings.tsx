@@ -248,7 +248,7 @@ export function IntegrationSettings() {
               </div>
             ))}
             <p className="muted">
-              08:00 · meetings and tasks due today, even on empty days. One hour before · event reminder.
+              08:00 (Mon–Fri) · meetings and tasks due today, even on empty days. One hour before · event reminder.
             </p>
           </section>
           <section>

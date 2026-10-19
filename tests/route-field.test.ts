@@ -110,11 +110,13 @@ describe("routes in the Agent and Telegram", () => {
     data.meetings = [];
     engineer.telegramChatId = "9";
     data.members.find((m) => m.id === engineer.id)!.telegramChatId = "9";
-    const jobs = meetingReminders(data, now).filter(job=>job.memberId===engineer.id);
+    const weekday = "2026-09-25T07:00:00.000Z"; // Friday 08:00 Lisbon
+    const jobs = meetingReminders(data, weekday).filter(job=>job.memberId===engineer.id);
     expect(jobs).toHaveLength(1);
     expect(jobs[0].text.startsWith(`Bom dia, ${engineer.name}!`)).toBe(true);
     expect(jobs[0].text).not.toContain("3 visitas");
     expect(jobs[0].text).not.toContain("09:30 · norte");
+    expect(meetingReminders(data, now)).toEqual([]); // Saturday -> omitted
   });
 });
 

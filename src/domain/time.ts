@@ -96,3 +96,8 @@ export function weekDays(day: string) {
   const start = addDays(day, weekday === 0 ? -6 : 1 - weekday);
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 }
+export function isWeekday(value: string | Date = new Date()): boolean {
+  const day = typeof value === "string" && isDateKey(value) ? value : dateKey(value);
+  const weekday = new Date(`${day}T12:00:00Z`).getUTCDay();
+  return weekday >= 1 && weekday <= 5;
+}

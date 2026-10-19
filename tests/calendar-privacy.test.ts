@@ -227,16 +227,19 @@ describe("private tasks and calendar destinations", () => {
         action: "meeting.save",
         values: {
           ...event,
+          startsAt: "2026-09-28T10:00",
+          endsAt: "2026-09-28T11:00",
           participantIds: ["miguel", "vasco"],
           calendarTargets: ["office", "contacto", "personal:miguel"],
         },
       },
       now,
     );
-    const morning = meetingReminders(data, now);
+    expect(meetingReminders(data, now)).toEqual([]);
+    const morning = meetingReminders(data, "2026-09-28T07:00:00.000Z");
     expect(morning).toHaveLength(2);
     expect(morning[0].text.split("Shared appointment")).toHaveLength(2);
-    const reminders = meetingReminders(data, "2026-09-27T08:00:00.000Z");
+    const reminders = meetingReminders(data, "2026-09-28T08:00:00.000Z");
     expect(reminders).toHaveLength(2);
     expect(reminders[0].text.split("Shared appointment")).toHaveLength(2);
     expect(reminders.every((item) => item.key.startsWith("hour:"))).toBe(true);
