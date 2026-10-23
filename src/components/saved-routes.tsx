@@ -7,6 +7,7 @@ import { shortDate } from "@/domain/time";
 import { useApproachContext } from "./approach-context";
 import { useWorkspace } from "./context";
 import { SelectBox } from "./task-surface";
+import { DateField } from "./date-field";
 
 // Routes saved before they were shared lived in this browser only; they are moved to the workspace once.
 const legacyKey = "vouga-saved-routes";
@@ -318,7 +319,7 @@ export function SavedRoutes() {
           </label>
           <label>
             Follow-up <small>(opcional)</small>
-            <input type="date" value={followUpOn} onChange={(event) => setFollowUpOn(event.target.value)}/>
+            <DateField ariaLabel="Follow-up" placeholder="Sem data" value={followUpOn} onChange={setFollowUpOn}/>
           </label>
           <div className="route-check-actions">
             <button type="button" className="route-switch-button" onClick={closeCheck}>Cancelar</button>

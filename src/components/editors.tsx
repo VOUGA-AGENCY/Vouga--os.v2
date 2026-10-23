@@ -15,6 +15,14 @@ import { useWorkspace, type Editor } from "./context";
 import { flushEdits, formFields, SaveStatus, useAutosave } from "./autosave";
 import { Dialog } from "./dialog";
 import { RelationSelect } from "./relation-select";
+import { SelectBox } from "./task-surface";
+import { DateField } from "./date-field";
+
+const stageOptions = Object.entries(stages).map(([value, label]) => ({
+  value,
+  label,
+  dotClass: `crm-dot crm-stage-${value}`,
+}));
 
 function SideEditor({
   title,
@@ -195,16 +203,16 @@ function Person({
   label?: string;
 }) {
   return (
-    <label>
-      {label}
-      <select name={name} defaultValue={value ?? data.me.id}>
-        {data.members.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.name}
-          </option>
-        ))}
-      </select>
-    </label>
+    <SelectBox
+      name={name}
+      label={label}
+      defaultValue={value ?? data.me.id}
+      options={data.members.map((m) => ({
+        value: m.id,
+        label: m.name,
+        avatar: { id: m.id, name: m.name },
+      }))}
+    />
   );
 }
 function Relations({
@@ -303,61 +311,62 @@ export function RecordEditor({
           </label>
           <div className="form-grid">
             <Person data={data} value={item?.ownerId} />
-            <label>
-              Visibility
-              <select
-                name="visibility"
-                defaultValue={item?.visibility ?? "team"}
-              >
-                <option value="team">Team</option>
-                <option value="private">Private · just me</option>
-              </select>
-            </label>
-            <label>
-              Deadline
-              <input
-                type="date"
-                name="dueOn"
-                defaultValue={item?.dueOn ?? ""}
-              />
-            </label>
-            <label>
-              Priority
-              <select name="priority" defaultValue={item?.priority ?? "none"}>
-                <option value="none">None</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </label>
-            <label>
-              Size
-              <select name="size" defaultValue={item?.size ?? ""}>
-                <option value="">None</option>
-                {Object.entries(taskSizeLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectBox
+              name="visibility"
+              label="Visibility"
+              defaultValue={item?.visibility ?? "team"}
+              options={[
+                { value: "team", label: "Team" },
+                { value: "private", label: "Private · just me" },
+              ]}
+            />
+            <DateField
+              name="dueOn"
+              label="Deadline"
+              placeholder="None"
+              defaultValue={item?.dueOn ?? ""}
+            />
+            <SelectBox
+              name="priority"
+              label="Priority"
+              defaultValue={item?.priority ?? "none"}
+              options={[
+                { value: "none", label: "None" },
+                { value: "low", label: "Low" },
+                { value: "medium", label: "Medium" },
+                { value: "high", label: "High" },
+                { value: "urgent", label: "Urgent" },
+              ]}
+            />
+            <SelectBox
+              name="size"
+              label="Size"
+              defaultValue={item?.size ?? ""}
+              options={[
+                { value: "", label: "None" },
+                ...Object.entries(taskSizeLabels).map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+              ]}
+            />
           </div>
           <Relations
             data={data}
             projectId={item?.projectId ?? editor.projectId}
             organizationId={item?.organizationId ?? editor.organizationId}
           />
-          <label>
-            Status
-            <select name="status" defaultValue={item?.status ?? "todo"}>
-              {Object.entries(activeTaskStatuses).map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="form-grid">
+            <SelectBox
+              name="status"
+              label="Status"
+              defaultValue={item?.status ?? "todo"}
+              options={Object.entries(activeTaskStatuses).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
+          </div>
           <label>
             Context
             <textarea
@@ -463,24 +472,20 @@ export function RecordEditor({
             rows={3}
           />
           <div className="event-date-fields">
-            <label>
-              Starts
-              <input
-                name="startsAt"
-                type="datetime-local"
-                defaultValue={item ? localDateTime(item.startsAt) : startTime}
-                required
-              />
-            </label>
-            <label>
-              Ends
-              <input
-                name="endsAt"
-                type="datetime-local"
-                defaultValue={item ? localDateTime(item.endsAt) : endTime}
-                required
-              />
-            </label>
+            <DateField
+              name="startsAt"
+              mode="datetime"
+              label="Starts"
+              defaultValue={item ? localDateTime(item.startsAt) : startTime}
+              required
+            />
+            <DateField
+              name="endsAt"
+              mode="datetime"
+              label="Ends"
+              defaultValue={item ? localDateTime(item.endsAt) : endTime}
+              required
+            />
           </div>
           <input type="hidden" name="kind" value="event" />
           <input type="hidden" name="allDayPresent" value="1" />
@@ -683,25 +688,22 @@ export function RecordEditor({
             rows={3}
           />
           <div className="composer-properties">
-            <label>
-              Status
-              <select name="status" defaultValue={item?.status ?? "active"}>
-                {Object.entries(projectStatuses).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectBox
+              name="status"
+              label="Status"
+              defaultValue={item?.status ?? "active"}
+              options={Object.entries(projectStatuses).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
             <Person data={data} value={item?.ownerId} label="Lead" />
-            <label>
-              Target
-              <input
-                type="date"
-                name="dueOn"
-                defaultValue={item?.dueOn ?? ""}
-              />
-            </label>
+            <DateField
+              name="dueOn"
+              label="Target"
+              placeholder="None"
+              defaultValue={item?.dueOn ?? ""}
+            />
             <Relations
               data={data}
               organizationId={item?.organizationId}
@@ -802,15 +804,19 @@ export function RecordEditor({
             placeholder="https://github.com/team/repo/pull/123"
           />
         </label>
-        <label>
-          Status
-          <select name="state" defaultValue={pr?.state ?? "open"}>
-            <option value="open">Open</option>
-            <option value="draft">Draft</option>
-            <option value="merged">Merged</option>
-            <option value="closed">Closed</option>
-          </select>
-        </label>
+        <div className="form-grid">
+          <SelectBox
+            name="state"
+            label="Status"
+            defaultValue={pr?.state ?? "open"}
+            options={[
+              { value: "open", label: "Open" },
+              { value: "draft", label: "Draft" },
+              { value: "merged", label: "Merged" },
+              { value: "closed", label: "Closed" },
+            ]}
+          />
+        </div>
         <p className="field-hint">
           GitHub updates linked repositories through the App. Links added
           manually remain available here.
@@ -857,16 +863,12 @@ function OrganizationEditor({
             Add notes and meetings to its timeline after creating it.
           </p>
           <div className="form-grid">
-            <label>
-              Status
-              <select name="stage" defaultValue="new">
-                {Object.entries(stages).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectBox
+              name="stage"
+              label="Status"
+              defaultValue="new"
+              options={stageOptions}
+            />
             <Person data={data} />
           </div>
           <label>
@@ -1036,25 +1038,23 @@ function OrganizationEditor({
             />
           </label>
           <div className="form-grid">
-            <label>
-              Channel
-              <select name="channel">
-                <option value="note">Note</option>
-                <option value="call">Call</option>
-                <option value="email">Email</option>
-                <option value="meeting">Meeting</option>
-              </select>
-            </label>
-            <label>
-              Status
-              <select name="stage" defaultValue={item.stage}>
-                {Object.entries(stages).map(([k, l]) => (
-                  <option key={k} value={k}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectBox
+              name="channel"
+              label="Channel"
+              defaultValue="note"
+              options={[
+                { value: "note", label: "Note" },
+                { value: "call", label: "Call" },
+                { value: "email", label: "Email" },
+                { value: "meeting", label: "Meeting" },
+              ]}
+            />
+            <SelectBox
+              name="stage"
+              label="Status"
+              defaultValue={item.stage}
+              options={stageOptions}
+            />
           </div>
           <label>
             Next step
@@ -1064,14 +1064,14 @@ function OrganizationEditor({
               maxLength={500}
             />
           </label>
-          <label>
-            Follow up on
-            <input
-              type="date"
+          <div className="form-grid">
+            <DateField
               name="followUpOn"
+              label="Follow up on"
+              placeholder="None"
               defaultValue={item.followUpOn ?? addDays(dateKey(data.now), 1)}
             />
-          </label>
+          </div>
         </SaveForm>
       ) : (
         <SaveForm
@@ -1111,16 +1111,12 @@ function OrganizationEditor({
           </div>
           <div className="form-grid">
             <Person data={data} value={item?.ownerId} />
-            <label>
-              Status
-              <select name="stage" defaultValue={item?.stage ?? "new"}>
-                {Object.entries(stages).map(([k, l]) => (
-                  <option key={k} value={k}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectBox
+              name="stage"
+              label="Status"
+              defaultValue={item?.stage ?? "new"}
+              options={stageOptions}
+            />
           </div>
           <label>
             Next step
@@ -1130,14 +1126,14 @@ function OrganizationEditor({
               maxLength={500}
             />
           </label>
-          <label>
-            Follow up on
-            <input
+          <div className="form-grid">
+            <DateField
               name="followUpOn"
-              type="date"
+              label="Follow up on"
+              placeholder="None"
               defaultValue={item?.followUpOn ?? ""}
             />
-          </label>
+          </div>
           {item && (
             <>
               <input name="archivedPresent" type="hidden" value="1" />

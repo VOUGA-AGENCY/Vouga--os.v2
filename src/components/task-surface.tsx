@@ -35,6 +35,8 @@ import { useWorkspace } from "./context";
 import { ActivityFeed } from "./activity";
 import { Popover } from "./popover";
 import { PersonAvatar } from "./person-avatar";
+import { announce, useFloating } from "./floating";
+import { DateField } from "./date-field";
 
 const boardStatuses: TaskStatus[] = ["todo", "doing", "review", "done"];
 const boardLabels = taskStatuses;
@@ -73,57 +75,86 @@ export interface SelectOption {
 
 export function SelectBox({
   name,
-  value,
+  value: controlled,
+  defaultValue,
   onChange,
   options,
   label,
   ariaLabel,
+  disabled = false,
+  className = "",
 }: {
-  name: string;
-  value: string;
+  name?: string;
+  value?: string;
+  defaultValue?: string;
   onChange?: (val: string) => void;
   options: SelectOption[];
   label?: string;
   ariaLabel?: string;
+  disabled?: boolean;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [own, setOwn] = useState(defaultValue ?? options[0]?.value ?? "");
+  const value = controlled ?? own;
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLInputElement>(null);
+  const picked = useRef(false);
+  useFloating(open, setOpen, containerRef, listRef);
+
+  useEffect(() => {
+    if (!picked.current) return;
+    picked.current = false;
+    announce(hiddenRef.current);
+  }, [value]);
 
   useEffect(() => {
     if (!open) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    const list = listRef.current;
+    (list?.querySelector<HTMLElement>("[aria-selected=true]") ?? list?.querySelector<HTMLElement>("button"))?.focus({ preventScroll: false });
   }, [open]);
+
+  function choose(next: string) {
+    setOpen(false);
+    containerRef.current?.querySelector<HTMLElement>(".task-select-trigger")?.focus();
+    if (next === value) return;
+    picked.current = true;
+    if (controlled === undefined) setOwn(next);
+    onChange?.(next);
+  }
+
+  function moveFocus(event: React.KeyboardEvent) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const items = [...(listRef.current?.querySelectorAll<HTMLElement>("button") ?? [])];
+    const at = items.indexOf(document.activeElement as HTMLElement);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : Math.max(0, Math.min(items.length - 1, at + (event.key === "ArrowDown" ? 1 : -1)));
+    items[next]?.focus();
+  }
 
   const selected = options.find((opt) => opt.value === value) ?? options[0];
 
   return (
     <div
-      className={`task-select-box ${open ? "is-open" : ""}`}
+      className={`task-select-box ${open ? "is-open" : ""} ${className}`}
       ref={containerRef}
     >
-      <input type="hidden" name={name} value={value} />
+      {name && <input ref={hiddenRef} type="hidden" name={name} value={value} />}
       <button
         type="button"
         className="task-select-trigger"
         aria-label={ariaLabel ?? label}
+        aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => setOpen((prev) => !prev)}
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            setOpen(true);
+          }
+        }}
       >
         {label && <span className="task-select-label">{label}</span>}
         <span className="task-select-value">
@@ -145,7 +176,13 @@ export function SelectBox({
       </button>
 
       {open && (
-        <div className="task-select-dropdown" role="listbox">
+        <div
+          className="task-select-dropdown"
+          role="listbox"
+          ref={listRef}
+         
+          onKeyDown={moveFocus}
+        >
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -155,10 +192,7 @@ export function SelectBox({
                 role="option"
                 aria-selected={isSelected}
                 className={`task-select-option ${isSelected ? "selected" : ""}`}
-                onClick={() => {
-                  onChange?.(opt.value);
-                  setOpen(false);
-                }}
+                onClick={() => choose(opt.value)}
               >
                 <div className="task-select-option-content">
                   {opt.avatar && <PersonAvatar member={opt.avatar} />}
@@ -195,27 +229,8 @@ export function AssigneeMultiSelect({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
+  const listRef = useRef<HTMLDivElement>(null);
+  useFloating(open, setOpen, containerRef, listRef);
 
   const selectedMembers = members.filter((m) => value.includes(m.id));
 
@@ -279,6 +294,8 @@ export function AssigneeMultiSelect({
           className="task-select-dropdown"
           role="listbox"
           aria-multiselectable="true"
+          ref={listRef}
+         
         >
           <div className="task-select-dropdown-header">
             <span>Assign team members ({value.length})</span>
@@ -561,45 +578,43 @@ export function TaskSurface({
           <h3>Filters</h3>
           <label>
             Status
-            <select
+            <SelectBox
+              ariaLabel="Status filter"
               value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-            >
-              <option value="">Any status</option>
-              {Object.entries(activeTaskStatuses).map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              onChange={setStatusFilter}
+              options={[
+                { value: "", label: "Any status" },
+                ...Object.entries(activeTaskStatuses).map(([value, label]) => ({ value, label })),
+              ]}
+            />
           </label>
           <label>
             Size
-            <select
+            <SelectBox
+              ariaLabel="Size filter"
               value={sizeFilter}
-              onChange={(event) => setSizeFilter(event.target.value)}
-            >
-              <option value="">Any size</option>
-              {Object.entries(taskSizes).map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              onChange={setSizeFilter}
+              options={[
+                { value: "", label: "Any size" },
+                ...Object.entries(taskSizes).map(([value, label]) => ({ value, label })),
+              ]}
+            />
           </label>
           <label>
             Assignee
-            <select
+            <SelectBox
+              ariaLabel="Assignee filter"
               value={ownerFilter}
-              onChange={(event) => setOwnerFilter(event.target.value)}
-            >
-              <option value="">Anyone</option>
-              {data.members.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.name}
-                </option>
-              ))}
-            </select>
+              onChange={setOwnerFilter}
+              options={[
+                { value: "", label: "Anyone" },
+                ...data.members.map((member) => ({
+                  value: member.id,
+                  label: member.name,
+                  avatar: { id: member.id, name: member.name },
+                })),
+              ]}
+            />
           </label>
           <button
             className="text-button"
@@ -630,33 +645,33 @@ export function TaskSurface({
           {view === "list" && (
             <label>
               Grouping
-              <select
-                aria-label="Group by"
+              <SelectBox
+                ariaLabel="Group by"
                 value={group}
-                onChange={(event) =>
-                  setGroup(event.target.value as typeof group)
-                }
-              >
-                <option value="status">Status</option>
-                <option value="size">Size</option>
-                <option value="project">Project</option>
-                <option value="owner">Person</option>
-                <option value="due">Deadline</option>
-              </select>
+                onChange={(next) => setGroup(next as typeof group)}
+                options={[
+                  { value: "status", label: "Status" },
+                  { value: "size", label: "Size" },
+                  { value: "project", label: "Project" },
+                  { value: "owner", label: "Person" },
+                  { value: "due", label: "Deadline" },
+                ]}
+              />
             </label>
           )}
           <label>
             Ordering
-            <select
-              aria-label="Sort by"
+            <SelectBox
+              ariaLabel="Sort by"
               value={sort}
-              onChange={(event) => setSort(event.target.value as typeof sort)}
-            >
-              <option value="date">Date</option>
-              <option value="priority">Priority</option>
-              <option value="size">Size</option>
-              <option value="status">Status</option>
-            </select>
+              onChange={(next) => setSort(next as typeof sort)}
+              options={[
+                { value: "date", label: "Date" },
+                { value: "priority", label: "Priority" },
+                { value: "size", label: "Size" },
+                { value: "status", label: "Status" },
+              ]}
+            />
           </label>
         </Popover>
         <button
@@ -1200,15 +1215,13 @@ function TaskPanelContent({
                 visibility === "team" ? projectOptions : [projectOptions[0]]
               }
             />
-            <label className="task-detail-date-pill">
-              <span className="task-select-label">Deadline</span>
-              <input
-                name="dueOn"
-                type="date"
-                defaultValue={task?.dueOn ?? ""}
-                className="task-date-input"
-              />
-            </label>
+            <DateField
+              name="dueOn"
+              label="Deadline"
+              placeholder="None"
+              defaultValue={task?.dueOn ?? ""}
+              onChange={(dueOn) => autosave.patch({ dueOn })}
+            />
             <SelectBox
               name="visibility"
               label="Visibility"
@@ -1431,16 +1444,15 @@ function TaskPanelContent({
                           pr.projectId === selectedProjectId,
                       ).length > 0 && (
                         <div className="task-pr-picker-row">
-                          <select
-                            aria-label="Linked pull request"
-                            className="task-select-input"
+                          <SelectBox
+                            ariaLabel="Linked pull request"
                             value=""
-                            onChange={(event) => {
-                              if (!event.target.value) return;
+                            onChange={(pullRequestId) => {
+                              if (!pullRequestId) return;
                               void taskAction("task.linkPR", {
                                 id: task.id,
                                 version: task.version,
-                                pullRequestId: event.target.value,
+                                pullRequestId,
                               }).catch((error) =>
                                 notify(
                                   error instanceof Error
@@ -1449,22 +1461,20 @@ function TaskPanelContent({
                                 ),
                               );
                             }}
-                          >
-                            <option value="">
-                              Select an existing pull request...
-                            </option>
-                            {data.pullRequests
-                              .filter(
-                                (pr) =>
-                                  !selectedProjectId ||
-                                  pr.projectId === selectedProjectId,
-                              )
-                              .map((pr) => (
-                                <option key={pr.id} value={pr.id}>
-                                  #{pr.number} · {pr.title} ({pr.state})
-                                </option>
-                              ))}
-                          </select>
+                            options={[
+                              { value: "", label: "Select an existing pull request…" },
+                              ...data.pullRequests
+                                .filter(
+                                  (pr) =>
+                                    !selectedProjectId ||
+                                    pr.projectId === selectedProjectId,
+                                )
+                                .map((pr) => ({
+                                  value: pr.id,
+                                  label: `#${pr.number} · ${pr.title} (${pr.state})`,
+                                })),
+                            ]}
+                          />
                           <span className="task-pr-divider">or paste URL</span>
                         </div>
                       )}

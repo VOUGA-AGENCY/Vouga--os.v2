@@ -7,6 +7,7 @@ import { caeGroups, vougaBase, type CaeGroup } from "@/domain/prospects";
 import { haversineKm, type RouteStop } from "@/domain/routing";
 import { addDays, dateKey, shortDate } from "@/domain/time";
 import { useWorkspace } from "./context";
+import { DateField } from "./date-field";
 import { highlightProspects, hitsProspect } from "./prospect-layer";
 
 type Plan = {
@@ -202,10 +203,10 @@ export function RoutePlanner({ map, lib, sectors, onClose, onSaveRoute, pickRef 
   return <aside className="route-planner" aria-label="Planear visitas">
     <header><strong><Route size={15}/>Planear visitas</strong><button type="button" aria-label="Fechar planeador" onClick={onClose}><X size={15}/></button></header>
     <div className="route-grid">
-      <label>Dia<input type="date" {...field("date")}/></label>
+      <label>Dia<DateField ariaLabel="Dia" value={form.date} onChange={(date) => { setPlan(null); setForm({ ...form, date }); }} clearable={false}/></label>
       <label>Visitas<input type="number" min={1} max={12} {...field("count")}/></label>
-      <label>Início<input type="time" {...field("start")}/></label>
-      <label>Regresso<input type="time" {...field("end")}/></label>
+      <label>Início<DateField mode="time" ariaLabel="Início" value={form.start} onChange={(start) => { setPlan(null); setForm({ ...form, start }); }} clearable={false}/></label>
+      <label>Regresso<DateField mode="time" ariaLabel="Regresso" value={form.end} onChange={(end) => { setPlan(null); setForm({ ...form, end }); }} clearable={false}/></label>
     </div>
     <details className="route-more">
       <summary>Mais opções · raio {form.radiusKm} km · {form.visitMinutes} min/visita</summary>

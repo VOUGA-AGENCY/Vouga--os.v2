@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useWorkspace } from "./context";
+import { SelectBox } from "./task-surface";
 type Status = {
   connections: {
     id: string;
@@ -345,10 +346,15 @@ export function RepositorySettings({ projectId }: { projectId: string }) {
         Link repository
       </button>
       {repos.length > 0 && (
-        <select
-          aria-label="Repository to link"
-          defaultValue=""
-          onChange={async (event) => {
+        <SelectBox
+          ariaLabel="Repository to link"
+          value=""
+          options={[
+            { value: "", label: "Choose repository…" },
+            ...repos.map((repo) => ({ value: String(repo.id), label: repo.full_name })),
+          ]}
+          onChange={async (repositoryId) => {
+            if (!repositoryId) return;
             try {
               const response = await fetch("/api/integrations", {
                   method: "POST",
@@ -356,7 +362,7 @@ export function RepositorySettings({ projectId }: { projectId: string }) {
                   body: JSON.stringify({
                     action: "github.link",
                     projectId,
-                    repositoryId: Number(event.target.value),
+                    repositoryId: Number(repositoryId),
                   }),
                 }),
                 result = await response.json();
@@ -371,16 +377,7 @@ export function RepositorySettings({ projectId }: { projectId: string }) {
               );
             }
           }}
-        >
-          <option value="" disabled>
-            Choose repository…
-          </option>
-          {repos.map((repo) => (
-            <option value={repo.id} key={repo.id}>
-              {repo.full_name}
-            </option>
-          ))}
-        </select>
+        />
       )}
       {error && <p className="form-error">{error}</p>}
     </div>

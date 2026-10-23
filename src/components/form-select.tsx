@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { SelectBox, type SelectOption } from "./task-surface";
 
 /**
@@ -13,6 +12,5 @@ export function FormSelect({ name, label, defaultValue, options, ariaLabel }: {
   options: SelectOption[];
   ariaLabel?: string;
 }) {
-  const [value, setValue] = useState(defaultValue);
-  return <SelectBox name={name} label={label} ariaLabel={ariaLabel} value={value} onChange={setValue} options={options}/>;
+  return <SelectBox name={name} label={label} ariaLabel={ariaLabel} defaultValue={defaultValue} options={options}/>;
 }
