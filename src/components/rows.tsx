@@ -10,6 +10,7 @@ import type { Meeting, Organization, Project, Task } from "@/domain/model";
 import { projectStatuses, stages, activeTaskStatuses } from "@/domain/model";
 import { dateKey, relativeDate, shortDate, timeLabel } from "@/domain/time";
 import { useWorkspace } from "./context";
+import { SelectBox } from "./task-surface";
 export function Empty({
   title,
   children,
@@ -208,17 +209,12 @@ export function StatusSelect({
   disabled?: boolean;
 }) {
   return (
-    <select
-              aria-label="Task status"
+    <SelectBox
+      ariaLabel="Task status"
       value={value}
-      onChange={(e) => onChange(e.target.value as Task["status"])}
+      onChange={(next) => onChange(next as Task["status"])}
       disabled={disabled}
-    >
-      {Object.entries(activeTaskStatuses).map(([key, label]) => (
-        <option key={key} value={key}>
-          {label}
-        </option>
-      ))}
-    </select>
+      options={Object.entries(activeTaskStatuses).map(([key, label]) => ({ value: key, label }))}
+    />
   );
 }

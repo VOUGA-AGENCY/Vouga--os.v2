@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { LockKeyhole, Plus, Trash2, Users, X } from "lucide-react";
 import { SaveStatus, useAutosave } from "./autosave";
 import { useWorkspace, type Editor } from "./context";
+import { SelectBox } from "./task-surface";
 
 export function StickyNotes() {
   const { data, edit } = useWorkspace();
@@ -230,24 +231,25 @@ export function NoteComposer({
             <div className="note-sharing">
               <label>
                 For
-                <select
-                  aria-label="Note visibility"
+                <SelectBox
+                  ariaLabel="Note visibility"
                   value={visibility}
-                  onChange={(event) => {
-                    const next = event.target.value as typeof visibility;
+                  onChange={(value) => {
+                    const next = value as typeof visibility;
                     setVisibility(next);
                     autosave.patch({
                       visibility: next,
                       recipientIds: next === "shared" ? recipients : [],
                     });
                   }}
-                >
-                  <option value="private">Only me</option>
-                  <option value="shared">Selected people</option>
-                  {note?.visibility === "team" && (
-                    <option value="team">Team (existing note)</option>
-                  )}
-                </select>
+                  options={[
+                    { value: "private", label: "Only me" },
+                    { value: "shared", label: "Selected people" },
+                    ...(note?.visibility === "team"
+                      ? [{ value: "team", label: "Team (existing note)" }]
+                      : []),
+                  ]}
+                />
               </label>
               {visibility === "shared" && (
                 <fieldset>

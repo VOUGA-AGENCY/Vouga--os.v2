@@ -6,6 +6,8 @@ import { captureKinds, stages } from "@/domain/model";
 import { emptyDraft, parseCapture } from "@/domain/capture";
 import { useWorkspace } from "./context";
 import { Dialog } from "./dialog";
+import { SelectBox } from "./task-surface";
+import { DateField } from "./date-field";
 
 export function Capture({
   onClose,
@@ -140,36 +142,30 @@ export function Capture({
                 <div className="form-grid">
                   <label>
                     Type
-                    <select
+                    <SelectBox
+                      ariaLabel="Type"
                       value={draft.kind}
-                      onChange={(e) =>
-                        patch(index, { kind: e.target.value as CaptureKind })
+                      onChange={(kind) =>
+                        patch(index, { kind: kind as CaptureKind })
                       }
-                    >
-                      {Object.entries(captureKinds).map(([key, label]) => (
-                        <option key={key} value={key}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
+                      options={Object.entries(captureKinds).map(([value, label]) => ({ value, label }))}
+                    />
                   </label>
                   {!["note", "update", "inbox", "crm"].includes(draft.kind) && (
                     <label>
                       {["meeting", "event"].includes(draft.kind)
                         ? "Calendar owner"
                         : "Owner"}
-                      <select
+                      <SelectBox
+                        ariaLabel="Owner"
                         value={draft.ownerId}
-                        onChange={(e) =>
-                          patch(index, { ownerId: e.target.value })
-                        }
-                      >
-                        {data.members.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(ownerId) => patch(index, { ownerId })}
+                        options={data.members.map((m) => ({
+                          value: m.id,
+                          label: m.name,
+                          avatar: { id: m.id, name: m.name },
+                        }))}
+                      />
                     </label>
                   )}
                 </div>
@@ -196,21 +192,17 @@ export function Capture({
                   {!["contact", "reminder", "inbox", "crm"].includes(draft.kind) && (
                     <label>
                       Project
-                      <select
+                      <SelectBox
+                        ariaLabel="Project"
                         value={draft.projectId}
-                        onChange={(e) =>
-                          patch(index, { projectId: e.target.value })
-                        }
-                      >
-                        <option value="">No project</option>
-                        {data.projects
-                          .filter((p) => p.status !== "archived")
-                          .map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                      </select>
+                        onChange={(projectId) => patch(index, { projectId })}
+                        options={[
+                          { value: "", label: "No project" },
+                          ...data.projects
+                            .filter((p) => p.status !== "archived")
+                            .map((p) => ({ value: p.id, label: p.name })),
+                        ]}
+                      />
                     </label>
                   )}
                   {!["note", "update", "reminder", "inbox"].includes(draft.kind) && (
@@ -218,33 +210,33 @@ export function Capture({
                       {draft.kind === "contact"
                         ? "Conversation with existing organization"
                         : "Organization"}
-                      <select
+                      <SelectBox
+                        ariaLabel="Organization"
                         value={draft.organizationId}
-                        onChange={(e) => {
+                        onChange={(organizationId) => {
                           const org = data.organizations.find(
-                            (o) => o.id === e.target.value,
+                            (o) => o.id === organizationId,
                           );
                           patch(index, {
-                            organizationId: e.target.value,
+                            organizationId,
                             ...(draft.kind === "contact" && org
                               ? { title: org.name }
                               : {}),
                           });
                         }}
-                      >
-                        <option value="">
-                          {draft.kind === "contact"
-                            ? "Create organization"
-                            : "No organization"}
-                        </option>
-                        {data.organizations
-                          .filter((o) => !o.archived)
-                          .map((o) => (
-                            <option key={o.id} value={o.id}>
-                              {o.name}
-                            </option>
-                          ))}
-                      </select>
+                        options={[
+                          {
+                            value: "",
+                            label:
+                              draft.kind === "contact"
+                                ? "Create organization"
+                                : "No organization",
+                          },
+                          ...data.organizations
+                            .filter((o) => !o.archived)
+                            .map((o) => ({ value: o.id, label: o.name })),
+                        ]}
+                      />
                     </label>
                   )}
                 </div>
@@ -257,21 +249,22 @@ export function Capture({
                   <div className="form-grid">
                     <label>
                       {draft.kind === "contact" ? "Follow up on" : "Date"}
-                      <input
-                        type="date"
+                      <DateField
+                        ariaLabel={draft.kind === "contact" ? "Follow up on" : "Date"}
+                        placeholder="No date"
                         value={draft.date}
-                        onChange={(e) => patch(index, { date: e.target.value })}
+                        onChange={(date) => patch(index, { date })}
                       />
                     </label>
                     {["meeting", "event", "reminder"].includes(draft.kind) && (
                       <label>
                         Time · Lisbon
-                        <input
-                          type="time"
+                        <DateField
+                          mode="time"
+                          ariaLabel="Time"
+                          placeholder="No time"
                           value={draft.time}
-                          onChange={(e) =>
-                            patch(index, { time: e.target.value })
-                          }
+                          onChange={(time) => patch(index, { time })}
                         />
                       </label>
                     )}
@@ -316,9 +309,7 @@ export function Capture({
                   </div>
                 )}
                 {draft.kind === "crm" && <div className="form-grid"><label>New status
-                  <select value={draft.stage} onChange={(event) => patch(index, { stage: event.target.value })}>
-                    <option value="">Choose status</option>{Object.entries(stages).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-                  </select></label><label>Status note<textarea value={draft.body} onChange={(event) => patch(index, { body: event.target.value })} rows={2}/></label></div>}
+                  <SelectBox ariaLabel="New status" value={draft.stage} onChange={(stage) => patch(index, { stage })} options={[{ value: "", label: "Choose status" }, ...Object.entries(stages).map(([value, label]) => ({ value, label, dotClass: `crm-dot crm-stage-${value}` }))]}/></label><label>Status note<textarea value={draft.body} onChange={(event) => patch(index, { body: event.target.value })} rows={2}/></label></div>}
                 <details>
                   <summary>Original context</summary>
                   <textarea
