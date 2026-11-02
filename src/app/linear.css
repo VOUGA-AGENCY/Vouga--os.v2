@@ -1810,3 +1810,7 @@ html, body, .app-shell { background:var(--color-sidebar); }
 .company-details-form .date-field, .company-event-form .date-field, .route-check-dialog .date-field, .route-grid .date-field, .capture-body .task-select-box, .control-popover-content .date-field { display:flex; width:100%; }
 .company-details-form .date-field .task-select-trigger, .company-event-form .date-field .task-select-trigger, .route-check-dialog .date-field .task-select-trigger, .route-grid .task-select-trigger, .capture-body .task-select-trigger { width:100%; justify-content:space-between; }
 .date-field .task-select-value { margin-right:auto; }
+
+/* Commercial tools share a separate navigation group. */
+.sidebar-sales { margin-top: var(--space-8); }
+.sidebar-sales .sidebar-group-label { padding-inline: var(--space-3); padding-bottom: var(--space-2); }

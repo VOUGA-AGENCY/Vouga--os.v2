@@ -5,6 +5,7 @@ import "./theme.css";
 // Mobile-only refinements; loaded last so the desktop composition is untouched.
 import "./mobile.css";
 import "./loading.css";
+import "./prospect.css";
 export const metadata: Metadata = {
   title: "Vouga OS",
   description: "The essentials of Vouga, in one place.",

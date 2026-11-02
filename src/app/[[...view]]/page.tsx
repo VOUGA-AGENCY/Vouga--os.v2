@@ -22,6 +22,7 @@ export default async function Page({
       "agenda",
       "trabalho",
       "contactos",
+      "prospect",
       "notas",
       "inbox",
       "painel",

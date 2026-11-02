@@ -26,6 +26,7 @@ O servidor valida sessões e permissões. O login atual aceita email/password at
 - **Calendar:** Month por defeito e Week. Office/Contacto sincronizam com Google; calendários pessoais ficam no OS. Um evento pode ter vários destinos. Admin vê todos; engineer vê Contacto e o próprio pessoal. Participantes internos definem My Day e destinatários Telegram.
 - **Projects:** acesso direto na sidebar, tasks Board/List e Activity unificada com GitHub; progresso calculado pelas tasks.
 - **CRM:** empresas e timeline; etapas New → Contacted → Meeting → Proposal → Client → Dormant. Uma mudança de estado exige nota. Agendar evento associa calendário e histórico da empresa.
+- **Prospect:** entrada em Sales com fundo Beams e Sales Playbook em sete secções. Conteúdo editorial em `src/content/sales-playbook.ts`; Live Pitch ainda indisponível. Componentes reutilizáveis ficam em `src/components/ui` (alias `@/components/ui`), estilos em `src/app`. O fundo foi adaptado para CSS semântico e canvas: não requer shadcn, Tailwind ou Motion. Limite de 30 fps, pausa fora de vista e respeito por reduced motion.
 - **Agent/Voice:** `⌘K`/`Ctrl+K`, painel global, tools internas com validação de permissões. Web e Telegram partilham Agent e transcrição. Informação ambígua/destrutiva pede confirmação.
 - **Notas:** acessíveis por pesquisa, contexto e Agent. Privadas ou partilhadas com pessoas escolhidas; só o autor edita.
 

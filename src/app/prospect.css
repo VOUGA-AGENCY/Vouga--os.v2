@@ -1,0 +1,78 @@
+/* Beams is isolated to Prospect and reuses the workspace's responsive frame. */
+.beams-background {
+  --beams-base: #0a0a0a;
+  --beams-ink: #f4f4f5;
+  --beams-muted: #b9bdcb;
+  --beams-button: rgb(16 18 27 / 68%);
+  --beams-border: rgb(255 255 255 / 18%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--beams-base);
+  color: var(--beams-ink);
+}
+.beams-canvas { position: absolute; inset: 0; width: 100%; height: 100%; filter: blur(35px); pointer-events: none; opacity: .85; }
+.beams-veil { position: absolute; inset: 0; background: var(--beams-base); opacity: .1; pointer-events: none; animation: beams-breathe 10s ease-in-out infinite; }
+.beams-content { position: relative; z-index: 1; min-height: inherit; }
+@keyframes beams-breathe { 0%, 100% { opacity: .05; } 50% { opacity: .15; } }
+.prospect-entry { min-height: calc(100dvh - var(--header-height) - var(--space-5)); }
+.prospect-entry-inner { min-height: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--space-8) var(--space-5); gap: var(--space-9); }
+.prospect-entry-heading { text-align: center; }
+.prospect-eyebrow { color: var(--beams-muted); font-size: var(--text-xs); letter-spacing: .12em; }
+.prospect-entry-heading h1 { font-size: var(--text-xl); font-weight: 500; letter-spacing: -.035em; margin: var(--space-3) 0; color: var(--beams-ink); }
+.prospect-entry-heading p { font-size: var(--text-sm); color: var(--beams-muted); }
+.prospect-entry-actions { display: flex; gap: var(--space-3); width: min(100%, 34rem); }
+.prospect-entry-button { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex: 1; min-height: var(--space-10); padding: var(--space-4) var(--space-5); border: var(--border-width) solid var(--beams-border); border-radius: var(--radius-lg); background: var(--beams-button); color: var(--beams-ink); font-size: var(--text-sm); }
+.prospect-entry-button > span { flex: 1; white-space: nowrap; }
+.prospect-entry-button > small { color: var(--beams-muted); font-size: var(--text-xs); white-space: nowrap; }
+.prospect-entry-button:disabled { opacity: .6; cursor: default; }
+.prospect-entry-button:not(:disabled):hover { background: var(--beams-base); border-color: var(--beams-muted); }
+.sales-playbook { padding: var(--space-5) var(--space-7) var(--space-9); }
+.playbook-header { display: flex; align-items: center; gap: var(--space-5); padding-bottom: var(--space-5); border-bottom: var(--border-width) solid var(--color-border); font-size: var(--text-xs); color: var(--color-subtle); }
+.playbook-header button { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--color-muted); min-height: var(--space-8); }
+.playbook-header button:hover { color: var(--color-ink); }
+.playbook-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: var(--space-10); align-items: start; max-width: 72rem; margin-inline: auto; }
+.playbook-index { position: sticky; top: var(--space-5); padding-top: var(--space-7); }
+.playbook-index > p { margin: 0 0 var(--space-4) var(--space-3); font-size: var(--text-xs); color: var(--color-subtle); }
+.playbook-index nav { display: grid; gap: var(--space-1); }
+.playbook-index button { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--color-muted); }
+.playbook-index button > span { color: var(--color-subtle); font-family: var(--font-mono); font-size: var(--text-xs); }
+.playbook-index button:hover, .playbook-index button[aria-current="page"] { background: var(--color-surface); color: var(--color-ink); }
+.playbook-reading { width: 100%; max-width: 46rem; min-width: 0; padding-top: var(--space-8); }
+.playbook-chapter-number { font-family: var(--font-mono); color: var(--color-subtle); font-size: var(--text-xs); }
+.playbook-article h1 { font-size: var(--text-xl); font-weight: 500; line-height: 1.2; letter-spacing: -.025em; margin: var(--space-3) 0 var(--space-5); scroll-margin-top: var(--space-6); }
+.playbook-intro { font-size: var(--text-sm); color: var(--color-muted); max-width: 55ch; }
+.playbook-prose { margin-top: var(--space-7); font-size: var(--text-md); line-height: 1.8; color: var(--color-muted); overflow-wrap: anywhere; }
+.playbook-prose > * { margin: 0 0 var(--space-5); }
+.playbook-prose h3 { font-size: var(--text-base); font-weight: 500; color: var(--color-ink); line-height: 1.5; margin-top: var(--space-9); margin-bottom: var(--space-4); }
+.playbook-prose h3:first-child { margin-top: 0; }
+.playbook-prose strong { font-weight: 500; color: var(--color-ink); }
+.playbook-prose blockquote { border: 0; border-radius: var(--radius-md); background: var(--color-surface); padding: var(--space-5) var(--space-6); color: var(--color-ink); }
+.playbook-prose blockquote p { margin: 0 0 var(--space-4); }
+.playbook-prose blockquote p:last-child { margin-bottom: 0; }
+.playbook-prose ul, .playbook-prose ol { padding-left: var(--space-5); }
+.playbook-prose li { padding-left: var(--space-1); margin-bottom: var(--space-3); }
+.playbook-prose li::marker { color: var(--color-subtle); }
+.playbook-rule { padding-block: var(--space-4); border-top: var(--border-width) solid var(--color-border); }
+.playbook-pagination { display: flex; justify-content: space-between; gap: var(--space-5); margin-top: var(--space-9); padding-top: var(--space-5); border-top: var(--border-width) solid var(--color-border); }
+.playbook-pagination button { display: flex; align-items: center; gap: var(--space-3); color: var(--color-muted); min-height: var(--space-9); font-size: var(--text-xs); }
+.playbook-pagination button:hover { color: var(--color-ink); }
+.playbook-pagination button:disabled { visibility: hidden; }
+.playbook-mobile-index { display: none; }
+:root[data-theme="light"] .beams-background { --beams-base: #f8f9fc; --beams-ink: #171b27; --beams-muted: #4b5369; --beams-button: rgb(255 255 255 / 75%); --beams-border: rgb(30 40 65 / 18%); }
+:root[data-theme="light"] .beams-canvas { opacity: .6; }
+@media (max-width: 63.99rem) {
+  .playbook-layout { grid-template-columns: 1fr; }
+  .playbook-index { display: none; }
+  .playbook-reading { margin-inline: auto; padding-top: var(--space-5); }
+  .playbook-mobile-index { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-7); font-size: var(--text-xs); color: var(--color-muted); }
+  .playbook-mobile-index select { min-width: 0; flex: 1; min-height: var(--space-9); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); padding: var(--space-2) var(--space-3); color: var(--color-ink); }
+}
+@media (max-width: 47.99rem) {
+  .prospect-entry { min-height: calc(100dvh - var(--header-height) - var(--bottom-navigation-height) - env(safe-area-inset-bottom)); }
+  .prospect-entry-actions { flex-direction: column; max-width: 22rem; }
+  .sales-playbook { padding: var(--space-4) var(--space-4) var(--space-8); }
+  .playbook-header { gap: var(--space-4); }
+  .playbook-prose blockquote { padding: var(--space-4); }
+}
+@media (prefers-reduced-motion: reduce) { .beams-veil { animation: none; } }

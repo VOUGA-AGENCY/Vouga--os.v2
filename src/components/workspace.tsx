@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
   CalendarDays,
@@ -13,6 +14,7 @@ import {
   Plus,
   Search,
   Users,
+  ScanSearch,
   X,
 } from "lucide-react";
 import { applySnapshotPatch } from "@/projections/changes";
@@ -32,11 +34,14 @@ import { Dialog } from "./dialog";
 import { flushEdits } from "./autosave";
 import { PersonAvatar } from "./person-avatar";
 
+const Prospect = dynamic(() => import("./prospect").then(module => module.Prospect));
+
 const navigation = [
   { path: "", label: "Home", icon: House },
   { path: "tasks", label: "Tasks", icon: ListTodo },
   { path: "agenda", label: "Calendar", icon: CalendarDays },
   { path: "contactos", label: "CRM", icon: Users },
+  { path: "prospect", label: "Prospect", icon: ScanSearch },
 ];
 export function Workspace({
   initial,
@@ -415,6 +420,7 @@ export function Workspace({
                 "tasks",
                 "agenda",
                 "contactos",
+                "prospect",
                 "trabalho",
                 "settings",
               ].includes(next)
@@ -444,8 +450,14 @@ export function Workspace({
               />
             </Link>
             <nav aria-label="Main navigation" className="sidebar-nav">
-              {links}
+              {links.slice(0, 3)}
             </nav>
+            <section className="sidebar-sales" aria-labelledby="sales-navigation-title">
+              <div className="sidebar-group-label" id="sales-navigation-title">Sales</div>
+              <nav className="sidebar-nav" aria-label="Sales navigation">
+                {links.slice(3)}
+              </nav>
+            </section>
             <div className="sidebar-projects">
               <Link className="sidebar-group-label" href="/trabalho">
                 Projects <Plus size={13} />
@@ -572,6 +584,8 @@ export function Workspace({
                 <Agenda />
               ) : view === "trabalho" ? (
                 <Work />
+              ) : view === "prospect" ? (
+                <Prospect />
               ) : view === "contactos" ? (
                 <Contacts />
               ) : (
