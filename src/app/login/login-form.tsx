@@ -1,4 +1,5 @@
 "use client";
+import { WorkspaceLoading } from "@/components/workspace-loading";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 export function LoginForm({
@@ -6,8 +7,10 @@ export function LoginForm({
 }: {
   destination?: "/" | "/painel";
 }) {
+  const [entering, setEntering] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  if (entering) return <WorkspaceLoading />;
   return (
     <form
       className="form-stack"
@@ -28,6 +31,7 @@ export function LoginForm({
           });
           const result = await response.json();
           if (!response.ok) throw new Error(result.error);
+          setEntering(true);
           window.location.assign(
             result.mustChangePassword ? "/change-password" : destination,
           );
@@ -35,6 +39,7 @@ export function LoginForm({
           setError(
             error instanceof Error ? error.message : "Could not sign in.",
           );
+          setEntering(false);
           setBusy(false);
         }
       }}
