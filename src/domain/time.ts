@@ -1,11 +1,12 @@
 export const TIME_ZONE = "Europe/Lisbon";
+const dateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 export function dateKey(value: string | Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(value));
+  return dateFormatter.format(new Date(value));
 }
 export function isDateKey(value: string) {
   return (
@@ -19,16 +20,17 @@ export function addDays(value: string, days: number) {
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
 }
+const dateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
 export function localDateTime(value: string) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date(value));
+  const parts = dateTimeFormatter.formatToParts(new Date(value));
   const p = (type: string) => parts.find((x) => x.type === type)?.value ?? "";
   return `${p("year")}-${p("month")}-${p("day")}T${p("hour")}:${p("minute")}`;
 }
@@ -97,7 +99,8 @@ export function weekDays(day: string) {
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 }
 export function isWeekday(value: string | Date = new Date()): boolean {
-  const day = typeof value === "string" && isDateKey(value) ? value : dateKey(value);
+  const day =
+    typeof value === "string" && isDateKey(value) ? value : dateKey(value);
   const weekday = new Date(`${day}T12:00:00Z`).getUTCDay();
   return weekday >= 1 && weekday <= 5;
 }

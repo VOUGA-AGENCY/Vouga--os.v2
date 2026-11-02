@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { ChevronLeft, ChevronRight, Plus, X, ListFilter } from "lucide-react";
 import {
   addDays,
@@ -15,6 +21,7 @@ import {
   calendarLabel,
   uniqueEvents,
 } from "@/domain/calendars";
+import { indexMeetingsByDay } from "@/domain/calendar-index";
 import type { Meeting } from "@/domain/model";
 import { useWorkspace } from "./context";
 import { Popover } from "./popover";
@@ -58,34 +65,45 @@ export function Agenda() {
     start: number;
     end: number;
   } | null>(null);
-  const visible = uniqueEvents(
-    data.meetings.filter(
-      (meeting) =>
-        !meeting.cancelled && calendars.includes(calendarTarget(meeting)),
-    ),
+  const visible = useMemo(
+    () =>
+      uniqueEvents(
+        data.meetings.filter(
+          (meeting) =>
+            !meeting.cancelled && calendars.includes(calendarTarget(meeting)),
+        ),
+      ),
+    [data.meetings, calendars],
   );
-  const days =
-    view === "week"
-      ? weekDays(selected)
-      : (() => {
-          const first = `${selected.slice(0, 7)}-01`;
-          const start = weekDays(first)[0];
-          const last = new Date(`${first}T12:00Z`);
-          last.setUTCMonth(last.getUTCMonth() + 1);
-          last.setUTCDate(0);
-          const end = weekDays(last.toISOString().slice(0, 10))[6];
-          const count =
-            Math.round((Date.parse(end) - Date.parse(start)) / 86400000) + 1;
-          return Array.from({ length: count }, (_, index) =>
-            addDays(start, index),
-          );
-        })();
-  const meetingsOn = (day: string) =>
-    visible.filter(
-      (meeting) =>
-        dateKey(meeting.startsAt) <= day &&
-        dateKey(new Date(Date.parse(meeting.endsAt) - 1).toISOString()) >= day,
-    );
+  const days = useMemo(
+    () =>
+      view === "week"
+        ? weekDays(selected)
+        : (() => {
+            const first = `${selected.slice(0, 7)}-01`;
+            const start = weekDays(first)[0];
+            const last = new Date(`${first}T12:00Z`);
+            last.setUTCMonth(last.getUTCMonth() + 1);
+            last.setUTCDate(0);
+            const end = weekDays(last.toISOString().slice(0, 10))[6];
+            const count =
+              Math.round((Date.parse(end) - Date.parse(start)) / 86400000) + 1;
+            return Array.from({ length: count }, (_, index) =>
+              addDays(start, index),
+            );
+          })(),
+    [view, selected],
+  );
+  const dayIndex = useMemo(
+    () =>
+      indexMeetingsByDay(visible, [
+        ...days,
+        mobileDay,
+        ...(inspectedDay ? [inspectedDay] : []),
+      ]),
+    [visible, days, mobileDay, inspectedDay],
+  );
+  const meetingsOn = (day: string) => dayIndex.get(day) ?? [];
   const dueOn = (day: string) =>
     data.tasks.filter(
       (task) =>

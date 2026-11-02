@@ -1,3 +1,5 @@
+import { enqueue } from "./activity-service";
+import { dateKey } from "@/domain/time";
 import type { CreationNotice } from "./creation-notifications";
 import { randomUUID } from "node:crypto";
 import {
@@ -90,6 +92,14 @@ export async function runIntegrationTick(ctx: ServiceContext) {
   } catch (error) {
     await connectionError(ctx, "telegram", error);
   }
+  // Advance the rolling window even when Google has no changes to notify us about.
+  await ctx.repo.transact((data) => {
+    for (const key of ["office", "contacto"] as CalendarKey[]) {
+      const connection = data.externalConnections.find((item) => item.id === `google:${key}`);
+      if (connection?.credentials && (!connection.lastSyncAt || dateKey(connection.lastSyncAt) < dateKey(ctx.now())))
+        enqueue(data, `calendar-window:${key}:${dateKey(ctx.now())}`, "calendar.pull", { calendarKey: key }, ctx.now());
+    }
+  });
   await processJobs(ctx);
   for (const key of ["office", "contacto"] as CalendarKey[])
     try {

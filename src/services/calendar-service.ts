@@ -240,10 +240,7 @@ export async function pushCalendarEvent(ctx: ServiceContext, id: string) {
     (item) => item.id === `google:${key}`,
   );
   if (!connection?.credentials)
-    throw new AppError(
-      "Calendar not connected; change saved locally.",
-      503,
-    );
+    throw new AppError("Calendar not connected; change saved locally.", 503);
   try {
     const token = await accessToken(ctx, key),
       headers: Record<string, string> = {
@@ -396,67 +393,49 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
   if (!connection?.credentials) return;
   const token = await accessToken(ctx, key),
     headers = { Authorization: `Bearer ${token}` };
-  let syncToken = connection.syncToken,
-    pageToken: string | undefined,
-    nextSyncToken: string | undefined;
+  // Expanded recurring instances and incremental cursors cannot safely be combined:
+  // syncToken forbids timeMin/timeMax, so an endless series can expand for years.
+  // Keep a bounded, paginated snapshot; webhooks still trigger updates, not UI navigation.
+  const windowStart = Date.parse(ctx.now()) - 90 * 86400000;
+  const windowEnd = Date.parse(ctx.now()) + 366 * 86400000;
+  let pageToken: string | undefined;
   const all: GoogleEvent[] = [];
-  let full = !syncToken;
-  for (let pages = 0; pages < 100; pages++) {
+  for (let pages = 0; pages < 20; pages++) {
     const query = new URLSearchParams({
       singleEvents: "true",
       showDeleted: "true",
       maxResults: "2500",
+      timeMin: new Date(windowStart).toISOString(),
+      timeMax: new Date(windowEnd).toISOString(),
     });
-    if (syncToken) query.set("syncToken", syncToken);
-    else {
-      query.set(
-        "timeMin",
-        new Date(Date.parse(ctx.now()) - 90 * 86400000).toISOString(),
-      );
-      query.set(
-        "timeMax",
-        new Date(Date.parse(ctx.now()) + 366 * 86400000).toISOString(),
-      );
-    }
     if (pageToken) query.set("pageToken", pageToken);
-    try {
-      const result = await api<{
-        items?: GoogleEvent[];
-        nextPageToken?: string;
-        nextSyncToken?: string;
-      }>(
-        ctx,
-        "google",
-        `${root}${encodeURIComponent(calendarId(key))}/events?${query}`,
-        { headers },
-      );
-      all.push(...(result.items ?? []));
-      pageToken = result.nextPageToken;
-      nextSyncToken = result.nextSyncToken;
-      if (!pageToken) break;
-    } catch (error) {
-      if (error instanceof ProviderError && error.status === 410 && syncToken) {
-        syncToken = undefined;
-        pageToken = undefined;
-        full = true;
-        all.length = 0;
-        continue;
-      }
-      throw error;
-    }
+    const result = await api<{
+      items?: GoogleEvent[];
+      nextPageToken?: string;
+    }>(
+      ctx,
+      "google",
+      `${root}${encodeURIComponent(calendarId(key))}/events?${query}`,
+      { headers },
+    );
+    all.push(...(result.items ?? []));
+    pageToken = result.nextPageToken;
+    if (!pageToken) break;
   }
-  if (pageToken || !nextSyncToken)
+  if (pageToken)
     throw new AppError(
-      "Incomplete synchronization; the cursor was not advanced.",
+      "Incomplete synchronization; no calendar data was changed.",
       503,
     );
   await ctx.repo.transact((data) => {
+    const byExternalId = new Map(
+      data.meetings
+        .filter((item) => item.googleCalendarId === calendarId(key))
+        .map((item) => [item.googleEventId, item]),
+    );
+    const returnedIds = new Set(all.map((item) => item.id));
     for (const external of all) {
-      let event = data.meetings.find(
-        (item) =>
-          item.googleCalendarId === calendarId(key) &&
-          item.googleEventId === external.id,
-      );
+      let event = byExternalId.get(external.id);
       if (!event && external.extendedProperties?.private?.vougaId)
         event = data.meetings.find(
           (item) =>
@@ -530,6 +509,7 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
         data.meetings.push(updated);
         event = updated;
       }
+      byExternalId.set(external.id, event);
       // Keep linked destinations coherent without echo loops. A local pending edit wins
       // until explicitly resolved; never overwrite it with a webhook notification.
       if (updated.groupId) {
@@ -592,24 +572,23 @@ export async function pullCalendar(ctx: ServiceContext, key: CalendarKey) {
       });
     }
     // Full resync only cancels missing events within the exact fetched window; never unsynced local edits.
-    if (full)
-      for (const event of data.meetings) {
-        if (
-          event.googleCalendarId === calendarId(key) &&
-          event.syncStatus === "synced" &&
-          !event.cancelled &&
-          Date.parse(event.startsAt) >= Date.parse(ctx.now()) - 90 * 86400000 &&
-          Date.parse(event.startsAt) < Date.parse(ctx.now()) + 366 * 86400000 &&
-          !all.some((item) => item.id === event.googleEventId)
-        ) {
-          event.cancelled = true;
-          event.version++;
-        }
+    for (const event of data.meetings) {
+      if (
+        event.googleCalendarId === calendarId(key) &&
+        event.syncStatus === "synced" &&
+        !event.cancelled &&
+        Date.parse(event.endsAt) > windowStart &&
+        Date.parse(event.startsAt) < windowEnd &&
+        !returnedIds.has(event.googleEventId!)
+      ) {
+        event.cancelled = true;
+        event.version++;
       }
+    }
     const current = data.externalConnections.find(
       (item) => item.id === connection.id,
     )!;
-    current.syncToken = nextSyncToken;
+    delete current.syncToken;
     current.lastSyncAt = ctx.now();
     current.lastError = undefined;
     current.status = "connected";

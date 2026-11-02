@@ -18,7 +18,7 @@ import {
   type GithubPayload,
 } from "@/services/github-service";
 import { enqueue } from "@/services/activity-service";
-import { processJobs } from "@/services/integration-worker";
+import { processJobs, runIntegrationTick } from "@/services/integration-worker";
 import { pullCalendar, pushCalendarEvent } from "@/services/calendar-service";
 import type { Store } from "@/domain/model";
 const now = "2026-09-26T07:00:00.000Z",
@@ -144,7 +144,7 @@ describe("operational calendars and queue", () => {
     enqueue(data, "one", "calendar.pull", { calendarKey: "office" }, now);
     expect(data.integrationJobs).toHaveLength(1);
   });
-  it("imports the same Google event once and advances its sync token", async () => {
+  it("imports the same Google event once using a bounded snapshot", async () => {
     googleConnection();
     vi.mocked(ctx.fetch).mockImplementation(async (url) =>
       String(url).includes("oauth2")
@@ -170,22 +170,125 @@ describe("operational calendars and queue", () => {
     expect(
       data.activity.filter((event) => event.source === "google"),
     ).toHaveLength(1);
-    expect(data.externalConnections[0].syncToken).toBe("next");
+    expect(data.externalConnections[0].syncToken).toBeUndefined();
     expect(data.inbox).toHaveLength(0);
   });
-  it("resets expired Google sync tokens after 410 without dropping local data", async () => {
+  it("ignores legacy cursors and keeps time bounds on every page without dropping local data", async () => {
     googleConnection();
     data.externalConnections[0].syncToken = "expired";
+    const queries: URL[] = [];
+    vi.mocked(ctx.fetch).mockImplementation(async (url) => {
+      if (String(url).includes("oauth2"))
+        return response({ access_token: "x" });
+      const query = new URL(String(url));
+      queries.push(query);
+      return response(
+        query.searchParams.has("pageToken")
+          ? { items: [], nextSyncToken: "unused" }
+          : { items: [], nextPageToken: "page2" },
+      );
+    });
+    await pullCalendar(ctx, "office");
+    expect(data.externalConnections[0].syncToken).toBeUndefined();
+    expect(queries).toHaveLength(2);
+    for (const query of queries) {
+      expect(query.searchParams.has("syncToken")).toBe(false);
+      expect(query.searchParams.get("singleEvents")).toBe("true");
+      expect(query.searchParams.get("timeMin")).toBe(
+        new Date(Date.parse(now) - 90 * 86400000).toISOString(),
+      );
+      expect(query.searchParams.get("timeMax")).toBe(
+        new Date(Date.parse(now) + 366 * 86400000).toISOString(),
+      );
+    }
+    expect(data.meetings).toHaveLength(fixture.meetings.length);
+  });
+  it("does not apply a partial snapshot if a later page fails", async () => {
+    googleConnection();
+    const before = structuredClone(data);
+    vi.mocked(ctx.fetch).mockImplementation(async (url) => {
+      if (String(url).includes("oauth2"))
+        return response({ access_token: "x" });
+      return String(url).includes("pageToken")
+        ? response({}, 500)
+        : response({
+            items: [
+              {
+                id: "partial",
+                start: { dateTime: now },
+                end: { dateTime: "2026-09-26T08:00:00Z" },
+              },
+            ],
+            nextPageToken: "page2",
+          });
+    });
+    await expect(pullCalendar(ctx, "office")).rejects.toThrow();
+    expect(data.meetings).toEqual(before.meetings);
+    expect(data.activity).toEqual(before.activity);
+    expect(data.externalConnections[0].lastSyncAt).toBeUndefined();
+  });
+  it("reconciles deleted occurrences only in the fetched window and protects pending edits", async () => {
+    googleConnection();
+    const base = {
+      ...data.meetings[0],
+      googleCalendarId: "office@vouga-agency.pt",
+      syncStatus: "synced" as const,
+      cancelled: false,
+    };
+    data.meetings = [
+      {
+        ...base,
+        id: "missing",
+        googleEventId: "missing",
+        startsAt: now,
+        endsAt: "2026-09-26T08:00:00Z",
+      },
+      {
+        ...base,
+        id: "future",
+        googleEventId: "future",
+        startsAt: "2040-01-01T10:00:00Z",
+        endsAt: "2040-01-01T11:00:00Z",
+      },
+      {
+        ...base,
+        id: "pending",
+        googleEventId: "pending",
+        startsAt: now,
+        endsAt: "2026-09-26T08:00:00Z",
+        syncStatus: "pending",
+      },
+    ];
     vi.mocked(ctx.fetch).mockImplementation(async (url) =>
       String(url).includes("oauth2")
         ? response({ access_token: "x" })
-        : String(url).includes("syncToken=expired")
-          ? response({}, 410)
-          : response({ items: [], nextSyncToken: "fresh" }),
+        : response({ items: [] }),
     );
     await pullCalendar(ctx, "office");
-    expect(data.externalConnections[0].syncToken).toBe("fresh");
-    expect(data.meetings).toHaveLength(fixture.meetings.length);
+    expect(data.meetings.map((m) => m.cancelled)).toEqual([true, false, false]);
+    expect(data.meetings).toHaveLength(3);
+  });
+  it("advances the calendar window daily without requiring a Google change or duplicate daily jobs", async () => {
+    googleConnection();
+    data.externalConnections[0].lastSyncAt = "2026-09-25T07:00:00Z";
+    vi.mocked(ctx.fetch).mockImplementation(async (url) =>
+      String(url).includes("oauth2")
+        ? response({ access_token: "x" })
+        : response({ items: [] }),
+    );
+    await runIntegrationTick(ctx);
+    await runIntegrationTick(ctx);
+    expect(
+      data.integrationJobs.filter((job) =>
+        job.key.startsWith("calendar-window:office:"),
+      ),
+    ).toHaveLength(1);
+    expect(data.externalConnections[0].lastSyncAt).toBe(now);
+    expect(
+      vi
+        .mocked(ctx.fetch)
+        .mock.calls.filter(([url]) => String(url).includes("/events?")),
+    ).toHaveLength(1);
   });
   it("uses stable Google IDs on a retry and stores external references", async () => {
     googleConnection();
