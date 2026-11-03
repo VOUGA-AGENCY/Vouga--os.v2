@@ -25,11 +25,8 @@ const anchor = (text: string) =>
     .replace(/[^\p{L}\p{N}\s-]/gu, "")
     .replace(/\s/g, "-");
 const entries = headings.flatMap((heading, i) => {
-  let area: "academy" | "cases";
-  if (/^CL-|^Como utilizar e atualizar/.test(heading.title)) area = "cases";
-  else if (/^Módulo |^Anexo |^Como usar|^Nota final/.test(heading.title))
-    area = "academy";
-  else return [];
+  if (!/^Módulo |^Anexo |^Como usar|^Nota final/.test(heading.title)) return [];
+  const area = "academy";
   const end =
     headings.slice(i + 1).find((h) => h.level <= heading.level)?.line ??
     lines.length;
@@ -39,7 +36,10 @@ const entries = headings.flatMap((heading, i) => {
     .trim()
     .replace(/\n---\s*$/, "");
   if (heading.title === "Como usar este documento")
-    content = content.replace(/### Índice[\s\S]*?(?=### Como avaliar)/, "");
+    content = content.replace(
+      /### Índice[\s\S]*?(?=### Como tirar partido)/,
+      "",
+    );
   const code = /^(Módulo \d+|CL-\d+|Anexo [A-D])/.exec(heading.title)?.[1];
   return [
     {
@@ -50,21 +50,11 @@ const entries = headings.flatMap((heading, i) => {
       ),
       code: code ?? "Guia",
       content: clean(content),
-      kind: /^CL-/.test(heading.title)
-        ? content.includes("[EXEMPLO FICTÍCIO]")
-          ? "Exemplo fictício"
-          : "Contexto interno · Hipóteses"
-        : undefined,
     },
   ];
 });
-if (
-  entries.filter((e) => e.code.startsWith("Módulo")).length !== 8 ||
-  entries.filter((e) => e.code.startsWith("CL-")).length !== 12
-)
-  throw new Error(
-    "Expected 8 modules and 12 cases. Review the document headings.",
-  );
+if (entries.filter((e) => e.code.startsWith("Módulo")).length !== 8)
+  throw new Error("Expected 8 modules. Review the document headings.");
 writeFileSync(
   new URL("../src/content/sales-knowledge.json", import.meta.url),
   JSON.stringify(entries, null, 2) + "\n",

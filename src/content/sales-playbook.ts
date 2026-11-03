@@ -1,280 +1,32 @@
 export const salesPlaybook = [
   {
-    id: "preparacao",
-    title: "Preparação comercial",
-    content: `**Regra:** nunca visitar uma empresa sem conhecer a sua atividade e identificar previamente um possível decisor.
-
-Antes de cada abordagem, pesquisar:
-
-- **Empresa:** atividade, setor, produtos e dimensão aproximada.
-- **Decisor:** nome, cargo e responsabilidades.
-- **Oportunidade:** processos que poderão beneficiar de software, integração ou automação.
-- **Caso de uso:** projeto ou demonstração da Vouga relevante para aquela empresa.
-
-O objetivo é chegar com uma abordagem específica, não com uma apresentação genérica de serviços.`,
-  },
-  {
     id: "presencial",
     title: "Abordagem presencial",
-    content: `### Primeiro contacto: receção ou secretariado
-
-> Bom dia! Sou o [Nome], da Vouga Agency, uma empresa de engenharia e desenvolvimento tecnológico do Porto.
->
-> Estivemos a conhecer a atividade da [Empresa] e temos desenvolvido soluções para empresas com operações semelhantes.
->
-> Gostaríamos de falar brevemente com o Sr. [Nome do decisor] sobre algumas aplicações que poderão ser interessantes para a vossa atividade.
->
-> Sabe dizer-me se estaria disponível ou qual seria a melhor forma de chegar até ele?
-
-### «Mas o que pretendem exatamente?»
-
-> Desenvolvemos software à medida e fazemos integrações entre sistemas que permitem eliminar trabalho manual, reduzir erros e tornar os processos mais eficientes.
->
-> Em determinados processos, estas soluções podem reduzir o tempo dedicado a tarefas manuais e repetitivas. O potencial de melhoria precisa de ser medido e validado na vossa operação.
->
-> Já desenvolvemos soluções de gestão interna e integração de sistemas e gostaríamos de mostrar alguns exemplos ao responsável da empresa, para perceber se existe alguma oportunidade semelhante aqui.
-
-### «Envie um email.»
-
-> Claro, podemos enviar!
->
-> No entanto, privilegiamos um contacto mais pessoal, porque as nossas soluções são bastante específicas e é muito mais fácil explicar o que fazemos através de exemplos concretos.
->
-> Aliás, até preparámos algum material visual e demonstrações para apresentar ao responsável da empresa.
->
-> Seria possível agendarmos uma conversa de 10 minutos com o Sr. [Nome], sem qualquer compromisso? Assim conseguimos mostrar-lhe o que fazemos e perceber se poderá existir algum interesse para a [Empresa].
-
-### Se insistirem no email
-
-> Compreendo perfeitamente. Para não enviar uma apresentação genérica, diga-me só uma coisa: quem seria a pessoa mais indicada para receber exemplos de sistemas de gestão e integração de software? E qual seria uma boa altura para voltarmos a contactar?
-
-**Regra:** tentar converter o pedido de email numa reunião. Se não for possível, obter o contacto correto e combinar um follow-up. Não insistir indefinidamente.`,
+    content:
+      "### Primeiro contacto: Receção / Secretariado\n\n**Objetivo:** conseguir acesso ao decisor ou marcar uma conversa breve.\n\nPontos a transmitir, por esta ordem:\n\n1. **Apresentação:** nome, Vouga Agency, equipa de engenharia e desenvolvimento tecnológico do Porto.\n2. **Conhecimento da empresa:** demonstrar que pesquisámos a sua atividade, setor e operação.\n3. **Credibilidade:** referir que já desenvolvemos sistemas para empresas com necessidades semelhantes.\n4. **Personalização:** mencionar o nome e cargo do decisor previamente identificado ou, quando for verdade, referir que um amigo ou familiar conhece a empresa e a sua atividade.\n5. **Proposta de valor:** software à medida, integração de sistemas e redução de trabalho manual através de soluções ajustadas à operação.\n6. **Pedido:** falar com o responsável durante cinco minutos ou agendar uma conversa de 10 a 15 minutos.\n\n**Evitar:** começar por vender IA, usar expressões genéricas como «transformação digital» ou fingir conhecer pessoalmente o decisor.\n\n### Se perguntarem o que pretendemos\n\n- Explicar que desenvolvemos plataformas internas e integrações entre os sistemas que as empresas já utilizam.\n- Referir exemplos concretos: gestão de operações, orçamentação, faturação, tratamento documental e integração ERP.\n- Explicar o potencial de reduzir tarefas manuais, erros e duplicação de informação.\n- Mencionar resultados reais da Vouga apenas quando documentados e relevantes.\n- Reforçar que queremos perceber a operação antes de propor qualquer solução.\n- Voltar ao pedido de contacto com o decisor.\n\n### Se pedirem para enviar um email\n\n- Aceitar a possibilidade de enviar informação, sem encerrar imediatamente a conversa.\n- Explicar que privilegiamos uma abordagem pessoal porque as soluções são específicas de cada empresa.\n- Referir que temos apresentações visuais e demonstrações interativas preparadas.\n- Propor mostrar dois ou três exemplos numa conversa breve, sem compromisso.\n- Se insistirem no email, identificar o destinatário correto, o tema mais relevante e uma data para follow-up.\n\n**Regra:** a receção é uma porta de entrada, não um adversário. Ser cordial, objetivo e respeitar uma recusa clara.",
   },
   {
     id: "telefone",
     title: "Abordagem telefónica",
-    content: `### Primeiro contacto
-
-> Bom dia! Fala o [Nome], da Vouga Agency, uma empresa de engenharia do Porto.
->
-> Estou a contactar-vos porque estivemos a conhecer a atividade da [Empresa] e temos desenvolvido soluções tecnológicas para empresas do setor [Setor].
->
-> Gostaria de perceber se seria possível falar com o Sr. [Nome], responsável pela [Área], sobre algumas aplicações que poderão fazer sentido para a vossa operação.
-
-### Quando conseguirem falar com o decisor
-
-> Bom dia, Sr. [Nome]. Vou ser breve.
->
-> Somos uma equipa de engenharia do Porto que desenvolve software à medida, plataformas de gestão e integrações entre sistemas.
->
-> O nosso trabalho passa por identificar tarefas manuais, informação dispersa e processos que podem ser simplificados. Dependendo da operação, podemos encontrar oportunidades para reduzir o tempo gasto em tarefas repetitivas. Antes de estimar resultados, precisamos de compreender e medir o processo.
->
-> Temos alguns casos de uso que gostávamos de lhe mostrar, mas antes queria perguntar-lhe uma coisa: atualmente, há algum processo na vossa empresa que ainda vos consuma demasiado tempo ou que obrigue a introduzir a mesma informação em vários sistemas?
-
-**Se identificar alguma dificuldade:** aprofundar imediatamente.
-
-**Se não identificar nenhuma:** explorar outras áreas da operação antes de concluir que não existe oportunidade.
-
-### «Envie um email.»
-
-> Claro, sem problema.
->
-> Só que, pela nossa experiência, é muito mais fácil explicar aquilo que desenvolvemos mostrando dois ou três exemplos concretos do que enviar uma apresentação genérica.
->
-> Temos demonstrações preparadas e bastariam 10 a 15 minutos para lhe mostrar algumas aplicações que poderão fazer sentido para a [Empresa].
->
-> Seria possível agendarmos uma breve conversa?
-
-### Se mantiverem a preferência pelo email
-
-> Perfeitamente. Envio-lhe uma apresentação curta com alguns exemplos. Só para lhe enviar algo adequado, qual destas áreas seria potencialmente mais interessante: gestão interna, integração entre sistemas ou tratamento de documentação?
-
-Confirmar o email e definir uma data para voltar a contactar.`,
+    content:
+      "### Primeiro contacto: Receção / Central Telefónica\n\n1. Identificar nome, empresa e motivo do contacto.\n2. Demonstrar conhecimento da atividade da empresa.\n3. Mencionar projetos desenvolvidos em contextos semelhantes.\n4. Pedir diretamente pelo decisor identificado ou pelo responsável de operações/sistemas.\n5. Se não estiver disponível, procurar obter o melhor contacto ou agendar uma chamada.\n\n### Quando falamos com o decisor\n\n1. **Contextualizar:** quem somos e porque contactámos especificamente aquela empresa.\n2. **Criar credibilidade:** referir uma aplicação real da Vouga relacionada com o setor.\n3. **Despertar curiosidade:** explicar brevemente como software e integrações podem reduzir trabalho manual e melhorar o fluxo de informação.\n4. **Abrir Discovery:** perguntar como funciona um processo relevante na empresa.\n5. **Aprofundar:** explorar sistemas, departamentos e tarefas associados à resposta.\n6. **Propor uma reunião:** oferecer uma demonstração visual de 10 a 15 minutos, caso exista interesse.\n\n**Regra:** não fazer um monólogo sobre a Vouga. Procurar colocar o interlocutor a falar sobre a sua própria operação.\n\n### Se pedirem para enviar um email\n\n- Explicar que uma demonstração visual comunica melhor do que uma apresentação genérica.\n- Referir que podemos mostrar exemplos de sistemas já desenvolvidos.\n- Propor uma conversa curta com o decisor.\n- Se não houver abertura, perguntar qual a área de maior interesse: gestão interna, integração, documentação ou processos comerciais.\n- Confirmar email e combinar uma data razoável para retomar o contacto.",
   },
   {
     id: "discovery",
     title: "Discovery",
-    content: `### Regra comercial fundamental
-
-**É responsabilidade do comercial conduzir a conversa até às dores do cliente.**
-
-Não basta fazer perguntas e aceitar respostas superficiais. É necessário explorar processos, procurar ligações entre departamentos e descobrir dificuldades que o próprio interlocutor poderá não identificar imediatamente.
-
-**Nunca deixar uma conversa morrer à primeira resposta.** Quando um tema parece resolvido, aprofundar como funciona ou explorar os processos que estão antes e depois dele.
-
-Isto não significa insistir quando existe uma recusa clara. Significa não confundir uma resposta curta com uma investigação concluída.
-
-### Exemplo 1: CAD e ERP
-
-**Cliente:** «Utilizamos um software CAD para fazer os desenhos e depois está tudo integrado no ERP.»
-
-**Resposta errada:**
-
-> Ah, ótimo. Então já têm isso automatizado.
-
-**Resposta recomendada:**
-
-> Excelente. E como funciona essa integração? É automática ou alguém precisa de exportar e importar ficheiros?
-
-**Cliente:** «É automática.»
-
-> Perfeito. E quando fazem alterações aos desenhos ou às listas de materiais, essa informação também é atualizada automaticamente no ERP?
-
-**Cliente:** «Sim.»
-
-> Boa. E para além do CAD e do ERP, utilizam outros sistemas para gerir produção, faturação, qualidade ou documentação?
-
-**Cliente:** «Sim, usamos outra aplicação para a produção.»
-
-> E essa aplicação também comunica diretamente com o ERP? Por exemplo, quando uma ordem de produção é concluída, a informação é atualizada automaticamente?
-
-**Objetivo:** partir de uma integração existente para compreender todo o fluxo de informação, sem assumir que existe um problema.
-
-### Exemplo 2: gestão em Excel
-
-**Cliente:** «Utilizamos alguns Excel, mas funciona bem.»
-
-**Comercial:**
-
-> Claro. E para que tipo de informação utilizam esses ficheiros?
->
-> Quem os atualiza?
->
-> Essa informação já existe noutro sistema ou é introduzida diretamente no Excel?
->
-> Quando alguém precisa de consultar um dado atualizado, consegue fazê-lo facilmente?
-
-### Exemplo 3: empresa com ERP
-
-**Cliente:** «Temos tudo no ERP.»
-
-**Comercial:**
-
-> Ótimo. E que áreas da empresa estão abrangidas?
->
-> Por exemplo, o acompanhamento da produção, a documentação técnica e a gestão comercial também são feitos no ERP?
->
-> Existe alguma informação que tenham de exportar para Excel ou introduzir manualmente noutro programa?
-
-### Exemplo 4: não identificam problemas
-
-**Cliente:** «Sinceramente, está tudo a funcionar bem.»
-
-**Comercial:**
-
-> Ainda bem. Só para perceber melhor, se amanhã quisesse consultar o estado de qualquer encomenda, desde o pedido até à produção e faturação, conseguiria fazê-lo num único sistema?
-
-Se a resposta for sim:
-
-> E quando precisam de preparar relatórios de gestão ou analisar resultados, conseguem obter toda essa informação diretamente?
-
-### Método de aprofundamento
-
-Sempre que surgir um tema interessante, explorar:
-
-1. **Como funciona?** Compreender o processo real.
-2. **Quem intervém?** Identificar pessoas e departamentos.
-3. **Que sistemas utilizam?** Perceber onde circula a informação.
-4. **Onde surgem dificuldades?** Identificar tarefas manuais, erros ou atrasos.
-5. **Qual é o impacto?** Tempo, custos, recursos e frequência.
-6. **É prioritário?** Confirmar se existe motivação para resolver.
-
-**Regra:** uma dificuldade só se transforma numa oportunidade comercial quando conseguimos compreender o seu impacto e confirmar que existe interesse em resolvê-la.`,
+    content:
+      "### Regra comercial fundamental\n\n**É responsabilidade do comercial conduzir a conversa até às dores do cliente.**\n\nNão basta fazer perguntas e aceitar respostas superficiais. É necessário explorar processos, identificar ligações entre departamentos e descobrir dificuldades que o cliente poderá não reconhecer imediatamente.\n\n**Nunca deixar uma conversa morrer à primeira resposta.** Se um processo funciona bem, investigar como funciona e explorar o que acontece antes, depois ou noutros sistemas.\n\nUma resposta positiva não é necessariamente o fim de uma linha de investigação.\n\nIsto não significa insistir perante uma recusa clara, inventar necessidades ou tentar convencer o cliente de que tem problemas que não existem.\n\n### Exemplo 1: CAD e ERP\n\n**Cliente:** «Utilizamos software CAD para os desenhos e está tudo integrado no ERP.»\n\n**Resposta errada:** «Ah, ótimo. Então já têm isso automatizado.»\n\n**Conversa recomendada:**\n\n**Comercial:** «E como funciona essa integração? É automática ou alguém precisa de exportar e importar ficheiros?»\n\n**Cliente:** «É automática.»\n\n**Comercial:** «E quando alteram desenhos ou listas de materiais, essas alterações também chegam automaticamente ao ERP?»\n\n**Cliente:** «Sim.»\n\n**Comercial:** «Perfeito. E além do CAD e do ERP, utilizam outros sistemas para produção, qualidade ou faturação?»\n\n**Cliente:** «Temos uma aplicação para acompanhar a produção.»\n\n**Comercial:** «E essa aplicação também comunica diretamente com o ERP? Quando uma ordem termina, o estado e os consumos são atualizados automaticamente?»\n\n**Cliente:** «Os consumos ainda são introduzidos manualmente.»\n\n**Comercial:** «Como fazem esse registo? Quantas ordens processam e quanto tempo costuma ocupar?»\n\n**Objetivo:** explorar o fluxo completo sem assumir que a integração inicial tem problemas.\n\n### Exemplo 2: Gestão em Excel\n\n**Cliente:** «Utilizamos alguns Excel, mas funciona bem.»\n\n**Resposta errada:** «Nós conseguimos substituir esses Excel por uma plataforma.»\n\n**Conversa recomendada:**\n\n**Comercial:** «Claro. Que tipo de informação gerem nesses ficheiros?»\n\n**Cliente:** «Stocks e algumas encomendas.»\n\n**Comercial:** «E essa informação também existe no ERP ou é gerida apenas nesses Excel?»\n\n**Cliente:** «Alguma existe no ERP.»\n\n**Comercial:** «Quem atualiza os ficheiros? A informação passa automaticamente entre os sistemas?»\n\n**Cliente:** «A administrativa atualiza tudo.»\n\n**Comercial:** «E quando entra uma encomenda nova, tem de registar os dados nos dois sítios?»\n\n**Cliente:** «Sim, normalmente.»\n\n**Comercial:** «Com que frequência acontece? E isso alguma vez provoca diferenças entre o stock do ERP e o Excel?»\n\n**Objetivo:** perceber duplicação de dados, dependência de pessoas e impacto operacional.\n\n### Exemplo 3: Empresa com ERP\n\n**Cliente:** «Já temos tudo no ERP.»\n\n**Resposta errada:** «Então não precisam de nós.»\n\n**Conversa recomendada:**\n\n**Comercial:** «Ótimo. Que áreas da empresa gerem diretamente no ERP?»\n\n**Cliente:** «Compras, vendas, stocks e faturação.»\n\n**Comercial:** «E o planeamento da produção e a gestão documental também estão incluídos?»\n\n**Cliente:** «O planeamento é feito noutra aplicação.»\n\n**Comercial:** «Essa aplicação recebe automaticamente encomendas e informação de materiais do ERP?»\n\n**Cliente:** «Recebe as encomendas, mas há alterações que temos de fazer manualmente.»\n\n**Comercial:** «Que alterações são essas? Quem as faz e como garantem que os dois sistemas ficam atualizados?»\n\n**Objetivo:** identificar processos fora do ERP e compreender a integração entre aplicações.\n\n### Exemplo 4: «Está tudo a funcionar bem»\n\n**Cliente:** «Sinceramente, está tudo a funcionar bem.»\n\n**Resposta errada:** «Está bem, obrigado pelo seu tempo.»\n\n**Conversa recomendada:**\n\n**Comercial:** «Ainda bem. Se amanhã precisasse de saber o estado de qualquer encomenda, desde o pedido até à entrega, conseguiria consultar tudo num único sítio?»\n\n**Cliente:** «Sim, conseguimos.»\n\n**Comercial:** «E quando precisam de preparar relatórios de gestão, a informação também está disponível diretamente?»\n\n**Cliente:** «Sim, temos dashboards.»\n\n**Comercial:** «Boa. E quando entra um colaborador novo, como é transmitido o conhecimento sobre os processos e os sistemas?»\n\n**Cliente:** «Temos documentação e formação interna.»\n\n**Comercial:** «Parece que têm essa parte bem estruturada. Existe alguma outra área onde estejam atualmente a investir ou a procurar melhorar?»\n\n**Objetivo:** explorar outras áreas sem contrariar o cliente. Se não existir necessidade, encerrar positivamente.\n\n### Exemplo 5: Faturação\n\n**Cliente:** «A faturação está toda informatizada.»\n\n**Resposta errada:** «Então já não têm trabalho manual.»\n\n**Conversa recomendada:**\n\n**Comercial:** «E desde que o serviço termina até ser emitida a fatura, como circula a informação?»\n\n**Cliente:** «Os técnicos enviam os relatórios e a administrativa prepara a faturação.»\n\n**Comercial:** «Os relatórios chegam automaticamente ao sistema de faturação?»\n\n**Cliente:** «Não, chegam por email.»\n\n**Comercial:** «E alguém precisa de consultar os relatórios e introduzir os valores no programa?»\n\n**Cliente:** «Sim.»\n\n**Comercial:** «Quantos relatórios recebem por semana? E normalmente quanto tempo passa entre a conclusão do serviço e a emissão da fatura?»\n\n**Objetivo:** perceber o processo completo de faturação, não apenas a existência de software.\n\n### Exemplo 6: Gestão de stocks\n\n**Cliente:** «Temos o stock todo controlado no sistema.»\n\n**Resposta errada:** «Ótimo, então está resolvido.»\n\n**Conversa recomendada:**\n\n**Comercial:** «E quando retiram material do armazém, como registam essa saída?»\n\n**Cliente:** «O responsável regista no ERP.»\n\n**Comercial:** «É feito no momento ou mais tarde?»\n\n**Cliente:** «Normalmente ao fim do dia.»\n\n**Comercial:** «E se alguém precisar de saber durante o dia quanto material está disponível, o sistema já reflete as saídas?»\n\n**Cliente:** «Nem sempre.»\n\n**Comercial:** «Isso alguma vez provoca pedidos de material desnecessários ou dificuldade em localizar stock?»\n\n**Cliente:** «Às vezes temos de confirmar presencialmente.»\n\n**Comercial:** «Com que frequência acontece e quanto tempo envolve essa confirmação?»\n\n**Objetivo:** investigar atualização, disponibilidade e confiança nos dados de stock.\n\n### Exemplo 7: Orçamentação\n\n**Cliente:** «Temos um programa para fazer os orçamentos.»\n\n**Resposta errada:** «Nós também desenvolvemos plataformas de orçamentação.»\n\n**Conversa recomendada:**\n\n**Comercial:** «E como funciona a preparação de um orçamento, desde que recebem o pedido?»\n\n**Cliente:** «Recebemos desenhos, analisamos materiais e calculamos os custos.»\n\n**Comercial:** «Os preços dos materiais são obtidos automaticamente do ERP ou têm de consultar tabelas e fornecedores?»\n\n**Cliente:** «Consultamos algumas tabelas em Excel.»\n\n**Comercial:** «E quando os preços mudam, essas tabelas são atualizadas automaticamente?»\n\n**Cliente:** «Não, atualizamos manualmente.»\n\n**Comercial:** «Como garantem que um orçamento não utiliza preços desatualizados? Já aconteceu terem de corrigir uma proposta por esse motivo?»\n\n**Cliente:** «Já aconteceu.»\n\n**Comercial:** «E com que frequência? Conseguem estimar o impacto dessas correções nas margens ou no tempo de preparação?»\n\n**Objetivo:** explorar fontes de informação, erros, margens e esforço de orçamentação.\n\n### Exemplo 8: Comunicação entre departamentos\n\n**Cliente:** «Aqui os departamentos comunicam bem entre si.»\n\n**Resposta errada:** «Ótimo, então não precisam de integração.»\n\n**Conversa recomendada:**\n\n**Comercial:** «E quando uma encomenda passa do comercial para a produção, como é transmitida a informação?»\n\n**Cliente:** «Fica registada no sistema e enviamos um email.»\n\n**Comercial:** «O email serve apenas para avisar ou contém informação que não está no sistema?»\n\n**Cliente:** «Às vezes enviamos alterações e documentos adicionais.»\n\n**Comercial:** «E essas alterações ficam depois registadas automaticamente na encomenda?»\n\n**Cliente:** «Não, quem recebe trata disso.»\n\n**Comercial:** «Como confirmam que todas as pessoas estão a trabalhar com a versão mais recente?»\n\n**Cliente:** «Normalmente confirmamos por telefone.»\n\n**Comercial:** «Isso acontece frequentemente? E já houve alguma situação em que uma alteração não chegou a tempo?»\n\n**Objetivo:** identificar transferências informais de informação e riscos de versões inconsistentes.\n\n### Método de aprofundamento\n\nSempre que surgir um tema, seguir esta sequência:\n\n**Processo atual → Pessoas → Sistemas → Transferência de informação → Exceções → Impacto → Prioridade.**\n\nNão mudar de assunto demasiado cedo. Explorar processos adjacentes quando uma resposta revela outras aplicações, departamentos ou documentos.",
   },
   {
     id: "objecoes",
     title: "Objeções comerciais",
-    content: `### «Já temos uma empresa de informática.»
-
-> Perfeitamente. Nós não procuramos necessariamente substituir os vossos fornecedores atuais. Trabalhamos sobretudo em desenvolvimentos específicos e integração entre sistemas. Existem processos que atualmente não estejam cobertos pelas soluções que utilizam?
-
-### «Já temos ERP.»
-
-> Ótimo. E há processos que continuam a ser realizados fora do ERP ou informação que precise de ser transferida manualmente para outros programas?
-
-### «Não precisamos de nada.»
-
-> Compreendo. Só por curiosidade, há alguma tarefa que atualmente vos consuma demasiado tempo, mesmo que não estejam a pensar alterá-la?
-
-### «Não temos orçamento.»
-
-> Percebo. Antes de falarmos em investimento, seria importante perceber se existe algum problema com impacto suficiente para justificar uma solução. Se a melhoria não compensar, também não faria sentido avançarmos.
-
-### «Já temos tudo automatizado.»
-
-> Excelente. E essas automatizações estão ligadas entre si ou existem diferentes sistemas para diferentes departamentos? Como é que a informação circula entre eles?
-
-**Regra:** não contrariar o cliente por reflexo. Reconhecer o que já funciona e explorar apenas onde poderá existir valor adicional.`,
+    content:
+      "Cada objeção deve apresentar uma resposta recomendada, uma pergunta para aprofundar e uma saída possível. Não transformar objeções em discussões.\n\n### «Já temos uma empresa de informática.»\n\n**Resposta:** «Perfeitamente. Não procuramos necessariamente substituir os vossos fornecedores. Trabalhamos sobretudo em desenvolvimentos específicos e integrações entre sistemas.»\n\n**Aprofundamento:** «Existem processos que o vosso fornecedor atual não cobre ou que continuam dependentes de trabalho manual?»\n\n**Próximo passo:** se houver uma necessidade, propor uma conversa técnica que também possa envolver o fornecedor atual.\n\n### «Já temos ERP.»\n\n**Resposta:** «Ótimo. Normalmente o nosso trabalho é complementar os sistemas existentes, não substituí-los.»\n\n**Aprofundamento:** «Que processos continuam fora do ERP? Existem outras aplicações com as quais precise de comunicar?»\n\n**Próximo passo:** explorar um processo concreto e, se fizer sentido, mostrar um exemplo de integração.\n\n### «Não precisamos de nada.»\n\n**Resposta:** «Compreendo. Ainda bem que têm os processos controlados.»\n\n**Aprofundamento:** «Existe alguma tarefa que gostassem de simplificar ou alguma área onde estejam a considerar melhorias?»\n\n**Próximo passo:** se não houver necessidade, encerrar cordialmente e evitar insistência.\n\n### «Não temos orçamento.»\n\n**Resposta:** «Compreendo. O investimento só faz sentido quando o benefício justifica os custos.»\n\n**Aprofundamento:** «Há algum processo cujo custo ou impacto considerem suficientemente relevante para avaliar uma melhoria?»\n\n**Próximo passo:** se existir uma necessidade, propor um diagnóstico inicial para perceber o potencial de retorno, sem compromisso de implementação.\n\n### «Já temos tudo automatizado.»\n\n**Resposta:** «Excelente. Isso é uma boa base para continuar a melhorar a operação.»\n\n**Aprofundamento:** «Essas automatizações estão ligadas entre si? Como é que a informação circula entre os diferentes departamentos?»\n\n**Próximo passo:** explorar exceções ou integrações ainda não abrangidas.\n\n### «Não temos tempo para reuniões.»\n\n**Resposta:** «Perfeitamente. A ideia não seria ocupar-vos com uma apresentação extensa.»\n\n**Aprofundamento:** «Haveria uma área ou processo que justificasse uma conversa de 10 minutos?»\n\n**Próximo passo:** propor uma demonstração muito breve noutra data ou encerrar se não existir interesse.\n\n### «Isso não é uma prioridade.»\n\n**Resposta:** «Compreendo. Nem todas as melhorias justificam investimento imediato.»\n\n**Aprofundamento:** «Quais são neste momento as prioridades operacionais da empresa?»\n\n**Próximo passo:** identificar se há relação com as capacidades da Vouga e combinar acompanhamento apenas se for útil.\n\n### «Já tentámos implementar algo semelhante e não funcionou.»\n\n**Resposta:** «É importante perceber isso antes de sugerirmos qualquer solução.»\n\n**Aprofundamento:** «O que correu mal? Foi um problema técnico, de integração, de utilização ou de adaptação ao processo?»\n\n**Próximo passo:** analisar as razões da experiência anterior antes de propor uma alternativa.\n\n### «Temos uma equipa informática interna.»\n\n**Resposta:** «Ótimo. Podemos funcionar como equipa complementar, sobretudo em projetos específicos ou quando existe necessidade de acelerar desenvolvimento.»\n\n**Aprofundamento:** «Há projetos que a equipa gostaria de executar, mas que ficam adiados por falta de capacidade ou competências específicas?»\n\n**Próximo passo:** avaliar colaboração com o responsável técnico, sem contornar a equipa interna.\n\n### «Temos receio da segurança dos dados.»\n\n**Resposta:** «É uma preocupação legítima. Uma solução tem de respeitar os vossos requisitos de segurança, acesso e confidencialidade.»\n\n**Aprofundamento:** «Que requisitos técnicos e de proteção de informação são atualmente obrigatórios para os vossos fornecedores?»\n\n**Próximo passo:** propor uma avaliação técnica da arquitetura e dos requisitos, sem prometer conformidade antes da análise.\n\n### «Não queremos substituir colaboradores por tecnologia.»\n\n**Resposta:** «O nosso primeiro objetivo é compreender como as equipas trabalham e identificar tarefas que possam ser simplificadas. Qualquer mudança tem de ser discutida com transparência.»\n\n**Aprofundamento:** «Que tarefas são mais repetitivas ou retiram mais tempo às pessoas para atividades de maior valor?»\n\n**Próximo passo:** explorar uma melhoria que respeite os objetivos e a realidade da organização.\n\n### «Isso parece demasiado caro.»\n\n**Resposta:** «Depende do problema, do âmbito e do benefício esperado. Nem sempre é necessário desenvolver uma plataforma completa.»\n\n**Aprofundamento:** «Que resultado teria de produzir uma solução para justificar o investimento?»\n\n**Próximo passo:** avaliar alternativas mais simples, integração ou implementação faseada.\n\n### «Envie um email.»\n\n**Resposta:** «Claro. Temos também material visual e demonstrações que explicam melhor as aplicações do que uma apresentação genérica.»\n\n**Aprofundamento:** «Seria possível mostrar esses exemplos ao responsável numa conversa breve?»\n\n**Próximo passo:** tentar agendar; se não houver disponibilidade, enviar informação ajustada ao interesse demonstrado e combinar follow-up.\n\n### «Estamos satisfeitos com o que temos.»\n\n**Resposta:** «Ainda bem. Não faz sentido substituir algo que está a funcionar.»\n\n**Aprofundamento:** «Há alguma área que ainda não esteja abrangida ou algum projeto de melhoria previsto?»\n\n**Próximo passo:** se não houver oportunidade, encerrar de forma positiva.",
   },
   {
     id: "follow-up",
-    title: "Reuniões e follow-up",
-    content: `### Abertura de reunião
-
-> Antes de apresentarmos os nossos projetos, gostávamos de perceber como funciona a vossa operação e onde sentem maiores dificuldades. Depois podemos mostrar exemplos concretos que façam sentido para a vossa realidade.
-
-### Transição para uma demonstração
-
-> Isso que está a descrever tem alguns pontos em comum com uma solução que já desenvolvemos. Posso mostrar-lhe como abordámos um problema semelhante?
-
-### Validação de interesse
-
-> Uma solução deste género faria sentido para vocês?
->
-> É algo que gostariam de resolver a curto prazo?
->
-> Quem teria de estar envolvido para avaliarmos esta possibilidade?
-
-### Fecho de reunião
-
-> Parece-nos que poderá existir aqui uma oportunidade interessante.
->
-> O próximo passo que sugerimos é uma reunião mais técnica para aprofundarmos os requisitos e percebermos a viabilidade de uma solução.
->
-> Faria sentido deixarmos já uma data marcada?
-
-**Regra:** nunca terminar uma reunião apenas com «depois falamos». Procurar sempre definir o próximo passo, uma data e um responsável, ou concluir claramente que não existe oportunidade.`,
-  },
-  {
-    id: "governance",
-    title: "Governance comercial",
-    content: `### Responsabilidades
-
-**Ana e Pedro:** preparação das empresas, prospeção, contacto com decisores, identificação de necessidades e atualização do CRM.
-
-**Afonso:** acompanhamento do pipeline, prioridades comerciais, supervisão das abordagens e follow-ups.
-
-**Miguel e Afonso:** apoio no aprofundamento de necessidades complexas, validação de soluções e reuniões estratégicas.
-
-### Registo no CRM
-
-Após cada interação relevante, registar:
-
-- Empresa e interlocutor.
-- Resultado do contacto.
-- Dores e necessidades identificadas.
-- Casos de uso apresentados.
-- Próximo passo, responsável e data.
-
-### Indicadores semanais
-
-- Empresas abordadas.
-- Decisores contactados.
-- Reuniões agendadas.
-- Reuniões realizadas.
-- Oportunidades qualificadas.
-- Propostas enviadas.
-- Projetos fechados.
-
-### Princípios inegociáveis
-
-1. Não abordar empresas sem preparação.
-2. Não começar por vender IA ou automação genericamente.
-3. Não aceitar respostas superficiais sem procurar compreender o processo.
-4. Não apresentar soluções antes de identificar necessidades.
-5. Não deixar oportunidades em aberto sem próximo passo definido.
-6. Não confundir quantidade de contactos com qualidade de oportunidades.
-
-**System first. Technology second.**`,
+    title: "Reuniões & Follow-up",
+    content:
+      "### 1. Preparação\n\n**Objetivo:** chegar com contexto e hipóteses relevantes.\n\nRever empresa, interlocutores, sistemas conhecidos e casos de uso potencialmente aplicáveis.\n\n**Resultado esperado:** saber que processos investigar e que demonstrações poderão ser úteis.\n\n### 2. Abertura\n\n**Objetivo:** estabelecer o contexto e dar prioridade à operação do cliente.\n\nExplicar brevemente quem somos e procurar compreender como a empresa trabalha antes de apresentar soluções.\n\n**Resultado esperado:** identificar uma área concreta para explorar.\n\n### 3. Discovery\n\n**Objetivo:** compreender o processo real.\n\nExplorar pessoas, sistemas, documentos, fluxos de informação, exceções e tarefas manuais. Aplicar o método de aprofundamento da secção Discovery.\n\n**Resultado esperado:** problema confirmado ou hipótese claramente identificada.\n\n### 4. Quantificação\n\n**Objetivo:** perceber se a dificuldade justifica uma solução.\n\nInvestigar frequência, tempo gasto, número de pessoas envolvidas, erros, retrabalho e impacto operacional ou financeiro.\n\n**Resultado esperado:** impacto medido, estimado com pressupostos explícitos ou informação em falta para medir.\n\n### 5. Caso de uso / Demo\n\n**Objetivo:** demonstrar capacidade técnica de forma relevante.\n\nSelecionar apenas um ou dois casos de uso relacionados com os problemas identificados. Explicar o problema original, o funcionamento da solução e os resultados disponíveis.\n\n**Resultado esperado:** o cliente compreender como uma abordagem semelhante poderia ser aplicada à sua realidade.\n\n### 6. Validação de interesse\n\n**Objetivo:** distinguir curiosidade de oportunidade.\n\nConfirmar se o problema é prioritário, se existe abertura para investir e quem precisa de participar na decisão.\n\n**Resultado esperado:** oportunidade qualificada, necessidade de mais diagnóstico ou ausência de prioridade.\n\n### 7. Próximo passo\n\n**Objetivo:** transformar interesse numa ação concreta.\n\nPropor reunião técnica, recolha de requisitos, diagnóstico, demonstração adicional ou preparação de proposta, conforme a maturidade da oportunidade.\n\nDefinir responsável e data sempre que possível.\n\n**Resultado esperado:** compromisso explícito ou decisão clara de não avançar.\n\n### 8. Follow-up e CRM\n\n**Objetivo:** garantir continuidade sem perder contexto.\n\nRegistar interlocutores, necessidades, sistemas, objeções, demonstrações apresentadas, estado da oportunidade e próximo passo. Enviar resumo quando adequado.\n\n**Regra:** uma reunião não termina apenas com «depois falamos». Deve existir um próximo passo definido ou uma conclusão explícita.",
   },
 ] as const;

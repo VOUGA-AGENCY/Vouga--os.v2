@@ -22,18 +22,21 @@ import type { CaptureKind, Snapshot } from "@/domain/model";
 import { WorkspaceContext, type Editor } from "./context";
 import { Today } from "./today";
 import { Agenda } from "./agenda";
-import { Work, ProjectDetail } from "./work";
 import { TaskPanel, TaskSurface } from "./task-surface";
-import { Contacts, CompanyPanel } from "./contacts";
 import { NoteComposer } from "./notes";
 import { AgentPanel } from "./agent";
-import { IntegrationSettings } from "./settings";
 import { RecordEditor } from "./editors";
 import { CompactPanel } from "./compact-panel";
 import { Dialog } from "./dialog";
 import { flushEdits } from "./autosave";
 import { PersonAvatar } from "./person-avatar";
+import { markWorkspaceEntered } from "./workspace-loading";
 
+const Contacts = dynamic(() => import("./contacts").then(module => module.Contacts));
+const CompanyPanel = dynamic(() => import("./contacts").then(module => module.CompanyPanel));
+const Work = dynamic(() => import("./work").then(module => module.Work));
+const ProjectDetail = dynamic(() => import("./work").then(module => module.ProjectDetail));
+const IntegrationSettings = dynamic(() => import("./settings").then(module => module.IntegrationSettings));
 const Prospect = dynamic(() => import("./prospect").then(module => module.Prospect));
 
 const navigation = [
@@ -50,6 +53,7 @@ export function Workspace({
   initial: Snapshot;
   view: string;
 }) {
+  useEffect(() => { markWorkspaceEntered(); }, []);
   const [data, setData] = useState(initial);
   const [view, setView] = useState(initialView);
   const lastPath = useRef(`/${initialView}`);
@@ -82,8 +86,10 @@ export function Workspace({
   const [toast, setToast] = useState("");
   const [project, setProject] = useState<string | null>(null);
   useEffect(() => {
-    const navigate = () => {
+    const navigate = (event: PopStateEvent) => {
       const path = window.location.pathname;
+      if (!["/", "/tasks", "/agenda", "/contactos", "/prospect", "/trabalho", "/settings"].includes(path)) return;
+      event.stopImmediatePropagation();
       void flushEdits()
         .then(() => {
           lastPath.current = path;
@@ -92,12 +98,12 @@ export function Workspace({
           setEditor(null);
         })
         .catch((error) => {
-          window.history.pushState(null, "", lastPath.current);
+          History.prototype.pushState.call(window.history, null, "", lastPath.current);
           setToast(error.message);
         });
     };
-    window.addEventListener("popstate", navigate);
-    return () => window.removeEventListener("popstate", navigate);
+    window.addEventListener("popstate", navigate, true);
+    return () => window.removeEventListener("popstate", navigate, true);
   }, []);
   const [help, setHelp] = useState(false);
   const [search, setSearch] = useState(false);
@@ -313,7 +319,7 @@ export function Workspace({
         event.preventDefault();
         void flushEdits()
           .then(() => {
-            window.history.pushState(null, "", `/${path}`);
+            History.prototype.pushState.call(window.history, null, "", `/${path}`);
             lastPath.current = `/${path}`;
             setView(path);
             setProject(null);
@@ -428,11 +434,16 @@ export function Workspace({
               return;
             event.preventDefault();
             event.stopPropagation();
-            window.history.pushState(null, "", url.pathname);
-            setView(next);
-            setProject(null);
-            setEditor(null);
-            setCaptureKind(undefined);
+            void flushEdits()
+              .then(() => {
+                History.prototype.pushState.call(window.history, null, "", url.pathname);
+                lastPath.current = url.pathname;
+                setView(next);
+                setProject(null);
+                setEditor(null);
+                setCaptureKind(undefined);
+              })
+              .catch((error) => setToast(error.message));
           }}
         >
           <a className="skip-link" href="#main">

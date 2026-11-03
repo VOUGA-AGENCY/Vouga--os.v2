@@ -9,6 +9,8 @@ import { createSeed, addTeamProfiles } from "./seed";
 
 export interface WorkspaceRepository {
   read(): Promise<Store>;
+  /** Read-only browser model. Must never be used as a transaction base. */
+  readForBrowser?(): Promise<Store>;
   transact<T>(fn: (data: Store) => T): Promise<T>;
 }
 
@@ -168,4 +170,10 @@ export function repository(): WorkspaceRepository {
       return createSeed(password);
     },
   );
+}
+
+/** Keeps the reduced browser read separate from full transactional/Agent reads. */
+export function readBrowserWorkspace(): Promise<Store> {
+  const repo = repository();
+  return repo.readForBrowser ? repo.readForBrowser() : repo.read();
 }

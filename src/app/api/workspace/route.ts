@@ -6,7 +6,7 @@ import {
 } from "@/application/auth";
 import { executeCommand } from "@/application/commands";
 import { repository } from "@/persistence/store";
-import { workspaceFor } from "@/projections/workspace";
+import { browserWorkspaceFor } from "@/projections/workspace";
 import { snapshotChanges } from "@/projections/changes";
 import { AppError } from "@/domain/validation";
 import { errorResponse, jsonBody } from "@/foundation/http";
@@ -15,7 +15,8 @@ export async function GET(request: Request) {
     assertLocalRequest(request);
     if (!/^[a-f0-9]{64}$/.test(tokenFrom(request)))
       throw new AppError("Please sign in again.", 401);
-    const data = await repository().read();
+    const repo = repository();
+    const data = await (repo.readForBrowser ? repo.readForBrowser() : repo.read());
     const me = await requireMember(request, data);
     const etag = `"${me.id}:${data.revision}"`;
     const headers = {
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
     };
     if (request.headers.get("if-none-match") === etag)
       return new Response(null, { status: 304, headers });
-    return Response.json(workspaceFor(data, me, new Date().toISOString()), {
+    return Response.json(browserWorkspaceFor(data, me, new Date().toISOString()), {
       headers,
     });
   } catch (error) {
@@ -54,12 +55,12 @@ export async function POST(request: Request) {
       const now = new Date().toISOString();
       const before =
         baseRevision === data.revision
-          ? structuredClone(workspaceFor(data, identity.member, now))
+          ? structuredClone(browserWorkspaceFor(data, identity.member, now))
           : null;
       const result = executeCommand(data, identity.member, input, now);
       // Both repositories increment revision once on commit. No second read: the
       // returned projection belongs to this exact successful transaction.
-      const snapshot = workspaceFor(
+      const snapshot = browserWorkspaceFor(
         { ...data, revision: data.revision + 1 },
         identity.member,
         now,

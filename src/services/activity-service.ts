@@ -7,32 +7,56 @@ import {
   canSeeProject,
   canSeeTask,
 } from "@/domain/permissions";
-export function canSeeActivity(data: Store, me: Member, event: ActivityEvent) {
+export interface ActivityVisibility {
+  meetings: ReadonlySet<string>;
+  tasks: ReadonlySet<string>;
+  notes: ReadonlySet<string>;
+  projects: ReadonlySet<string>;
+}
+
+export function canSeeActivity(
+  data: Store,
+  me: Member,
+  event: ActivityEvent,
+  visible?: ActivityVisibility,
+) {
+  const meetingId = event.metadata?.meetingId;
   if (
-    event.metadata?.meetingId &&
-    !data.meetings.some(
-      (m) => m.id === event.metadata.meetingId && canSeeMeeting(me, m),
-    )
+    meetingId &&
+    !(visible
+      ? visible.meetings.has(meetingId as string)
+      : data.meetings.some((m) => m.id === meetingId && canSeeMeeting(me, m)))
   )
     return false;
   if (event.entityType === "task")
-    return data.tasks.some(
-      (task) => task.id === event.entityId && canSeeTask(me, task, data),
-    );
+    return visible
+      ? visible.tasks.has(event.entityId)
+      : data.tasks.some(
+          (task) => task.id === event.entityId && canSeeTask(me, task, data),
+        );
   if (event.entityType === "calendar")
-    return data.meetings.some(
-      (meeting) => meeting.id === event.entityId && canSeeMeeting(me, meeting),
-    );
+    return visible
+      ? visible.meetings.has(event.entityId)
+      : data.meetings.some(
+          (meeting) =>
+            meeting.id === event.entityId && canSeeMeeting(me, meeting),
+        );
   if (event.entityType === "note")
-    return data.notes.some(
-      (note) => note.id === event.entityId && canSeeNote(me, note, data),
-    );
+    return visible
+      ? visible.notes.has(event.entityId)
+      : data.notes.some(
+          (note) => note.id === event.entityId && canSeeNote(me, note, data),
+        );
   if (event.projectId)
-    return data.projects.some(
-      (project) => project.id === event.projectId && canSeeProject(me, project),
-    );
+    return visible
+      ? visible.projects.has(event.projectId)
+      : data.projects.some(
+          (project) =>
+            project.id === event.projectId && canSeeProject(me, project),
+        );
   return event.entityType === "company";
 }
+
 export function recordActivity(data: Store, input: Omit<ActivityEvent, "id">) {
   if (
     input.externalKey &&

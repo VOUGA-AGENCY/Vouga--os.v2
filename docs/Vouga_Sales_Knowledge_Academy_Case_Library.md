@@ -1,12 +1,12 @@
 ---
-title: "VOUGA — Sales Knowledge Academy & Case Library"
+title: "VOUGA — Sales Knowledge Academy"
 version: "1.0"
 updated: "2026-11-03"
 owner: "Vouga Agency — Sales & Founders"
 classification: "Interno — não distribuir externamente"
 ---
 
-# VOUGA — Sales Knowledge Academy & Case Library
+# VOUGA — Sales Knowledge Academy
 
 > **Understand before building. System first. Technology second.**
 >
@@ -16,25 +16,29 @@ classification: "Interno — não distribuir externamente"
 
 ## Como usar este documento
 
-Este documento complementa o **Sales Playbook — Approach**, mas não o substitui. O Approach descreve *como abordar, conduzir e acompanhar* conversas comerciais. A **Knowledge Academy** explica *o que precisamos de compreender* para fazer perguntas inteligentes. A **Case Library** mostra *como relacionar conceitos com situações de empresas*.
+A Knowledge Academy ajuda-te a compreender os processos e os sistemas de uma empresa para fazeres melhores perguntas numa conversa comercial. Não precisas de dominar a implementação técnica para começar.
 
-A equipa deve conseguir, perante um potencial cliente:
+### Antes de uma reunião
 
-1. Compreender a atividade da empresa e os seus processos principais.
-2. Identificar sistemas, dados, pessoas e decisões envolvidos.
-3. Formular hipóteses sobre problemas sem assumir que existem.
-4. Investigar impacto, frequência e prioridade.
-5. Comparar alternativas: melhorar o processo, configurar software existente, integrar sistemas, automatizar ou desenvolver à medida.
-6. Sugerir um próximo passo proporcionado à evidência disponível.
+Escolhe o módulo relacionado com a empresa que vais abordar. Se ainda não conheces a sua operação, começa pelo módulo 01. Consulta o módulo 03 para compreender sistemas como ERP e CRM, o 05 para integrações e o 06 quando existir uma questão concreta de IA.
 
-**Princípios de utilização:**
+Lê o exemplo empresarial e escolhe duas ou três perguntas de discovery que façam sentido para essa empresa.
 
-- **Sem promessa de resultados não medidos.** Tempos poupados, ROI e reduções de erros são *estimativas* até existir medição e validação. Não utilizar alegações como “reduzimos 30%” sem prova específica.
-- **Sem diagnóstico antecipado.** Um Excel pode ser adequado; um ERP pode estar bem implementado; uma tarefa manual pode ser preferível a automatizá-la.
-- **Sem solução por defeito.** A existência de IA, APIs ou software à medida não constitui, por si só, uma oportunidade.
-- **Os casos reais são internos.** Não publicar nomes, necessidades, dados, imagens ou características de clientes sem autorização. As fichas deste documento **não são referências comerciais públicas nem prova de resultados**.
-- **Separar factos de hipóteses.** Os exemplos numéricos são ilustrativos, salvo indicação expressa de medição validada.
-- **Proteger a informação.** Não carregar documentos sensíveis, dados pessoais ou credenciais em ferramentas externas sem autorização e controlos adequados.
+### Durante a conversa
+
+Procura perceber como o trabalho é feito, quem participa e onde passa a informação. Usa as perguntas como apoio, adaptando-as às respostas do interlocutor.
+
+Um Excel, uma tarefa manual ou um sistema antigo não provam que existe um problema. Confirma o que custa tempo, provoca erros ou dificulta a operação antes de falar numa solução.
+
+Se surgir uma questão de viabilidade, integração, segurança ou custo que não saibas responder, regista-a e confirma com o Miguel ou o Roque. Não precisas de improvisar uma resposta técnica.
+
+### Depois da conversa
+
+Regista no CRM o que o cliente confirmou, o que falta esclarecer e o próximo passo. Volta ao módulo relevante para compreender melhor os temas que surgiram.
+
+### O que podes apresentar ao cliente
+
+Usa exemplos e demonstrações aprovados pela Vouga. Distingue um projeto realizado de uma ideia de solução e identifica os exemplos fictícios como tal. Só apresenta resultados ou poupanças quando houver dados que os sustentem.
 
 ### Índice
 
@@ -49,35 +53,13 @@ A equipa deve conseguir, perante um potencial cliente:
 7. [Business Analysis, ROI e vendas consultivas](#módulo-07--business-analysis-roi-e-vendas-consultivas)
 8. [Laboratório integrado de diagnóstico e proposta](#módulo-08--laboratório-integrado-de-diagnóstico-e-proposta)
 
-**Parte B — Case Library**
-
-- [Como utilizar e atualizar casos](#como-utilizar-e-atualizar-a-case-library)
-- [CL-01 — Stocks e custos por obra](#cl-01--stocks-e-custos-por-obra)
-- [CL-02 — Ordens de trabalho, documentos e faturação](#cl-02--ordens-de-trabalho-documentos-e-faturação)
-- [CL-03 — CAD, listas de materiais e ERP](#cl-03--cad-listas-de-materiais-e-erp)
-- [CL-04 — Extração documental e entrada no ERP](#cl-04--extração-documental-e-entrada-no-erp)
-- [CL-05 — Normalização de catálogos XML de fornecedores](#cl-05--normalização-de-catálogos-xml-de-fornecedores)
-- [CL-06 — CRM comercial e oportunidades industriais](#cl-06--crm-comercial-e-oportunidades-industriais)
-- [CL-07 — Rastreabilidade das ordens de produção](#cl-07--rastreabilidade-das-ordens-de-produção)
-- [CL-08 — Compras, fornecedores e ruturas de stock](#cl-08--compras-fornecedores-e-ruturas-de-stock)
-- [CL-09 — Manutenção e assistência técnica](#cl-09--manutenção-e-assistência-técnica)
-- [CL-10 — Conhecimento interno e assistente de IA](#cl-10--conhecimento-interno-e-assistente-de-ia)
-- [CL-11 — Propostas e orçamentos dispersos](#cl-11--propostas-e-orçamentos-dispersos)
-- [CL-12 — Dashboard e indicadores de gestão](#cl-12--dashboard-e-indicadores-de-gestão)
-
 **Anexos:** [Guia de perguntas por interlocutor](#anexo-a--perguntas-de-discovery-por-interlocutor) · [Templates](#anexo-b--templates-operacionais) · [Glossário](#anexo-c--glossário) · [Fontes](#anexo-d--fontes-e-estudo-adicional).
 
-### Como avaliar a aprendizagem
+### Como tirar partido dos módulos
 
-Em cada módulo há: **objetivos → teoria → exemplo empresarial → aplicação à Vouga → perguntas de discovery → exercício → respostas e critérios**. Um comercial deve conseguir *explicar o conceito e utilizá-lo numa reunião*; um engenheiro deve conseguir *avaliar as implicações de implementação, limites e riscos*. Não é necessário estudar os módulos por semanas: podem ser percorridos por necessidade, em sessões intensivas ou progressivamente.
+Cada módulo tem conceitos, exemplos, perguntas de discovery e um exercício com respostas para consulta. Usa o exercício para treinar uma conversa ou esclarecer uma dúvida, ao teu ritmo.
 
-| Nível | Sinal observável |
-|---|---|
-| 0 — Não familiarizado | Não reconhece o termo ou não consegue explicar o objetivo. |
-| 1 — Conceitual | Explica o conceito sem recorrer a jargão. |
-| 2 — Aplicado | Consegue identificar quando é relevante e formular boas perguntas. |
-| 3 — Autónomo | Conduz um diagnóstico inicial e compara alternativas sem supervisão. |
-| 4 — Referência interna | Ajuda a equipa a resolver casos complexos e documenta decisões. |
+O objetivo é conseguires explicar o tema por palavras tuas, reconhecer quando é relevante para um cliente e formular perguntas que ajudem a compreender a sua operação.
 
 ---
 
@@ -1005,552 +987,6 @@ Após uma reunião real ou simulação, responder em equipa:
 
 ---
 
-# PARTE B — CASE LIBRARY
-
-## Como utilizar e atualizar a Case Library
-
-A Case Library não é um catálogo de promessas nem uma montra de clientes. É um **repositório de padrões de problemas e perguntas** que ajuda a equipa a reconhecer situações durante o discovery e a escolher a resposta certa.
-
-### Regras de evidência e confidencialidade
-
-**Etiquetas obrigatórias:**
-
-- **[CONTEXTO INTERNO]** — existe um contexto de projeto/diálogo conhecido pela Vouga, mas a ficha não afirma que uma solução foi construída ou que produziu resultados.
-- **[HIPÓTESE]** — possibilidade ainda não confirmada pelo cliente.
-- **[EXEMPLO FICTÍCIO]** — cenário criado exclusivamente para formação, não atribuído a uma empresa real.
-- **[VALIDADO]** — informação documentada, aprovada internamente e rastreável a evidência identificada. Não usar esta etiqueta sem registo da prova.
-
-**Não confundir:** reunião ≠ oportunidade qualificada; proposta ≠ projeto fechado; projeto contratado ≠ solução implementada; implementação ≠ resultado medido; melhoria estimada ≠ poupança comprovada.
-
-**O que deve conter cada ficha de caso:**
-
-| Campo | Conteúdo |
-|---|---|
-| Código e nome | `CL-XX — Nome do padrão` |
-| Estado | Interno / hipótese / fictício / validado |
-| Setor e processo | Contexto e fluxo onde surge |
-| Sinais de oportunidade | Frases ou sintomas que justificam investigar, não prova de problema |
-| Teoria relevante | Módulos e conceitos que ajudam a compreender |
-| Discovery | Perguntas que descobrem causa, impacto e prioridade |
-| Alternativas | Melhorar processo, configurar, integrar, automatizar, desenvolver ou não avançar |
-| Dados e métricas | Evidência a pedir e resultados a medir |
-| Riscos | Privacidade, qualidade dos dados, segurança, adoção, dependências |
-| Próximo passo | Ação proporcional ao conhecimento disponível |
-
-### Como usar antes de uma reunião
-
-1. Procurar por **setor**, **problema** ou **sistema**.
-2. Ler os conceitos e perguntas correspondentes.
-3. Selecionar **três a cinco hipóteses**; não transformar a ficha num guião de interrogatório.
-4. Preparar um exemplo que seja autorizado partilhar. Se não existir, usar exemplo fictício **claramente identificado**.
-5. Durante a conversa, recolher evidência nova e **descartar hipóteses contraditas**.
-6. Depois, registar aprendizagem, com data, responsável e grau de confiança.
-
----
-
-## CL-01 — Stocks e custos por obra
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** a Vouga tem um projeto com a ACRS relacionado com sistema interno de stock e controlo de custos por obra. Esta ficha **não afirma poupanças nem funcionalidades entregues** que não estejam documentadas em artefactos aprovados.
-
-**Setor:** construção, instalação, montagem e empresas com projetos/obras. **Processos:** compras, armazém, consumos por obra, orçamentação e análise de rentabilidade.
-
-### O problema a investigar
-
-A empresa compra materiais para várias obras. Parte do material entra num armazém comum, parte é entregue diretamente em obra e outra parte regressa. Pode ser difícil saber **quanto material existe**, **onde está**, **a que obra foi imputado** e **quanto custou efetivamente cada intervenção**. O problema pode estar em registos tardios, códigos inconsistentes, ausência de reservas, falta de disciplina operacional ou limitações dos sistemas existentes.
-
-### Conceitos essenciais
-
-ERP; master data de artigos; centros de custo; movimentos de stock; stock reservado; custo previsto vs. custo real; materiais diretos e indiretos; relatórios por obra; inventário físico; rastreabilidade.
-
-**Fluxo didático:** `Pedido de material → Aprovação → Compra/Reserva → Entrada → Atribuição à obra → Consumo/Devolução → Reconciliação → Apuramento do custo`.
-
-### Perguntas de discovery
-
-1. Onde é criado e aprovado o orçamento inicial de cada obra?
-2. Qual é a origem do código e preço de cada material?
-3. Como distinguem material disponível, reservado e já consumido?
-4. Quem regista a saída para obra e em que momento?
-5. O que acontece quando sobra material ou uma obra pede mais do que previsto?
-6. As compras feitas diretamente para uma obra aparecem como custo dessa obra?
-7. Com que atraso conseguem saber o custo real e a margem?
-8. Existem divergências de inventário? Como são identificadas e corrigidas?
-
-### Alternativas a avaliar
-
-- Melhorar procedimentos, codificação de artigos e inventários periódicos.
-- Aproveitar módulos de projetos, inventário e centros de custo no ERP atual.
-- Adicionar interface simples de movimentos de armazém, com permissões.
-- Criar aplicação complementar integrada com ERP, caso existam requisitos específicos.
-- Não desenvolver se a solução atual já garantir registos fiáveis com esforço aceitável.
-
-### Métricas e evidências
-
-Percentagem de movimentos registados no próprio dia; divergência stock físico/registado; tempo de apuramento de custos por obra; taxa de materiais sem imputação; desvios entre custo previsto e real; número de compras urgentes; tempo administrativo por movimento. **Cuidado:** comparar custos por obra pode exigir regras contabilísticas de imputação de mão de obra e indiretos.
-
-### Riscos / red flags
-
-Inventário de partida incorreto; ausência de códigos únicos; utilizadores sem conectividade em obra; contabilização de devoluções; dupla imputação; diferença entre custos contabilísticos e custos de gestão; resistência ao registo operacional.
-
-**Próximo passo recomendado:** workshop com responsável de obra, armazém, financeiro e técnico de sistema para mapear um ciclo completo e confirmar dados existentes. **Módulos:** [01](#módulo-01--fundamentos-do-negócio-e-funcionamento-das-empresas), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [05](#módulo-05--integração-de-sistemas-dados-e-automação), [07](#módulo-07--business-analysis-roi-e-vendas-consultivas).
-
----
-
-## CL-02 — Ordens de trabalho, documentos e faturação
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** análise de fluxos e ficheiros internos da Termovapor envolvendo entidades operacionais, documentos PDF e articulação com SAGE. Não assumir que cada entidade ou PDF é redundante sem confirmar o propósito.
-
-**Setor:** manutenção industrial, assistência, instalação e serviços técnicos. **Processo:** pedido → ordem de serviço → execução → materiais → documentação → faturação.
-
-### O problema a investigar
-
-A empresa utiliza diferentes ficheiros, aplicações ou documentos para representar etapas do mesmo trabalho. Uma ordem pode dar origem a subordens, notas, documentação de serviço e dados para faturação. A fragmentação pode gerar esforço ou, pelo contrário, refletir **controlo e rastreabilidade necessários**. O diagnóstico deve distinguir as duas coisas.
-
-**Fluxo didático:** `Pedido cliente → Preparação da ordem → Atribuição → Execução → Registo de materiais/horas → Validação cliente → Emissão documental → Faturação`.
-
-### Conceitos essenciais
-
-BPMN; FSM; ERP; estados e transições; DMS; aprovação; audit trail; dados mestre; documentos como evidência; automação de documentos; integração contabilística.
-
-### Perguntas de discovery
-
-1. Qual o motivo original para criar cada tipo de ordem, nota ou documento?
-2. Quem preenche, consulta, aprova e arquiva cada ficheiro?
-3. Que informação é reintroduzida mais de uma vez?
-4. O PDF serve para assinatura, entrega ao cliente, arquivo legal ou outra finalidade?
-5. Que campos mudam ao longo da execução e quem os altera?
-6. Existem trabalhos que não seguem o fluxo habitual? Porquê?
-7. Quando é que SAGE recebe os dados? De forma automática ou manual?
-8. Quem consegue dizer se uma ordem está pronta a faturar?
-9. Que documentos têm valor legal ou contratual e devem ser preservados?
-
-### Alternativas a avaliar
-
-- Preservar o processo atual com melhor documentação, nomenclatura e organização.
-- Criar um workflow digital com estados e campos únicos, mantendo PDFs só quando necessários.
-- Configurar ou integrar uma solução standard de gestão de serviços.
-- Construir interface web simplificada sobre um modelo de dados consolidado.
-- Introduzir integração com SAGE apenas através de mecanismo suportado e validado.
-
-### Métricas e evidências
-
-Tempo entre intervenção e faturação; número de introduções repetidas de um campo; documentos emitidos por ordem; percentagem de ordens incompletas; tempo de preparação de relatórios; número de correções por mês; tempos de aprovação.
-
-### Riscos / red flags
-
-Simplificar sem preservar significado legal; eliminar assinaturas obrigatórias; migração incorreta de históricos; desconhecimento do formato e regras de integração SAGE; exceções operacionais não modeladas; confundir uma ferramenta pessoal construída ao longo do tempo com ausência de necessidade comercial.
-
-**Próximo passo recomendado:** selecionar uma ordem antiga e uma recente, reconstruir a vida completa de ambas com os utilizadores e identificar funções essenciais de cada documento. **Módulos:** [02](#módulo-02--business-process-management-e-melhoria-de-processos), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [05](#módulo-05--integração-de-sistemas-dados-e-automação).
-
----
-
-## CL-03 — CAD, listas de materiais e ERP
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** conversas com a IS3 sobre desenhos de engenharia, exportações e ligação ao PHC. Foi referido que parte das exportações já funciona; não afirmar que há falha ou oportunidade sem validar o fluxo completo.
-
-**Setor:** metalomecânica, maquinaria, equipamento industrial, engenharia por encomenda. **Processo:** desenho → revisão → lista de materiais → compras/produção.
-
-### O problema a investigar
-
-Um desenho técnico pode conter componentes, medidas, revisões e relações que precisam de chegar ao sistema de compras/produção. A exportação de um formato, como STEP, não equivale necessariamente a exportar **BOM, códigos, quantidades, versões ou estados**. Por outro lado, uma integração existente pode já resolver tudo o que o cliente precisa.
-
-### Conceitos essenciais
-
-CAD; PDM/PLM; BOM; ETO; ERP; revisões; master data de artigos; equivalência de códigos; gestão de alterações; integrações via API/ficheiros.
-
-### Perguntas de discovery
-
-1. Que informação do CAD chega atualmente ao ERP? Desenho, lista de materiais, ambos?
-2. Como são criados e associados os códigos de artigo?
-3. O que acontece quando o desenho muda depois da encomenda de material?
-4. Como garantem que compras e produção usam a mesma revisão?
-5. Há componentes comprados, fabricados, subcontratados e alternativos?
-6. Que tarefas são manuais, apesar de existir exportação automática?
-7. Quais são as exceções mais frequentes?
-8. Que software e versões são utilizados? Que integrações são oficialmente suportadas?
-
-### Alternativas a avaliar
-
-- Manter integração atual se for suficiente; melhorar formação e controlo de versões.
-- Padronizar artigos e BOM antes de escrever conectores.
-- Criar validação de diferenças de revisão com aprovação explícita.
-- Integrar listas de materiais/estados por APIs ou exportações suportadas.
-- Introduzir PLM/PDM se o problema principal for gestão de revisões e colaboração de engenharia.
-
-### Métricas e evidências
-
-Tempo de preparação da BOM; número de revisões por ordem; compras ou fabrico com versão desatualizada; horas de reconciliação; taxa de artigos duplicados; custo de alterações depois de produção iniciada.
-
-### Riscos / red flags
-
-Desenho geométrico confundido com dados de compras; modelos configuráveis; unidades; estrutura multinível; componentes equivalentes; gestão de alterações após início de produção; falta de permissões para mexer em ERP; dependências de plugins proprietários.
-
-**Próximo passo recomendado:** demonstração com uma ordem real (autorizada), incluindo **uma revisão posterior**. Não aceitar apenas um cenário “feliz” de exportação. **Módulos:** [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [04](#módulo-04--operações-industriais-lean-e-indústria-4050), [05](#módulo-05--integração-de-sistemas-dados-e-automação).
-
----
-
-## CL-04 — Extração documental e entrada no ERP
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** investigação de oportunidades de extração de dados de documentos empresariais para PHC e outros sistemas. Sem garantia de viabilidade até avaliar documentos e APIs.
-
-**Setor:** transversal — compras, financeiro, logística e produção. **Processo:** receber documento → compreender → validar → registar → arquivar.
-
-### O problema a investigar
-
-Faturas, guias, ordens e certificados chegam por PDF ou imagem. Uma pessoa lê, copia campos, confirma valores e introduz os dados no ERP. Os documentos podem variar muito em estrutura. O benefício potencial pode estar em reduzir transcrição, mas as regras de validação são mais importantes do que a simples extração.
-
-### Conceitos essenciais
-
-OCR; Document AI; extração estruturada; regras; fornecedor; documento; deduplicação; validação de totais; integração ERP; human-in-the-loop; RGPD.
-
-### Perguntas de discovery
-
-1. Que tipos de documentos e quantos por mês?
-2. Que campos são copiados? Quais são críticos?
-3. Que percentagem dos documentos tem formato repetido?
-4. Existem documentos manuscritos, digitalizados ou de baixa qualidade?
-5. Como detetam duplicados, discrepâncias ou fornecedores novos?
-6. Que aprovações devem existir antes de lançar o documento?
-7. Há histórico de erros e custos conhecidos de correção?
-8. Os dados contêm informação sensível? Quem pode processá-la?
-
-### Alternativas a avaliar
-
-- E-invoicing ou formatos estruturados já suportados pelo sistema.
-- OCR standard do ERP e configurações nativas.
-- Extração assistida com fila de validação humana.
-- Modelo personalizado apenas se variedade e volumes o justificarem.
-- Manter transcrição manual para volumes pequenos e exceções raras.
-
-### Métricas e evidências
-
-Documentos/mês; minutos por documento; precisão por campo crítico; taxa de exceções; correções após lançamento; custo de processamento; tempo entre receção e registo; incidentes de duplicação.
-
-### Riscos / red flags
-
-Falhas silenciosas; números com separadores e vírgulas decimais; referência do pedido errada; IVA diferente por linha; formatos alterados; informação pessoal; lançamento automático irreversível; custos de validação ignorados.
-
-**Próximo passo recomendado:** amostra autorizada de 30–50 documentos representativos e desenho de um pipeline com avaliação de campos, exceções e integração. **Módulos:** [05](#módulo-05--integração-de-sistemas-dados-e-automação), [06](#módulo-06--ia-aplicada-aos-processos-empresariais), [07](#módulo-07--business-analysis-roi-e-vendas-consultivas).
-
----
-
-## CL-05 — Normalização de catálogos XML de fornecedores
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** projeto/estudo Cloud PC em torno de marketplace WordPress/WooCommerce e importação de catálogos de fornecedores. As camadas de IA discutidas são opções/propostas, não resultados comprovados.
-
-**Setor:** distribuição, e-commerce, marketplaces, venda de produtos técnicos. **Processo:** fornecedor → catálogo → normalização → seleção de produtos → publicação → atualização.
-
-### O problema a investigar
-
-Fornecedores entregam XML/CSV em formatos diferentes. Um chama o campo `SKU`, outro `Ref`; alguns usam preço com IVA, outros sem; alguns indicam stock físico, outros só disponibilidade. A transformação precisa de preservar significado e não introduzir dados fictícios.
-
-### Conceitos essenciais
-
-XML/CSV/JSON; ETL; PIM; WooCommerce; produto/variante; SKU; GTIN/EAN; stock; fornecedor; validação; SEO; IA assistida; margem e preço.
-
-### Perguntas de discovery
-
-1. Quantos fornecedores e produtos existem hoje e quais são previstos?
-2. Há um ficheiro de exemplo **real** por fornecedor?
-3. Qual a frequência de atualização e os volumes de alteração?
-4. Que campos são obrigatórios? Que campos são opcionais?
-5. Como são tratados impostos, moeda, portes, preço de custo e margem?
-6. Como funcionam variantes, categorias, imagens e códigos duplicados?
-7. Quem aprova novos produtos e mudanças drásticas de preços?
-8. Como detetam produtos descontinuados ou stock incerto?
-9. O checkout e a encomenda são próprios ou redirecionam para fornecedores?
-
-### Alternativas a avaliar
-
-- Importador standard com mapeamentos por fornecedor.
-- Camada intermédia com esquema de dados comum e validações.
-- IA **apenas para sugerir mapeamento inicial e enriquecer conteúdo**; execução recorrente determinística quando possível.
-- Seleção de produtos por regras simples antes de sistemas sofisticados de previsão de procura.
-- Separar importação, SEO/GEO e análise de procura em componentes independentes e mensuráveis.
-
-### Métricas e evidências
-
-Produtos corretamente importados; percentagem de campos válidos; erros de preço/stock; tempo para integrar novo fornecedor; horas de correção por lote; tempo de atualização; incidentes que afetam checkout.
-
-### Riscos / red flags
-
-Unidades incompatíveis; interpretação incorreta de impostos; produtos não disponíveis apresentados como stock real; scraping não autorizado; imagens sem direitos; dados de cliente tratados em serviços externos; duplicação de produto; alteração do catálogo sem aviso.
-
-**Próximo passo recomendado:** piloto com um fornecedor, lote real reduzido e tabela de exceções; validar data contract antes de expandir. **Módulos:** [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [05](#módulo-05--integração-de-sistemas-dados-e-automação), [06](#módulo-06--ia-aplicada-aos-processos-empresariais).
-
----
-
-## CL-06 — CRM comercial e oportunidades industriais
-
-**Estado:** [CONTEXTO INTERNO] + [HIPÓTESES]. **Contexto conhecido:** interesse em mini-CRM para organizar leads e seguimento comercial em contexto empresarial; funcionalidades e prioridade carecem de validação. A ficha não apresenta resultados da Oxiarte ou de outros contactos.
-
-**Setor:** indústria e serviços B2B. **Processo:** lead → contacto → qualificação → reunião → proposta → decisão → acompanhamento.
-
-### O problema a investigar
-
-Uma equipa recebe pedidos por email, telefone, site e contactos pessoais. Sem registo consistente, pode não saber quem é o responsável pelo seguimento, o que foi combinado ou quando retomar a conversa. O problema pode ser resolvido com disciplina comercial e CRM standard, sem desenvolvimento à medida.
-
-### Conceitos essenciais
-
-CRM; pipeline; lead/opportunity; ciclo comercial; *lead source*; SLA de resposta; próximo passo; permissões; automações simples; reporting; qualidade dos dados.
-
-### Perguntas de discovery
-
-1. Como entram novos contactos e pedidos? Qual o volume?
-2. Onde ficam registadas reuniões, propostas e compromissos?
-3. Cada oportunidade tem responsável e próximo passo?
-4. Que dados são essenciais? Que dados não vale a pena recolher?
-5. Quanto tempo demora a primeira resposta?
-6. Quantas propostas ficam sem acompanhamento?
-7. Quem precisa de acompanhar o pipeline e com que periodicidade?
-8. Que ferramentas já utilizam e por que motivo não chegam?
-
-### Alternativas a avaliar
-
-- Criar regras mínimas de CRM e formação na ferramenta existente.
-- Adotar CRM standard simples com pipeline e tarefas.
-- Integrar formulários do site e email com CRM, respeitando privacidade e permissões.
-- Desenvolver mini-CRM específico apenas se existirem requisitos que ferramentas standard não cubram.
-
-### Métricas e evidências
-
-Tempo de primeira resposta; leads sem responsável; percentagem com próximo passo; taxa de reuniões por contacto; tempo entre proposta e decisão; taxa de conversão por etapa; qualidade dos registos. Evitar avaliar a equipa apenas por quantidade de contactos.
-
-### Riscos / red flags
-
-Tratar um problema de disciplina comercial como problema de software; migração de contactos sem base legal; introdução excessiva de campos; dashboards que premiam atividades sem resultados; duplicados; falta de propriedade do CRM.
-
-**Próximo passo recomendado:** mapear a jornada de cinco leads recentes e configurar um pipeline de teste. **Módulos:** [01](#módulo-01--fundamentos-do-negócio-e-funcionamento-das-empresas), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [07](#módulo-07--business-analysis-roi-e-vendas-consultivas).
-
----
-
-## CL-07 — Rastreabilidade das ordens de produção
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** metalomecânica, têxtil, componentes, equipamento industrial. **Processo:** planeamento → execução → controlo → expedição.
-
-### O problema a investigar
-
-A produção utiliza quadros, folhas de papel e comunicação oral para saber onde está cada ordem. Quando um cliente liga, a equipa comercial telefona à fábrica. Há atrasos e pouca visibilidade, mas o processo pode funcionar bem em determinadas dimensões e volumes.
-
-### Conceitos essenciais
-
-MES; ERP; ordens de fabrico; estados; WIP; lead time; OTD; rastreabilidade; código de barras/QR; qualidade de dados; ISA-95.
-
-### Perguntas de discovery
-
-- Quantas ordens existem simultaneamente? Quantas operações por ordem?
-- Quem define prioridades e quem pode alterá-las?
-- O que significa “em produção” para cada equipa?
-- Como registam quantidade concluída, sucata e retrabalho?
-- Que informação precisa de estar disponível em tempo real?
-- É viável registar estados em tablets ou terminais de chão de fábrica?
-- Existe requisito de rastreabilidade por lote, operador ou máquina?
-
-### Alternativas a avaliar
-
-Primeiro definir estados e regras; depois avaliar quadro digital, módulo MES do ERP, ferramenta especializada ou solução complementar integrada. Não instalar sensores/IoT se bastar registo simples e fiável de operações.
-
-### Métricas e evidências
-
-Tempo para encontrar estado de ordem; percentagem de ordens com estado atualizado; atrasos; WIP; retrabalho; número de chamadas entre departamentos; aderência ao plano.
-
-### Riscos / red flags
-
-Registos pouco utilizados; interface lenta; cobertura Wi-Fi fraca; dados inseridos tarde; responsáveis indefinidos; discrepância entre ordem técnica e ordem contabilística.
-
-**Próximo passo recomendado:** piloto numa linha/família de produtos com estados simples. **Módulos:** [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [04](#módulo-04--operações-industriais-lean-e-indústria-4050), [05](#módulo-05--integração-de-sistemas-dados-e-automação).
-
----
-
-## CL-08 — Compras, fornecedores e ruturas de stock
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** indústria, construção e distribuição. **Processo:** necessidade → planeamento → aprovação → encomenda → receção.
-
-### O problema a investigar
-
-Há ruturas de componentes críticos apesar de existir inventário. As causas possíveis incluem previsões imprecisas, consumos não registados, reservas ausentes, prazos de fornecedor variáveis ou alterações de produção.
-
-### Conceitos essenciais
-
-Procure-to-Pay; MRP; BOM; stock de segurança; lead time de fornecedor; ponto de encomenda; fornecedor alternativo; compras urgentes; reconciliação entre encomenda, receção e fatura.
-
-### Perguntas de discovery
-
-- O que desencadeia a compra? Pedido manual, stock mínimo ou plano MRP?
-- Qual o prazo médio **e variabilidade** de entrega por fornecedor?
-- Existem compras urgentes frequentes? Quais os motivos?
-- Os consumos são registados no momento?
-- Há reservas por obra ou ordem de produção?
-- Como verificam se o recebido corresponde ao encomendado?
-- Qual o custo de uma rutura e que produtos são críticos?
-
-### Alternativas a avaliar
-
-Melhorar cadastro e disciplina de movimentos; configurar reposição no ERP; rever stocks de segurança; criar alertas de exceção e dashboard; integrar fornecedores quando volumes justificam. Previsão com IA apenas quando houver dados e problema de previsão claramente demonstrado.
-
-### Métricas e evidências
-
-Taxa de rutura; entregas no prazo; compras urgentes; dias de inventário; valor de stock obsoleto; divergências de receção; lead time e sua variação.
-
-### Riscos / red flags
-
-Aumentar indiscriminadamente stock sem analisar capital circulante; ignorar prazo de transporte; confiar em stock “em trânsito” não confirmado; automatizar compras sem limites de aprovação.
-
-**Próximo passo recomendado:** analisar 10 ruturas recentes e classificar causas antes de propor ferramenta. **Módulos:** [01](#módulo-01--fundamentos-do-negócio-e-funcionamento-das-empresas), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [04](#módulo-04--operações-industriais-lean-e-indústria-4050).
-
----
-
-## CL-09 — Manutenção e assistência técnica
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** indústria, energia, instalações técnicas. **Processo:** avaria/pedido → triagem → planeamento → intervenção → fecho.
-
-### O problema a investigar
-
-A manutenção é predominantemente reativa e cada técnico tem um histórico próprio. A empresa desconhece recorrência de avarias, peças utilizadas e indisponibilidade de equipamentos. A primeira melhoria pode ser estruturar o registo, antes de qualquer solução preditiva.
-
-### Conceitos essenciais
-
-CMMS/EAM; ativo; manutenção corretiva/preventiva/condicional; MTBF; MTTR; criticidade; ordens de trabalho; peças de reposição; SLA.
-
-### Perguntas de discovery
-
-- Que ativos são mais críticos para produção ou serviço?
-- Existe inventário com identificadores únicos e localização?
-- Como registam motivo, duração e peças de cada intervenção?
-- Como programam manutenção preventiva?
-- Quais são as avarias repetidas? Com que frequência?
-- O custo da paragem é conhecido ou estimado?
-- Quem decide o plano e quem valida o fecho?
-
-### Alternativas a avaliar
-
-Criar cadastro e histórico; usar módulo CMMS; configurar planos e alertas; integrar stocks de peças; só depois ponderar sensores, análise de condição e modelos preditivos.
-
-### Métricas e evidências
-
-Disponibilidade dos ativos; horas de paragem; MTBF/MTTR definidos por classe de equipamento; cumprimento da manutenção preventiva; custo por ativo; avarias repetidas; peças críticas.
-
-### Riscos / red flags
-
-Promessa de previsão sem histórico suficiente; dados de sensores sem calibração; alertas em excesso; decisões que afetam segurança sem supervisão; planos irreais.
-
-**Próximo passo recomendado:** selecionar 10 ativos, estruturar histórico de intervenções e definir criticidade. **Módulos:** [04](#módulo-04--operações-industriais-lean-e-indústria-4050), [05](#módulo-05--integração-de-sistemas-dados-e-automação), [06](#módulo-06--ia-aplicada-aos-processos-empresariais).
-
----
-
-## CL-10 — Conhecimento interno e assistente de IA
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** transversal — operações, assistência, qualidade, RH e suporte. **Processo:** procurar conhecimento → interpretar → agir → registar.
-
-### O problema a investigar
-
-Os trabalhadores têm dificuldade em encontrar instruções, procedimentos e documentação atualizada. Um assistente de IA pode reduzir pesquisa, mas não resolve conteúdos desatualizados, versões inconsistentes ou falta de permissão de acesso.
-
-### Conceitos essenciais
-
-Gestão documental; versionamento; RAG; pesquisa semântica; evals; fontes; permissões; segregação de dados; alucinações; prompt injection.
-
-### Perguntas de discovery
-
-- Onde estão os documentos? Quem os mantém e aprova?
-- Existem documentos duplicados ou contraditórios?
-- Que perguntas são mais frequentes e quanto tempo levam a resolver?
-- Quem pode aceder a cada categoria de conteúdo?
-- Há manuais cujo erro de interpretação possa afetar segurança?
-- Como se identifica a versão válida?
-- Uma boa pesquisa tradicional resolveria parte do problema?
-
-### Alternativas a avaliar
-
-Organizar e versionar documentos; melhorar pesquisa e navegação; introduzir FAQs; só depois implementar RAG com fontes e permissões. O sistema deve admitir “não sei” e encaminhar assuntos críticos.
-
-### Métricas e evidências
-
-Taxa de respostas corretas com referência; tempo de pesquisa; taxa de escalamento; perguntas sem resposta; incidentes de acesso indevido; satisfação dos utilizadores; custo por consulta.
-
-### Riscos / red flags
-
-Conteúdo confidencial exposto; documentos antigos; respostas inventadas; instruções perigosas; informação externa maliciosa; ausência de avaliação antes de lançamento.
-
-**Próximo passo recomendado:** curadoria de um conjunto pequeno de documentos aprovados e 50 perguntas de teste, incluindo perguntas sem resposta. **Módulos:** [02](#módulo-02--business-process-management-e-melhoria-de-processos), [05](#módulo-05--integração-de-sistemas-dados-e-automação), [06](#módulo-06--ia-aplicada-aos-processos-empresariais).
-
----
-
-## CL-11 — Propostas e orçamentos dispersos
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** construção, indústria ETO e serviços B2B. **Processo:** pedido → levantamento → custo → validação → proposta → revisão.
-
-### O problema a investigar
-
-Os comerciais e engenheiros reutilizam propostas antigas, consultam preços por telefone e montam orçamentos em vários Excel. O problema pode estar em templates, regras, dados de custo, níveis de aprovação ou falta de integração.
-
-### Conceitos essenciais
-
-Quote-to-Cash; CRM; CPQ (*Configure, Price, Quote*); BOM; margens; versões; aprovação; custo previsto/real; regras de preço.
-
-### Perguntas de discovery
-
-- Quantas propostas fazem por mês e de que tipos?
-- Quais os passos mais demorados? Que partes são repetidas?
-- Onde são guardados preços, descontos e custos atualizados?
-- Qual a percentagem de propostas revista? Porquê?
-- A proposta aprovada origina automaticamente uma encomenda/obra?
-- Como controlam versões enviadas ao cliente?
-- Quem aprova descontos e condições especiais?
-
-### Alternativas a avaliar
-
-Padronizar modelos; organizar tabela de preços e custos; usar funcionalidades de proposta no CRM/ERP; criar CPQ; integrar dados de engenharia; usar IA para rascunhos textuais **não** para aprovar preços sem controlo.
-
-### Métricas e evidências
-
-Tempo médio por orçamento; taxa de retrabalho; erros de cálculo; propostas sem seguimento; taxa de conversão por tipologia; desvios de margem; número de versões.
-
-### Riscos / red flags
-
-Automatização de regras de preço não aprovadas; reutilização de dados desatualizados; falta de controlo de descontos; estimativas técnicas baseadas em conteúdo inventado.
-
-**Próximo passo recomendado:** analisar amostra de propostas de diferentes complexidades e identificar a etapa dominante. **Módulos:** [01](#módulo-01--fundamentos-do-negócio-e-funcionamento-das-empresas), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [07](#módulo-07--business-analysis-roi-e-vendas-consultivas).
-
----
-
-## CL-12 — Dashboard e indicadores de gestão
-
-**Estado:** [EXEMPLO FICTÍCIO]. **Setor:** transversal. **Processo:** recolha → validação → análise → decisão.
-
-### O problema a investigar
-
-A direção pede um dashboard que “mostre tudo”. O dado pode estar repartido entre ERP, CRM, folhas de cálculo e aplicações locais. O risco é criar uma interface visual sem resolver definições, qualidade e atualização.
-
-### Conceitos essenciais
-
-BI; KPI; fontes oficiais; modelo de dados; ETL; granularidade; métricas de negócio; qualidade dos dados; governança; perfis de acesso.
-
-### Perguntas de discovery
-
-- Que decisões querem tomar com o dashboard? Com que frequência?
-- Quais os cinco indicadores que mudariam uma decisão?
-- Como é definido cada KPI? Todos concordam com o cálculo?
-- Qual é a fonte oficial? Quem a atualiza?
-- Precisam de tempo real ou de atualização diária/semanal?
-- Quem pode ver margens, salários ou dados sensíveis?
-- Como identificam dados em falta, incorretos ou contraditórios?
-
-### Alternativas a avaliar
-
-Definir dicionário de indicadores; ativar relatórios do ERP/CRM; melhorar procedimentos de recolha; utilizar BI standard; desenvolver dashboard específico apenas quando justificado. A tecnologia de visualização é posterior à definição de dados.
-
-### Métricas e evidências
-
-Tempo de preparação de relatórios; divergências entre números; percentagem de indicadores com dono e definição; latência de atualização; uso real das análises; decisões suportadas.
-
-### Riscos / red flags
-
-“Tempo real” sem necessidade; dashboards com métricas contraditórias; dados pessoais sem acesso controlado; confundir correlação e causalidade; indicadores que incentivam comportamento errado.
-
-**Próximo passo recomendado:** workshop de indicadores com decisão associada, definição, origem e responsável por cada KPI. **Módulos:** [01](#módulo-01--fundamentos-do-negócio-e-funcionamento-das-empresas), [03](#módulo-03--sistemas-empresariais-erp-crm-mes-e-gestão-operacional), [05](#módulo-05--integração-de-sistemas-dados-e-automação).
-
----
-
 # ANEXOS — FERRAMENTAS DE UTILIZAÇÃO DIÁRIA
 
 ## Anexo A — Perguntas de discovery por interlocutor
@@ -1774,27 +1210,7 @@ A resposta ajuda a distinguir oportunidade ativa de exploração de mercado.
 - Estado do pipeline:
 ```
 
-### B.6. Template — Ficha de Case Library
-
-```markdown
-# CL-XX — [Padrão de problema]
-**Estado:** [CONTEXTO INTERNO] / [HIPÓTESE] / [EXEMPLO FICTÍCIO] / [VALIDADO]
-**Setor:**
-**Processo:**
-**Contexto (sem dados confidenciais desnecessários):**
-**Problema a investigar:**
-**Fluxo típico:**
-**Teoria / módulos:**
-**5–8 perguntas de discovery:**
-**Alternativas: melhoria de processo / standard / integração / desenvolvimento / não avançar:**
-**Métricas e dados para validar:**
-**Riscos e exceções:**
-**Resultados medidos e fonte, se existirem:**
-**Próximo passo aconselhado:**
-**Autor e data da revisão:**
-```
-
-### B.7. Rubrica de avaliação de uma chamada de discovery
+### B.6. Rubrica de avaliação de uma chamada de discovery
 
 A pessoa que observa a chamada pontua de 0 a 2 cada item: `0 = ausente`; `1 = parcial`; `2 = bem realizado`.
 
@@ -1813,12 +1229,11 @@ A pessoa que observa a chamada pontua de 0 a 2 cada item: `0 = ausente`; `1 = pa
 
 **Total:** ___ / 20. Após avaliação, discutir **uma melhoria específica** para a próxima conversa; não transformar a formação numa classificação punitiva.
 
-### B.8. Rituais de aprendizagem no Vouga OS
+### B.7. Rituais de aprendizagem no Vouga OS
 
 - **Vouga Radar:** cada pessoa pode partilhar um estudo, caso, ferramenta ou problema observado. Registar *o que é*, *para quem serve*, *porque interessa*, *limites* e *como testar*.
 - **Vouga Lab:** experimentar algo num ambiente sem dados sensíveis, medir o resultado e documentar o que falhou. Uma demo sem comparação com uma alternativa convencional não é evidência suficiente.
 - **Vouga Sessions:** explicação curta feita por um elemento da equipa, seguida de perguntas. O foco deve ser *ensinar a pensar*, não apresentar mais uma ferramenta.
-- **Case Review:** uma vez por ciclo comercial, escolher uma reunião real, rever hipóteses e atualizar a Case Library. Remover perguntas que não ajudaram e adicionar novos padrões.
 
 **Modelo para cada partilha do Radar:**
 
@@ -2023,7 +1438,6 @@ Estas fontes foram consultadas ou verificadas em **3 de novembro de 2026**. São
 - O enquadramento do AI Act tem fases e alterações; verificar a legislação vigente antes de cada projeto regulado.
 - Funcionalidades dos ERPs dependem de versões, licenças e módulos.
 - Regras de proteção de dados, cibersegurança e obrigações contratuais devem ser tratadas por especialistas quando pertinente.
-- Documentação da Case Library deve ser revista sempre que um caso passe de hipótese a diagnóstico, proposta, contratação ou implementação.
 
 ---
 
@@ -2031,7 +1445,7 @@ Estas fontes foram consultadas ou verificadas em **3 de novembro de 2026**. São
 
 A Vouga quer ser uma equipa capaz de compreender profundamente os negócios que ajuda a modernizar. Isso exige curiosidade e método: estudar conceitos, observar processos reais, experimentar soluções, medir resultados e partilhar conhecimento.
 
-**A regra que liga o Approach à Academy e à Case Library é simples:**
+**A regra que liga o Approach à Academy é simples:**
 
 > **Não vendemos tecnologia antes de compreender o sistema. Não chamamos oportunidade a uma hipótese não validada. Não chamamos resultado a uma promessa.**
 

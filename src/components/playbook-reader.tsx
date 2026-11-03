@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { salesPlaybook } from "@/content/sales-playbook";
 import knowledge from "@/content/sales-knowledge.json";
 
-type Area = "approach" | "academy" | "cases";
+type Area = "approach" | "academy";
 type Entry = {
   id: string;
   area: Area;
@@ -25,11 +25,6 @@ const areas: { id: Area; title: string; description: string }[] = [
     id: "academy",
     title: "Knowledge Academy",
     description: "Compreender o negócio antes de propor tecnologia.",
-  },
-  {
-    id: "cases",
-    title: "Case Library",
-    description: "Relacionar o conhecimento com situações concretas.",
   },
 ];
 const entries: Entry[] = [
@@ -50,9 +45,11 @@ const anchorKey = (text: string) => normalize(text).replace(/[^a-z0-9]/g, "");
 function ReadingContent({
   content,
   navigate,
+  collapsible = false,
 }: {
   content: string;
   navigate: (entry: Entry) => void;
+  collapsible?: boolean;
 }) {
   const markdown = (text: string) => (
     <Markdown
@@ -100,6 +97,24 @@ function ReadingContent({
       {text}
     </Markdown>
   );
+  if (collapsible) {
+    const sections = content.split(/(?=^### )/m);
+    return (
+      <>
+        {sections.map((section, index) => {
+          const match = /^### ([^\n]+)\n([\s\S]*)$/.exec(section);
+          return match ? (
+            <details className="playbook-answer" key={index}>
+              <summary>{match[1]}</summary>
+              {markdown(match[2])}
+            </details>
+          ) : (
+            <div key={index}>{markdown(section)}</div>
+          );
+        })}
+      </>
+    );
+  }
   const answer = /\*\*Resolução orientadora[^\n]*\n/.exec(content);
   if (!answer) return markdown(content);
   const start = answer.index + answer[0].length;
@@ -120,7 +135,6 @@ export function PlaybookReader({ onBack }: { onBack: () => void }) {
   const [area, setArea] = useState<Area>("approach");
   const [selected, setSelected] = useState(entries[0].id);
   const [query, setQuery] = useState("");
-  const title = useRef<HTMLHeadingElement>(null);
   const current = entries.find((e) => e.id === selected)!;
   const group = entries.filter((e) => e.area === area);
   const filtered = group.filter((e) =>
@@ -135,10 +149,6 @@ export function PlaybookReader({ onBack }: { onBack: () => void }) {
     setSelected(entry.id);
     setQuery("");
   }
-  useEffect(() => {
-    title.current?.focus({ preventScroll: true });
-    title.current?.scrollIntoView({ block: "start" });
-  }, [selected]);
   return (
     <div className="sales-playbook" lang="pt-PT">
       <header className="playbook-header">
@@ -229,12 +239,16 @@ export function PlaybookReader({ onBack }: { onBack: () => void }) {
               {current.kind && (
                 <span className="playbook-case-kind">{current.kind}</span>
               )}
-              <h1 ref={title} tabIndex={-1}>
-                {current.title}
-              </h1>
+              <h1>{current.title}</h1>
             </header>
             <div className="playbook-prose">
-              <ReadingContent content={current.content} navigate={navigate} />
+              <ReadingContent
+                content={current.content}
+                navigate={navigate}
+                collapsible={
+                  current.area === "approach" && current.id === "objecoes"
+                }
+              />
             </div>
           </article>
           <footer className="playbook-pagination">
