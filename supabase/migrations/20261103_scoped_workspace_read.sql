@@ -6,7 +6,7 @@ declare result jsonb; c record; items jsonb;
 begin
   if p_collections is null or exists (
     select 1 from unnest(p_collections) as requested(name)
-    where not exists (select 1 from vouga_next.collections c where c.name=requested.name)
+    where not exists (select 1 from vouga_next.collections as catalog_entry where catalog_entry.name=requested.name)
   ) then raise exception 'Invalid collection scope'; end if;
   select jsonb_build_object('schemaVersion',schema_version,'revision',revision)
     into result from vouga_next.workspace where singleton;
