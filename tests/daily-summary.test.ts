@@ -1,3 +1,7 @@
+import { beforeAll, afterAll } from "vitest";
+const oldTelegramFlag = process.env.TELEGRAM_ENABLED;
+beforeAll(() => { process.env.TELEGRAM_ENABLED = "true"; });
+afterAll(() => { if (oldTelegramFlag === undefined) delete process.env.TELEGRAM_ENABLED; else process.env.TELEGRAM_ENABLED = oldTelegramFlag; });
 import { describe, expect, it, vi } from "vitest";
 import {
   dailySummary,
@@ -180,7 +184,7 @@ describe("personal daily Telegram templates", () => {
         new Response(JSON.stringify({ ok: true, result: { message_id: 1 } })),
       );
     const ctx: ServiceContext = {
-      env: { TELEGRAM_BOT_TOKEN: "test-only" },
+      env: { TELEGRAM_ENABLED: "true", TELEGRAM_BOT_TOKEN: "test-only" },
       now: () => now,
       fetch: fetcher as typeof fetch,
       repo: {

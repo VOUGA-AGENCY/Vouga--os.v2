@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { Store } from "@/domain/model";
 import { AppError } from "@/domain/validation";
 import type { WorkspaceRepository } from "../store";
-import { rows, delta, validateStore } from "./collections";
+import { rows, delta, validateStore, type Collection } from "./collections";
 import { SupabaseClient, type SupabaseOptions } from "./client";
 
 /**
@@ -22,6 +22,8 @@ export type WorkspaceCache = {
   browserEntry?: CachedWorkspace;
   noRevisionUntil?: number;
   noBrowserReadUntil?: number;
+  scopedEntries?: Map<string, CachedWorkspace>;
+  noScopedReadUntil?: number;
 };
 // Until vouga_next_revision exists (20261007 migration), changes by other processes show up after this delay.
 const staleWithoutRevision = 60_000;
@@ -34,10 +36,25 @@ export class SupabaseWorkspaceRepository implements WorkspaceRepository {
   private client: SupabaseClient;
   private routesMissing = false;
   constructor(
-    options: SupabaseOptions,
+    private options: SupabaseOptions,
     private cache?: WorkspaceCache,
+    private scope?: readonly Collection[],
   ) {
     this.client = new SupabaseClient(options);
+  }
+
+  scoped(collections: readonly Collection[]): WorkspaceRepository {
+    return new SupabaseWorkspaceRepository(this.options, this.cache, collections);
+  }
+
+  private rememberScope(data: Store) {
+    if (!this.cache || !this.scope) return;
+    // A compatibility full read must never pollute either the full or scoped caches.
+    const projected = Object.fromEntries(Object.entries(data).map(([key, value]) =>
+      [key, Array.isArray(value) && !this.scope!.includes(key as Collection) ? [] : value])) as unknown as Store;
+    (this.cache.scopedEntries ??= new Map()).set([...this.scope].sort().join(","), {
+      revision: data.revision, data: structuredClone(projected), routesMissing: false, readAt: Date.now(),
+    });
   }
 
   /** Current revision, or null while the function is not installed. */
@@ -59,6 +76,25 @@ export class SupabaseWorkspaceRepository implements WorkspaceRepository {
   }
 
   async read(fresh = false): Promise<Store> {
+    if (this.scope) {
+      if (this.cache?.noScopedReadUntil && this.cache.noScopedReadUntil > Date.now())
+        return new SupabaseWorkspaceRepository(this.options, this.cache).read(fresh);
+      const key = [...this.scope].sort().join(",");
+      const cached = this.cache?.scopedEntries?.get(key);
+      if (cached && !fresh && await this.revision() === cached.revision)
+        return structuredClone(cached.data);
+      try {
+        const data = await this.client.rpc<Store>("vouga_next_read_scoped", { p_collections: this.scope });
+        validateStore(data);
+        this.rememberScope(data);
+        return data;
+      } catch (error) {
+        // No partial writes or silent degradation on authorization/network failures.
+        if (!(error instanceof AppError) || !/Run the vouga_next setup SQL/.test(error.message)) throw error;
+        if (this.cache) this.cache.noScopedReadUntil = Date.now() + 300_000;
+        return new SupabaseWorkspaceRepository(this.options, this.cache).read(fresh);
+      }
+    }
     const cached = this.cache?.entry;
     if (cached && !fresh) {
       const revision = await this.revision();
@@ -176,6 +212,8 @@ export class SupabaseWorkspaceRepository implements WorkspaceRepository {
       )
         throw new Error("Workspace metadata cannot be changed by the command.");
       const changes = delta(before, after);
+      if (this.scope && [...changes.upserts, ...changes.deletes].some(row => !this.scope!.includes(row.collection)))
+        throw new Error("Scoped transaction modified an undeclared collection.");
       // Nothing changed (e.g. the worker found no job): no write, no new revision, no egress for every reader.
       if (!changes.upserts.length && !changes.deletes.length) return value;
       if (
@@ -200,7 +238,8 @@ export class SupabaseWorkspaceRepository implements WorkspaceRepository {
       });
       if (result.status === "ok") {
         // The written state is the new current state: keep it, so the next read costs no download.
-        if (this.cache)
+        if (this.scope) this.rememberScope({ ...after, revision: result.revision });
+        else if (this.cache)
           this.cache.entry = {
             revision: result.revision,
             data: { ...structuredClone(after), revision: result.revision },

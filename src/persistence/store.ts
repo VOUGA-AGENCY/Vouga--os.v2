@@ -9,6 +9,8 @@ import { createSeed, addTeamProfiles } from "./seed";
 
 export interface WorkspaceRepository {
   read(): Promise<Store>;
+  /** Infrastructure-only scoped model; never a browser snapshot. */
+  scoped?(collections: readonly import("./supabase/collections").Collection[]): WorkspaceRepository;
   /** Read-only browser model. Must never be used as a transaction base. */
   readForBrowser?(): Promise<Store>;
   transact<T>(fn: (data: Store) => T): Promise<T>;

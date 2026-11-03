@@ -7,9 +7,16 @@ const state = vi.hoisted(() => ({
   data: null as unknown as ReturnType<typeof createSeed>,
   reads: 0,
   writes: 0,
+  scoped: false,
+  lightReads: 0,
 }));
 vi.mock("@/persistence/store", () => ({
   repository: () => ({
+    scoped: (names: string[]) => ({ read: async () => {
+      state.lightReads++;
+      return Object.fromEntries(Object.entries(state.data).map(([key, value]) =>
+        [key, Array.isArray(value) && !names.includes(key) ? [] : structuredClone(value)])) as typeof state.data;
+    } }),
     read: async () => {
       state.reads++;
       return structuredClone(state.data);
@@ -36,6 +43,7 @@ beforeEach(() => {
   state.data = createSeed("test-password");
   state.reads = 0;
   state.writes = 0;
+  state.lightReads = 0;
   state.data.sessions.push({
     hash: createHash("sha256").update(token).digest("hex"),
     memberId: "miguel",
@@ -122,5 +130,17 @@ it("rejects missing sessions without reading the database", async () => {
     }),
   );
   expect(response.status).toBe(401);
+  expect(state.reads).toBe(0);
+});
+
+it("unchanged ETag authenticates using only small collections, including revocation", async () => {
+  const request = () => new Request("http://127.0.0.1:3001/api/workspace", {
+    headers: { ...headers, "if-none-match": `"miguel:${state.data.revision}"` },
+  });
+  expect((await GET(request())).status).toBe(304);
+  expect(state.reads).toBe(0);
+  expect(state.lightReads).toBe(1);
+  state.data.accounts.find(a => a.memberId === "miguel")!.disabled = true;
+  expect((await GET(request())).status).toBe(401);
   expect(state.reads).toBe(0);
 });

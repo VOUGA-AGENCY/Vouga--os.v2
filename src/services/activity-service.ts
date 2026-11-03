@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import { randomUUID } from "node:crypto";
 import type { Member, Store } from "@/domain/model";
 import type { ActivityEvent } from "@/domain/integration-model";
@@ -71,9 +72,13 @@ export function captureChanges(
   actor: Member,
   source: ActivityEvent["source"],
   now: string,
+  scope: "all" | "tasks" = "all",
 ) {
+  const oldTasks = new Map(before.tasks.map(item => [item.id, item]));
+  const oldComments = new Set(before.taskComments.map(item => item.id));
+  const tasks = new Map(data.tasks.map(item => [item.id, item]));
   for (const task of data.tasks) {
-    const old = before.tasks.find((item) => item.id === task.id);
+    const old = oldTasks.get(task.id);
     if (old?.version === task.version) continue;
     const type = !old
       ? "task.created"
@@ -96,9 +101,9 @@ export function captureChanges(
     });
   }
   for (const comment of data.taskComments.filter(
-    (item) => !before.taskComments.some((old) => old.id === item.id),
+    (item) => !oldComments.has(item.id),
   )) {
-    const task = data.tasks.find((item) => item.id === comment.taskId)!;
+    const task = tasks.get(comment.taskId)!;
     recordActivity(data, {
       type: "task.comment_created",
       actorId: actor.id,
@@ -111,8 +116,12 @@ export function captureChanges(
       metadata: { commentId: comment.id },
     });
   }
+  if (scope === "tasks") return;
+  const oldCompanies = new Map(before.organizations.map(item => [item.id, item]));
+  const oldMeetings = new Map(before.meetings.map(item => [item.id, item]));
+  const oldNotes = new Set(before.interactions.map(item => item.id));
   for (const company of data.organizations) {
-    const old = before.organizations.find((item) => item.id === company.id);
+    const old = oldCompanies.get(company.id);
     if (old && old.stage === company.stage) continue;
     recordActivity(data, {
       type: old ? "company.status_changed" : "company.created",
@@ -127,7 +136,7 @@ export function captureChanges(
     });
   }
   for (const note of data.interactions.filter(
-    (item) => !before.interactions.some((old) => old.id === item.id),
+    (item) => !oldNotes.has(item.id),
   ))
     recordActivity(data, {
       type: "company.note_created",
@@ -141,7 +150,7 @@ export function captureChanges(
       metadata: { interactionId: note.id, meetingId: note.meetingId },
     });
   for (const meeting of data.meetings) {
-    const old = before.meetings.find((item) => item.id === meeting.id);
+    const old = oldMeetings.get(meeting.id);
     if (old?.version === meeting.version) continue;
     recordActivity(data, {
       type: !old
@@ -180,6 +189,7 @@ export function enqueue(
   payload: Record<string, unknown>,
   now = new Date().toISOString(),
 ) {
+  if (kind.startsWith("telegram.") && !telegramEnabled()) return;
   if (data.integrationJobs.some((job) => job.key === key)) return;
   data.integrationJobs.push({
     id: randomUUID(),

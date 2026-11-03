@@ -1,3 +1,7 @@
+import { beforeAll, afterAll } from "vitest";
+const oldTelegramFlag = process.env.TELEGRAM_ENABLED;
+beforeAll(() => { process.env.TELEGRAM_ENABLED = "true"; });
+afterAll(() => { if (oldTelegramFlag === undefined) delete process.env.TELEGRAM_ENABLED; else process.env.TELEGRAM_ENABLED = oldTelegramFlag; });
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createSeed } from "@/persistence/seed";
 import { executeCommand } from "@/application/commands";
@@ -31,7 +35,7 @@ beforeEach(() => {
         return result;
       },
     },
-    env: { TELEGRAM_BOT_TOKEN: "test-token" },
+    env: { TELEGRAM_ENABLED: "true", TELEGRAM_BOT_TOKEN: "test-token" },
     now: () => now,
     fetch: vi.fn(
       async () =>

@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import type { Member, Store } from "@/domain/model";
 import {
   canSeeMeeting,
@@ -125,6 +126,7 @@ export function queueCreationNotices(
   actor: Member,
   now: string,
 ) {
+  if (!telegramEnabled()) return;
   const queue = (
     entityType: EntityType,
     entityId: string,

@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import { enqueue } from "./activity-service";
 import { dateKey } from "@/domain/time";
 import type { CreationNotice } from "./creation-notifications";
@@ -12,9 +13,20 @@ import { applyTelegramUpdate, deliverReminders, deliverCreationNotice } from "./
 import { connectionError, type ServiceContext } from "./runtime";
 import type { CalendarKey } from "@/domain/integration-model";
 export async function processJobs(ctx: ServiceContext, limit = 10) {
+  const queue = ctx.repo.scoped?.(["integrationJobs"]) ?? ctx.repo;
   for (let index = 0; index < limit; index++) {
     const token = randomUUID();
-    const job = await ctx.repo.transact((data) => {
+    const job = await queue.transact((data) => {
+      if (!telegramEnabled(ctx.env)) {
+        // Preserve payload/history but retire pending messages: never replay old notifications on re-enable.
+        for (const item of data.integrationJobs) {
+          if (item.kind.startsWith("telegram.") &&
+              (item.state === "pending" || (item.state === "processing" && item.leaseUntil! <= ctx.now()))) {
+            item.state = "failed";
+            item.error = "Suspended by TELEGRAM_ENABLED; automatic replay disabled.";
+          }
+        }
+      }
       // A single leased consumer preserves ordering for external events and cursors.
       if (
         data.integrationJobs.some(
@@ -56,7 +68,7 @@ export async function processJobs(ctx: ServiceContext, limit = 10) {
           ctx,
           job.payload as unknown as Parameters<typeof applyTelegramUpdate>[1],
         );
-      await ctx.repo.transact((data) => {
+      await queue.transact((data) => {
         const item = data.integrationJobs.find((item) => item.id === job.id)!;
         if (item.leaseToken === token) {
           item.state = "done";
@@ -73,7 +85,7 @@ export async function processJobs(ctx: ServiceContext, limit = 10) {
           error: message.replace(/https?:\/\/\S+/g, "[endpoint]"),
         }),
       );
-      await ctx.repo.transact((data) => {
+      await queue.transact((data) => {
         const item = data.integrationJobs.find((item) => item.id === job.id)!;
         if (item.leaseToken !== token) return;
         item.state = item.attempts >= 5 ? "failed" : "pending";
@@ -93,7 +105,8 @@ export async function runIntegrationTick(ctx: ServiceContext) {
     await connectionError(ctx, "telegram", error);
   }
   // Advance the rolling window even when Google has no changes to notify us about.
-  await ctx.repo.transact((data) => {
+  const maintenance = ctx.repo.scoped?.(["externalConnections", "integrationJobs"]) ?? ctx.repo;
+  await maintenance.transact((data) => {
     for (const key of ["office", "contacto"] as CalendarKey[]) {
       const connection = data.externalConnections.find((item) => item.id === `google:${key}`);
       if (connection?.credentials && (!connection.lastSyncAt || dateKey(connection.lastSyncAt) < dateKey(ctx.now())))
@@ -103,7 +116,7 @@ export async function runIntegrationTick(ctx: ServiceContext) {
   await processJobs(ctx);
   for (const key of ["office", "contacto"] as CalendarKey[])
     try {
-      await renewGoogleWatch(ctx, key);
+      await renewGoogleWatch({ ...ctx, repo: ctx.repo.scoped?.(["externalConnections"]) ?? ctx.repo }, key);
     } catch (error) {
       await connectionError(ctx, `google:${key}`, error);
     }

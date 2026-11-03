@@ -135,13 +135,16 @@ export function Workspace({
       })
       .catch((error) => setToast(error.message));
   }, []);
+  const refreshInFlight = useRef(false);
   const refresh = useCallback(async () => {
     if (
       document.hidden ||
+      refreshInFlight.current ||
       inFlight.current ||
       Date.now() - lastRefresh.current < 1000
     )
       return;
+    refreshInFlight.current = true;
     lastRefresh.current = Date.now();
     try {
       const response = await fetch("/api/workspace", {
@@ -186,6 +189,8 @@ export function Workspace({
       setConnection(
         "No connection to the server. Saved records are safe. Retrying…",
       );
+    } finally {
+      refreshInFlight.current = false;
     }
   }, [accept]);
   const command = useCallback(

@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import { isActiveMember } from "@/domain/team";
 import { creationNotice, type CreationNotice } from "./creation-notifications";
 import { canSeeMeeting } from "@/domain/permissions";
@@ -109,6 +110,7 @@ export async function applyTelegramUpdate(
   ctx: ServiceContext,
   update: TelegramUpdate,
 ) {
+  if (!telegramEnabled(ctx.env)) return;
   const message = update.message,
     callback = update.callback_query,
     chat = message?.chat ?? callback?.message?.chat,
@@ -248,6 +250,7 @@ export async function sendOnce(
   buttons?: unknown,
   memberId = "",
 ) {
+  if (!telegramEnabled(ctx.env)) return;
   const claimed = await ctx.repo.transact((data) => {
     if (data.notificationDeliveries.some((item) => item.key === key))
       return false;
@@ -322,7 +325,7 @@ export function meetingReminders(data: Store, now: string) {
   return jobs;
 }
 export async function deliverReminders(ctx: ServiceContext) {
-  if (!ctx.env.TELEGRAM_BOT_TOKEN) return;
+  if (!telegramEnabled(ctx.env) || !ctx.env.TELEGRAM_BOT_TOKEN) return;
   const failures: string[] = [];
   for (const job of meetingReminders(await ctx.repo.read(), ctx.now())) {
     try { await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId); }
@@ -336,6 +339,7 @@ export async function deliverCreationNotice(
   key: string,
   notice: CreationNotice,
 ) {
+  if (!telegramEnabled(ctx.env)) return;
   const message = creationNotice(await ctx.repo.read(), notice);
   if (!message) return;
   await sendOnce(

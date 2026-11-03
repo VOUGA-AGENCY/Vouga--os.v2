@@ -1697,9 +1697,24 @@ export function executeCommand(
   now = new Date().toISOString(),
   source: ActivityEvent["source"] = "os",
 ) {
-  const before = structuredClone(data);
+  // Explicit known commands only: multi-entity captures and future commands keep full detection.
+  const action = record(input).action;
+  const taskOnly = ["task.save", "task.delete", "task.status", "task.comment", "task.tomorrow", "task.linkPR", "task.linkIssue"].includes(String(action));
+  // Detectors use row identity/version/status and groupId, not nested values.
+  // Copy row headers so executeCore may mutate the original without cloning history or calendar payloads.
+  const before = {
+    ...data,
+    tasks: data.tasks.map(item => ({ ...item })),
+    taskComments: data.taskComments.map(item => ({ ...item })),
+    organizations: data.organizations.map(item => ({ ...item })),
+    interactions: data.interactions.map(item => ({ ...item })),
+    meetings: taskOnly ? data.meetings : data.meetings.map(item => ({ ...item })),
+    projects: data.projects.map(item => ({ ...item })),
+    notes: data.notes.map(item => ({ ...item })),
+    reminders: data.reminders.map(item => ({ ...item })),
+  };
   const result = executeCore(data, actor, input, now);
-  captureChanges(data, before, actor, source, now);
+  captureChanges(data, before, actor, source, now, taskOnly ? "tasks" : "all");
   queueCreationNotices(data, before, actor, now);
   return result;
 }

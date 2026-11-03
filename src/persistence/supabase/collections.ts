@@ -109,26 +109,25 @@ export function rows(data: Store): StoredRow[] {
   return result;
 }
 export function delta(before: Store, after: Store) {
-  const oldRows = new Map(
-    rows(before).map((row) => [JSON.stringify([row.collection, row.key]), row]),
-  );
+  validateStore(before);
+  validateStore(after);
   const upserts: StoredRow[] = [];
-  for (const row of rows(after)) {
-    const key = JSON.stringify([row.collection, row.key]);
-    const old = oldRows.get(key);
-    if (
-      !old ||
-      old.position !== row.position ||
-      JSON.stringify(old.data) !== JSON.stringify(row.data)
-    )
-      upserts.push(row);
-    oldRows.delete(key);
+  const deletes: { collection: Collection; key: string }[] = [];
+  for (const collection of collections) {
+    const previous = new Map(before[collection].map((item, position) => {
+      const value = item as unknown as Record<string, unknown>;
+      return [rowKey(collection, value), { position, json: JSON.stringify(value) }] as const;
+    }));
+    after[collection].forEach((item, position) => {
+      const value = item as unknown as Record<string, unknown>;
+      const key = rowKey(collection, value);
+      const old = previous.get(key);
+      const json = JSON.stringify(value);
+      if (!old || old.position !== position || old.json !== json)
+        upserts.push({ collection, key, position, data: JSON.parse(json) });
+      previous.delete(key);
+    });
+    for (const key of previous.keys()) deletes.push({ collection, key });
   }
-  return {
-    upserts,
-    deletes: [...oldRows.values()].map(({ collection, key }) => ({
-      collection,
-      key,
-    })),
-  };
+  return { upserts, deletes };
 }

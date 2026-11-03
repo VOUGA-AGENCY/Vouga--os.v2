@@ -16,6 +16,15 @@ export async function GET(request: Request) {
     if (!/^[a-f0-9]{64}$/.test(tokenFrom(request)))
       throw new AppError("Please sign in again.", 401);
     const repo = repository();
+    if (request.headers.has("if-none-match") && repo.scoped) {
+      const auth = await repo.scoped(["members", "accounts", "sessions"]).read();
+      const member = await requireMember(request, auth);
+      const tag = `"${member.id}:${auth.revision}"`;
+      if (request.headers.get("if-none-match") === tag)
+        return new Response(null, { status: 304, headers: {
+          "Cache-Control": "private, no-cache", ETag: tag, Vary: "Cookie",
+        } });
+    }
     const data = await (repo.readForBrowser ? repo.readForBrowser() : repo.read());
     const me = await requireMember(request, data);
     const etag = `"${me.id}:${data.revision}"`;

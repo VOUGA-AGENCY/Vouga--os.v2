@@ -69,8 +69,9 @@ export async function sessionIdentity(
 export function identityFromStore(data: Store, token: string) {
   if (!/^[a-f0-9]{64}$/.test(token)) return null;
   const now = new Date().toISOString();
+  const tokenHash = digest(token);
   const session = data.sessions.find(
-    (s) => s.hash === digest(token) && s.expiresAt > now,
+    (s) => s.hash === tokenHash && s.expiresAt > now,
   );
   if (!session) return null;
   const account = data.accounts.find((a) => a.memberId === session.memberId);

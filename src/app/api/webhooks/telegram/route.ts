@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import { runtime, equal, required, hash } from "@/services/runtime";
 import { enqueue } from "@/services/activity-service";
 import { errorResponse, jsonBody } from "@/foundation/http";
@@ -5,6 +6,8 @@ import { AppError, record } from "@/domain/validation";
 export async function POST(request: Request) {
   try {
     const ctx = runtime();
+    // Acknowledge while suspended: no database reads, parsing, retries or queued messages.
+    if (!telegramEnabled(ctx.env)) return Response.json({ ok: true });
     if (
       !equal(
         required(ctx.env, "TELEGRAM_WEBHOOK_SECRET"),

@@ -1,3 +1,7 @@
+import { beforeAll, afterAll } from "vitest";
+const oldTelegramFlag = process.env.TELEGRAM_ENABLED;
+beforeAll(() => { process.env.TELEGRAM_ENABLED = "true"; });
+afterAll(() => { if (oldTelegramFlag === undefined) delete process.env.TELEGRAM_ENABLED; else process.env.TELEGRAM_ENABLED = oldTelegramFlag; });
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createSeed } from "@/persistence/seed";
 import { executeCommand } from "@/application/commands";
@@ -41,7 +45,7 @@ beforeEach(() => {
     now: () => now,
     env: {
       INTEGRATION_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString("base64"),
-      TELEGRAM_BOT_TOKEN: "test-token",
+      TELEGRAM_ENABLED: "true", TELEGRAM_BOT_TOKEN: "test-token",
       GITHUB_INSTALLATION_ID: "123",
       GROQ_API_KEY: "test-key",
       GOOGLE_CLIENT_ID: "test-id",

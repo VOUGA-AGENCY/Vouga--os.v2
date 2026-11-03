@@ -270,3 +270,34 @@ describe("separate browser read model", () => {
     expect(fetcher).toHaveBeenCalledTimes(3);
   });
 });
+
+it("scoped read falls back only for a missing migration, preserving existing Google writes", async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce(response({}, 404)).mockResolvedValueOnce(response(seed))
+    .mockResolvedValueOnce(response({ status: "ok", revision: seed.revision + 1 }));
+  await new SupabaseWorkspaceRepository(options(fetcher)).scoped(["externalConnections"]).transact(data => {
+    data.externalConnections.push({ id: "google:office", label: "Office", provider: "google", status: "connected" });
+  });
+  const payload = JSON.parse(fetcher.mock.calls[2][1].body);
+  expect(payload.p_deletes).toEqual([]);
+  expect(payload.p_upserts).toHaveLength(1);
+  expect(payload.p_upserts[0].collection).toBe("externalConnections");
+});
+it("scoped read never falls back on authorization failure", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({}, 403));
+  await expect(new SupabaseWorkspaceRepository(options(fetcher)).scoped(["sessions"]).read()).rejects.toThrow("rejected");
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});
+
+it("scoped cache checks revisions and never contaminates a full transaction cache", async () => {
+  const light = { ...seed, tasks: [], meetings: [] };
+  const cache: WorkspaceCache = { entry: { data: seed, revision: seed.revision, readAt: Date.now(), routesMissing: false } };
+  const fetcher = vi.fn().mockResolvedValueOnce(response(light)).mockResolvedValueOnce(response(seed.revision));
+  const repo = new SupabaseWorkspaceRepository(options(fetcher), cache);
+  const scope = repo.scoped(["members", "accounts", "sessions"]);
+  const first = await scope.read();
+  first.members[0].name = "do not leak mutations";
+  const second = await scope.read();
+  expect(second.members[0].name).toBe(seed.members[0].name);
+  expect(String(fetcher.mock.calls[1][0])).toContain("vouga_next_revision");
+  expect(cache.entry!.data.tasks.length).toBe(seed.tasks.length);
+});
