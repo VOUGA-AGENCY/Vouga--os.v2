@@ -6,7 +6,7 @@
   "packageManager": "bun@1.3.14",
   "scripts": {
     "dev": "bun --bun next dev --hostname 127.0.0.1 --port 3100",
-    "build": "bun --bun next build --webpack",
+    "build": "bun run content:build && bun --bun next build --webpack",
     "start": "bun --bun next start --hostname 127.0.0.1 --port 3100",
     "typecheck": "bun --bun tsc --noEmit",
     "lint": "bun --bun eslint src tests",
@@ -26,7 +26,8 @@
     "prospects:sync": "bun --conditions=react-server scripts/sync-prospects.ts",
     "prospects:import": "bun --conditions=react-server scripts/import-prospects.ts",
     "prospects:migrate": "bun --conditions=react-server scripts/migrate-prospects.ts",
-    "prospects:queries": "bun scripts/maps-queries.ts"
+    "prospects:queries": "bun scripts/maps-queries.ts",
+    "content:build": "bun scripts/build-sales-knowledge.ts"
   },
   "dependencies": {
     "lucide-react": "0.575.0",
@@ -34,6 +35,8 @@
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "server-only": "0.0.1"
   },
   "devDependencies": {

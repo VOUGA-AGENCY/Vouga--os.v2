@@ -30,7 +30,7 @@ O objetivo é chegar com uma abordagem específica, não com uma apresentação 
 
 > Desenvolvemos software à medida e fazemos integrações entre sistemas que permitem eliminar trabalho manual, reduzir erros e tornar os processos mais eficientes.
 >
-> Em determinados processos, estas soluções podem permitir **reduções de até 30% no tempo dedicado a tarefas manuais e repetitivas**, dependendo da operação.
+> Em determinados processos, estas soluções podem reduzir o tempo dedicado a tarefas manuais e repetitivas. O potencial de melhoria precisa de ser medido e validado na vossa operação.
 >
 > Já desenvolvemos soluções de gestão interna e integração de sistemas e gostaríamos de mostrar alguns exemplos ao responsável da empresa, para perceber se existe alguma oportunidade semelhante aqui.
 
@@ -67,7 +67,7 @@ O objetivo é chegar com uma abordagem específica, não com uma apresentação 
 >
 > Somos uma equipa de engenharia do Porto que desenvolve software à medida, plataformas de gestão e integrações entre sistemas.
 >
-> O nosso trabalho passa por identificar tarefas manuais, informação dispersa e processos que podem ser simplificados. Dependendo da operação, podemos encontrar oportunidades para **reduzir até 30% do tempo gasto em tarefas repetitivas**.
+> O nosso trabalho passa por identificar tarefas manuais, informação dispersa e processos que podem ser simplificados. Dependendo da operação, podemos encontrar oportunidades para reduzir o tempo gasto em tarefas repetitivas. Antes de estimar resultados, precisamos de compreender e medir o processo.
 >
 > Temos alguns casos de uso que gostávamos de lhe mostrar, mas antes queria perguntar-lhe uma coisa: atualmente, há algum processo na vossa empresa que ainda vos consuma demasiado tempo ou que obrigue a introduzir a mesma informação em vários sistemas?
 
