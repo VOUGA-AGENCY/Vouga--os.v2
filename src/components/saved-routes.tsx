@@ -47,13 +47,19 @@ export function SavedRoutes() {
     importing = true;
     void (async () => {
       let moved = 0;
+      const remaining = [...pending];
       for (const route of pending) {
         try {
           await command("route.save", { name: route.name, date: route.date, stops: route.stops });
           moved++;
+          // Forget each route as soon as it is shared, so a later failure cannot re-import it.
+          remaining.splice(remaining.indexOf(route), 1);
+          try {
+            if (remaining.length) window.localStorage.setItem(legacyKey, JSON.stringify(remaining));
+            else window.localStorage.removeItem(legacyKey);
+          } catch { /* storage unavailable */ }
         } catch { /* an invalid old route stays in this browser */ }
       }
-      if (moved === pending.length) try { window.localStorage.removeItem(legacyKey); } catch { /* storage unavailable */ }
       if (moved) notify(`${moved} rota${moved === 1 ? "" : "s"} deste browser passaram para a base partilhada.`);
       importing = false;
     })();

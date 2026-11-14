@@ -39,6 +39,7 @@ function QuickTask({ now }: { now: string }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
+  const creating = useRef(false);
   useEffect(() => {
     if (timing) titleRef.current?.focus();
   }, [timing]);
@@ -51,7 +52,9 @@ function QuickTask({ now }: { now: string }) {
         : data.me.role === "admin" || member.id === data.me.id,
   );
   async function create() {
-    if (!timing || saving || !title.trim()) return;
+    // The ref blocks a second submit that arrives before `saving` re-renders.
+    if (!timing || saving || creating.current || !title.trim()) return;
+    creating.current = true;
     setSaving(true);
     setError("");
     try {
@@ -78,6 +81,7 @@ function QuickTask({ now }: { now: string }) {
           : "Could not create task. Your draft is still here.",
       );
     } finally {
+      creating.current = false;
       setSaving(false);
     }
   }

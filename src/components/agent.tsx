@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Mic, Square, X } from "lucide-react";
 import Link from "next/link";
 import { useWorkspace } from "./context";
+import { useSingleFlight } from "./single-flight";
 export function AgentPanel({
   context,
   onClose,
@@ -16,6 +17,7 @@ export function AgentPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [recording, setRecording] = useState(false);
+  const once = useSingleFlight();
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const cancelled = useRef(false);
@@ -211,18 +213,20 @@ export function AgentPanel({
         <button
           className="text-button"
           disabled={busy || !input.trim()}
-          onClick={async () => {
-            try {
-              await command("inbox.save", { body: input });
-              setInput("");
-            } catch (error) {
-              setError(
-                error instanceof Error
-                  ? error.message
-                  : "Could not save.",
-              );
-            }
-          }}
+          onClick={() =>
+            void once(async () => {
+              try {
+                await command("inbox.save", { body: input });
+                setInput("");
+              } catch (error) {
+                setError(
+                  error instanceof Error
+                    ? error.message
+                    : "Could not save.",
+                );
+              }
+            })
+          }
         >
           Save to Inbox for later
         </button>

@@ -91,6 +91,8 @@ export function NoteComposer({
     note?.recipientIds ?? [],
   );
   const [error, setError] = useState("");
+  // Blocks a second create while the first is still saving (double click or Enter).
+  const creating = useRef(false);
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -189,15 +191,21 @@ export function NoteComposer({
               await autosave.flush();
               return;
             }
-            await command("note.save", {
-              ...(note ?? {}),
-              title: values.get("title"),
-              body: values.get("body"),
-              visibility,
-              recipientIds: recipients,
-              projectId: editor.projectId,
-              organizationId: editor.organizationId,
-            });
+            if (creating.current) return;
+            creating.current = true;
+            try {
+              await command("note.save", {
+                ...(note ?? {}),
+                title: values.get("title"),
+                body: values.get("body"),
+                visibility,
+                recipientIds: recipients,
+                projectId: editor.projectId,
+                organizationId: editor.organizationId,
+              });
+            } finally {
+              creating.current = false;
+            }
             onClose();
           } catch (error) {
             setError(

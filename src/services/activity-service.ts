@@ -173,13 +173,24 @@ export function captureChanges(
       continue;
     }
     meeting.syncStatus = "pending";
-    enqueue(
-      data,
-      `calendar:${meeting.id}:${meeting.version}`,
-      "calendar.push",
-      { meetingId: meeting.id },
-      now,
+    // A push that has not started yet reads the latest event when it runs. Queuing one per
+    // autosave would send Google (and every external guest) one update email per field.
+    // A push waiting to retry after a failure does not count: a new edit goes out now.
+    const waiting = data.integrationJobs.some(
+      (job) =>
+        job.kind === "calendar.push" &&
+        job.state === "pending" &&
+        job.attempts === 0 &&
+        job.payload.meetingId === meeting.id,
     );
+    if (!waiting)
+      enqueue(
+        data,
+        `calendar:${meeting.id}:${meeting.version}`,
+        "calendar.push",
+        { meetingId: meeting.id },
+        now,
+      );
   }
 }
 export function enqueue(

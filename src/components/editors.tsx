@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { CalendarDays, MessageSquare, Plus, X } from "lucide-react";
+import { useSingleFlight } from "./single-flight";
 import {
   projectStatuses,
   stages,
@@ -84,6 +85,8 @@ function SaveForm({
   const { command } = useWorkspace();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // A ref, not state: a second submit can arrive before `busy` re-renders.
+  const submitting = useRef(false);
   const autosave = useAutosave(
     action,
     typeof values.id === "string" ? values.id : undefined,
@@ -137,7 +140,8 @@ function SaveForm({
       }}
       onSubmit={async (e) => {
         e.preventDefault();
-        if (busy) return;
+        if (busy || submitting.current) return;
+        submitting.current = true;
         const form = new FormData(e.currentTarget);
         const fields: Record<string, unknown> = Object.fromEntries(form);
         for (const key of ["memberIds", "participantIds", "calendarTargets"])
@@ -157,6 +161,7 @@ function SaveForm({
         } catch (e) {
           setError(e instanceof Error ? e.message : "Could not save.");
         } finally {
+          submitting.current = false;
           setBusy(false);
         }
       }}
@@ -839,6 +844,7 @@ function OrganizationEditor({
   const item = data.organizations.find((o) => o.id === id);
   const [tab, setTab] = useState(item ? "conversation" : "details");
   const [addingContact, setAddingContact] = useState(false);
+  const once = useSingleFlight();
   const interactions = data.interactions
     .filter((i) => i.organizationId === id)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -906,9 +912,11 @@ function OrganizationEditor({
                 event.preventDefault();
                 const form = event.currentTarget;
                 const values = Object.fromEntries(new FormData(form).entries());
-                void command("contact.add", { ...values, organizationId: id })
-                  .then(() => setAddingContact(false))
-                  .catch((error) => notify(error.message));
+                void once(() =>
+                  command("contact.add", { ...values, organizationId: id })
+                    .then(() => setAddingContact(false))
+                    .catch((error) => notify(error.message)),
+                );
               }}
             >
               <input
