@@ -378,7 +378,11 @@ function executeCore(
           ? existing?.organizationId
           : values.organizationId,
       ),
-      projectId: projectId(values.projectId),
+      // Like organizationId: an edit that does not send the project keeps it.
+      projectId:
+        values.projectId === undefined
+          ? (existing?.projectId ?? null)
+          : projectId(values.projectId),
       groupId: trustedGroupId ?? existing?.groupId,
       allDay: boolean(values.allDay, existing?.allDay ?? false),
       cancelled: existing?.cancelled ?? false,

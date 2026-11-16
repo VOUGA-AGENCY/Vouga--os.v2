@@ -17,6 +17,7 @@ import { ProspectForm, type ProspectDraft } from "./prospect-form";
 import { addProspectLayer, prospectLayer, setProspectData } from "./prospect-layer";
 import { SelectBox } from "./task-surface";
 import { RoutePlanner } from "./route-planner";
+import { useSingleFlight } from "./single-flight";
 
 // OpenFreeMap: vector tiles from OpenStreetMap, no key, no Referer requirement, commercial use allowed.
 // tile.openstreetmap.org must not be used: the app sends no cross-origin Referer (Referrer-Policy: same-origin),
@@ -111,14 +112,16 @@ export function CompanyMap({ companies, onSelect }: { companies: Organization[];
   }, [prospectsVersion, prospects, groups, hideUnconfirmed, onlyLikelyIcp, mode]);
   const { placed, unplaced } = useMemo(() => placeCompanies(visibleCompanies), [visibleCompanies]);
 
-  const saveRoute = async (route: { name: string; date: string; stops: RouteStop[] }) => {
-    try {
-      await command("route.save", route);
-      notify("Rota guardada para a equipa. Inicia-a em Rotas para fazer as visitas em sequência.");
-    } catch (error) {
-      notify(error instanceof Error ? error.message : "Não foi possível guardar a rota.");
-    }
-  };
+  const once = useSingleFlight();
+  const saveRoute = (route: { name: string; date: string; stops: RouteStop[] }) =>
+    once(async () => {
+      try {
+        await command("route.save", route);
+        notify("Rota guardada para a equipa. Inicia-a em Rotas para fazer as visitas em sequência.");
+      } catch (error) {
+        notify(error instanceof Error ? error.message : "Não foi possível guardar a rota.");
+      }
+    });
 
   // Map instance: created once.
   useEffect(() => {

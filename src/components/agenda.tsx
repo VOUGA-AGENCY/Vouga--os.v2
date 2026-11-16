@@ -22,6 +22,7 @@ import {
   uniqueEvents,
 } from "@/domain/calendars";
 import { indexMeetingsByDay } from "@/domain/calendar-index";
+import { layoutDayEvents, type EventLane } from "@/domain/calendar-layout";
 import type { Meeting } from "@/domain/model";
 import { useWorkspace } from "./context";
 import { Popover } from "./popover";
@@ -65,6 +66,18 @@ export function Agenda() {
     start: number;
     end: number;
   } | null>(null);
+  // Releasing the mouse outside the grid ends the drag without creating an event.
+  // Slot buttons handle their own mouseup first, so this only sees releases elsewhere.
+  useEffect(() => {
+    if (!dragSelection) return;
+    const release = () => {
+      if (!selection.current) return;
+      selection.current = null;
+      setDragSelection(null);
+    };
+    window.addEventListener("mouseup", release);
+    return () => window.removeEventListener("mouseup", release);
+  }, [dragSelection]);
   const visible = useMemo(
     () =>
       uniqueEvents(
@@ -133,17 +146,37 @@ export function Agenda() {
     setDragSelection(null);
     edit({ type: "meeting", date: day, time: slotTime(start), duration });
   }
-  function eventStyle(meeting: Meeting) {
+  function eventMinutes(meeting: Meeting) {
     const start = localDateTime(meeting.startsAt);
     const end = localDateTime(meeting.endsAt);
-    const startMinutes =
-      Number(start.slice(11, 13)) * 60 + Number(start.slice(14, 16));
-    const endMinutes =
-      Number(end.slice(11, 13)) * 60 + Number(end.slice(14, 16));
+    return {
+      start: Number(start.slice(11, 13)) * 60 + Number(start.slice(14, 16)),
+      end: Number(end.slice(11, 13)) * 60 + Number(end.slice(14, 16)),
+    };
+  }
+  function eventStyle(meeting: Meeting, lane?: EventLane): CSSProperties {
+    const { start: startMinutes, end: endMinutes } = eventMinutes(meeting);
+    const lanes = lane?.lanes ?? 1;
+    const index = lane?.lane ?? 0;
     return {
       top: `${(Math.max(0, startMinutes - firstHour * 60) / 30) * 24}px`,
       height: `${Math.max(24, ((endMinutes - startMinutes) / 30) * 24)}px`,
+      // Overlapping events share the day column in equal parts.
+      ...(lanes > 1 && {
+        left: `calc(var(--space-1) + (100% - 2 * var(--space-1)) * ${index} / ${lanes})`,
+        right: "auto",
+        width: `calc((100% - 2 * var(--space-1)) / ${lanes} - 2px)`,
+      }),
     };
+  }
+  function timedLayout(day: string) {
+    return layoutDayEvents(
+      meetingsOn(day)
+        .filter((meeting) => !meeting.allDay)
+        // Same minutes as eventStyle; the 30-minute floor matches the 24px minimum height.
+        .map((meeting) => ({ id: meeting.id, ...eventMinutes(meeting) })),
+      30,
+    );
   }
   return (
     <div className="compact-page calendar-page">
@@ -361,7 +394,9 @@ export function Agenda() {
                 gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))`,
               }}
             >
-              {days.map((day) => (
+              {days.map((day) => {
+                const lanes = timedLayout(day);
+                return (
                 <div className="calendar-time-column" key={day}>
                   {Array.from({ length: slotCount }, (_, index) => (
                     <button
@@ -387,8 +422,9 @@ export function Agenda() {
                     .map((meeting) => (
                       <button
                         key={meeting.id}
-                        className={`calendar-event calendar-owner-${meeting.calendarKey === "contacto" ? 1 : 0}`}
-                        style={eventStyle(meeting)}
+                        className={`calendar-event calendar-owner-${meeting.calendarKey === "contacto" ? 1 : 0}${(lanes.get(meeting.id)?.lanes ?? 1) > 1 ? " is-split" : ""}`}
+                        style={eventStyle(meeting, lanes.get(meeting.id))}
+                        title={`${meeting.title} · ${timeLabel(meeting.startsAt)}`}
                         onClick={() =>
                           edit({ type: "meeting", id: meeting.id })
                         }
@@ -401,7 +437,8 @@ export function Agenda() {
                       </button>
                     ))}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

@@ -37,6 +37,7 @@ import { Popover } from "./popover";
 import { PersonAvatar } from "./person-avatar";
 import { announce, useFloating } from "./floating";
 import { DateField } from "./date-field";
+import { useSingleFlight } from "./single-flight";
 
 const boardStatuses: TaskStatus[] = ["todo", "doing", "review", "done"];
 const boardLabels = taskStatuses;
@@ -452,7 +453,8 @@ export function TaskSurface({
               (task.assigneeIds?.includes(data.me.id) ?? false)) &&
             (filter !== "open" || task.status !== "done") &&
             (filter !== "board" || task.visibility === "board") &&
-            (!statusFilter || task.status === statusFilter) &&
+            // Old Backlog/Blocked tasks show under To Do, as on the board.
+            (!statusFilter || boardStatus(task.status) === statusFilter) &&
             (!ownerFilter ||
               task.ownerId === ownerFilter ||
               (task.assigneeIds?.includes(ownerFilter) ?? false)) &&
@@ -957,6 +959,7 @@ function TaskPanelContent({
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [comment, setComment] = useState("");
+  const once = useSingleFlight();
 
   // Controlled form property values (fresh per key)
   const [status, setStatus] = useState<TaskStatus>(
@@ -980,6 +983,9 @@ function TaskPanelContent({
     task?.visibility ?? "team",
   );
   const autosave = useAutosave("task.save", task?.id, task?.version);
+  // A ref, not state: a second Enter/click can arrive before React re-renders.
+  const creating = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
   const [prUrlInput, setPrUrlInput] = useState("");
   const [linkingPr, setLinkingPr] = useState(false);
 
@@ -1103,11 +1109,19 @@ function TaskPanelContent({
                 await autosave.flush();
                 return;
               }
-              await command("task.save", {
-                ...fields,
-                organizationId: "",
-              });
-              if (!task) onClose();
+              if (creating.current) return;
+              creating.current = true;
+              setSubmitting(true);
+              try {
+                await command("task.save", {
+                  ...fields,
+                  organizationId: "",
+                });
+              } finally {
+                creating.current = false;
+                setSubmitting(false);
+              }
+              onClose();
             } catch (reason) {
               setError(
                 reason instanceof Error ? reason.message : "Could not save.",
@@ -1326,8 +1340,12 @@ function TaskPanelContent({
             {task ? (
               <SaveStatus saver={autosave.saver} />
             ) : (
-              <button type="submit" className="task-detail-save">
-                Create task
+              <button
+                type="submit"
+                className="task-detail-save"
+                disabled={submitting}
+              >
+                {submitting ? "Creating…" : "Create task"}
               </button>
             )}
             {task && (
@@ -1586,22 +1604,24 @@ function TaskPanelContent({
                 ))}
               </div>
               <form
-                onSubmit={async (event) => {
+                onSubmit={(event) => {
                   event.preventDefault();
                   if (!comment.trim()) return;
-                  try {
-                    await command("task.comment", {
-                      taskId: task.id,
-                      body: comment,
-                    });
-                    setComment("");
-                  } catch (reason) {
-                    notify(
-                      reason instanceof Error
-                        ? reason.message
-                        : "Comment failed.",
-                    );
-                  }
+                  void once(async () => {
+                    try {
+                      await command("task.comment", {
+                        taskId: task.id,
+                        body: comment,
+                      });
+                      setComment("");
+                    } catch (reason) {
+                      notify(
+                        reason instanceof Error
+                          ? reason.message
+                          : "Comment failed.",
+                      );
+                    }
+                  });
                 }}
               >
                 <textarea
