@@ -10,6 +10,7 @@ export type Editor = {
   date?: string;
   time?: string;
   duration?: number;
+  returnDay?: string;
 };
 export interface WorkspaceContextValue {
   data: Snapshot;

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowLeft,
   CalendarDays,
   Check,
   ChevronDown,
@@ -890,11 +891,13 @@ export function TaskPanel({
   id,
   projectId,
   initialStatus = "todo",
+  returnDay,
   onClose,
 }: {
   id?: string;
   projectId?: string;
   initialStatus?: TaskStatus;
+  returnDay?: string;
   onClose: () => void;
 }) {
   return (
@@ -909,6 +912,7 @@ export function TaskPanel({
         id={id}
         projectId={projectId}
         initialStatus={initialStatus}
+        returnDay={returnDay}
         onClose={onClose}
       />
     </div>
@@ -919,11 +923,13 @@ function TaskPanelContent({
   id,
   projectId,
   initialStatus = "todo",
+  returnDay,
   onClose,
 }: {
   id?: string;
   projectId?: string;
   initialStatus?: TaskStatus;
+  returnDay?: string;
   onClose: () => void;
 }) {
   const { data, command, notify, refresh, capture, confirm } = useWorkspace();
@@ -1057,6 +1063,17 @@ function TaskPanelContent({
       : []),
   ];
 
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <aside
       className="side-panel"
@@ -1065,7 +1082,20 @@ function TaskPanelContent({
       aria-label={task?.title ?? "New task"}
     >
       <header className="side-panel-header">
-        <span>{task ? "Task" : "New task"}</span>
+        <div className="side-panel-header-title">
+          {returnDay && (
+            <button
+              type="button"
+              className="side-panel-back-button"
+              aria-label="Voltar ao dia"
+              onClick={onClose}
+            >
+              <ArrowLeft size={14} />
+              <span>Voltar ao dia</span>
+            </button>
+          )}
+          <span>{task ? "Task" : "New task"}</span>
+        </div>
         <div className="side-panel-header-actions">
           <button type="button" onClick={() => capture()}>
             Ask Agent

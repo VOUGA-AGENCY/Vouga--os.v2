@@ -49,7 +49,9 @@ export function Agenda() {
   useEffect(() => {
     if (!inspectedDay) return;
     const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setInspectedDay(null);
+      if (event.key !== "Escape") return;
+      if (document.querySelector(".dialog, .side-panel:not(.day-agenda)")) return;
+      setInspectedDay(null);
     };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
@@ -584,8 +586,11 @@ export function Agenda() {
                   className="round-control"
                   aria-label="Add event on selected day"
                   onClick={() => {
-                    edit({ type: "meeting", date: inspectedDay });
-                    setInspectedDay(null);
+                    edit({
+                      type: "meeting",
+                      date: inspectedDay,
+                      returnDay: inspectedDay,
+                    });
                   }}
                 >
                   <Plus size={16} />
@@ -598,8 +603,11 @@ export function Agenda() {
                     key={meeting.id}
                     className="day-agenda-event"
                     onClick={() => {
-                      edit({ type: "meeting", id: meeting.id });
-                      setInspectedDay(null);
+                      edit({
+                        type: "meeting",
+                        id: meeting.id,
+                        returnDay: inspectedDay,
+                      });
                     }}
                   >
                     <small>
@@ -627,8 +635,11 @@ export function Agenda() {
                       <button
                         key={task.id}
                         onClick={() => {
-                          edit({ type: "task", id: task.id });
-                          setInspectedDay(null);
+                          edit({
+                            type: "task",
+                            id: task.id,
+                            returnDay: inspectedDay,
+                          });
                         }}
                       >
                         {task.title}

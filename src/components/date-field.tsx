@@ -21,6 +21,25 @@ export function parseTime(text: string): string | null {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
+export function isBeforeMin(
+  mode: Mode,
+  candidate: string,
+  min?: string,
+  minExclusive = false,
+): boolean {
+  if (!min || !candidate) return false;
+  if (mode === "date") {
+    const candidateDay = candidate.slice(0, 10);
+    const minDay = min.slice(0, 10);
+    return minExclusive ? candidateDay <= minDay : candidateDay < minDay;
+  }
+  if (mode === "time") {
+    const minTime = min.includes("T") ? min.slice(11, 16) : min;
+    return minExclusive ? candidate <= minTime : candidate < minTime;
+  }
+  return minExclusive ? candidate <= min : candidate < min;
+}
+
 const utc = (day: string) => new Date(`${day}T12:00:00Z`);
 const format = (day: string, options: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat("en-GB", { ...options, timeZone: "UTC" }).format(utc(day));
@@ -74,6 +93,8 @@ export function DateField({
   required = false,
   clearable = !required,
   className = "",
+  min,
+  minExclusive = false,
 }: {
   name?: string;
   mode?: Mode;
@@ -86,27 +107,105 @@ export function DateField({
   required?: boolean;
   clearable?: boolean;
   className?: string;
+  min?: string;
+  minExclusive?: boolean;
 }) {
   const [own, setOwn] = useState(defaultValue);
   const value = controlled ?? own;
   const { day, time } = split(mode, value);
   const today = dateKey();
+  const { day: minDay, time: minTime } = min ? split(mode, min) : { day: "", time: "" };
+  const [minHour = "", minMinute = ""] = minTime ? minTime.split(":") : ["", ""];
   const [open, setOpen] = useState(false);
-  const [month, setMonth] = useState((day || today).slice(0, 7));
+  const [month, setMonth] = useState((day || (minDay && minDay > today ? minDay : today)).slice(0, 7));
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const hiddenRef = useRef<HTMLInputElement>(null);
   const timesRef = useRef<HTMLDivElement>(null);
-  const picked = useRef(false);
+  const initial = useRef(true);
   useFloating(open, setOpen, rootRef, panelRef, false);
 
   useEffect(() => {
-    if (!picked.current) return;
-    picked.current = false;
+    if (initial.current) {
+      initial.current = false;
+      return;
+    }
     announce(hiddenRef.current);
   }, [value]);
 
-  // Keep the chosen hour and minute (or 09:00) in the middle of their columns.
+  const shown = display(mode, value);
+  const [hour, minute] = time ? time.split(":") : ["", ""];
+  const minuteOptions = minute && !minutes.includes(minute) ? [...minutes, minute].sort() : minutes;
+  const Icon = mode === "time" ? Clock : CalendarDays;
+
+  function isDayDisabled(key: string): boolean {
+    if (!minDay) return false;
+    if (mode === "date") {
+      return minExclusive ? key <= minDay : key < minDay;
+    }
+    if (key < minDay) return true;
+    if (key === minDay && minExclusive && minTime) {
+      if (minTime >= "23:55") return true;
+    }
+    return false;
+  }
+
+  function isHourDisabled(h: string): boolean {
+    if (!minTime) return false;
+    if (mode === "datetime") {
+      const activeDay = day || (minDay && minDay >= today ? minDay : today);
+      if (minDay && activeDay !== minDay) {
+        return activeDay < minDay;
+      }
+    }
+    if (h < minHour) return true;
+    if (h === minHour) {
+      const hasValidMinute = minuteOptions.some((m) =>
+        minExclusive ? m > minMinute : m >= minMinute,
+      );
+      return !hasValidMinute;
+    }
+    return false;
+  }
+
+  function isMinuteDisabled(m: string): boolean {
+    if (!minTime) return false;
+    if (mode === "datetime") {
+      const activeDay = day || (minDay && minDay >= today ? minDay : today);
+      if (minDay && activeDay !== minDay) {
+        return activeDay < minDay;
+      }
+    }
+    const currentHour = hour || (isHourDisabled(minHour) ? pad(Number(minHour) + 1) : minHour);
+    if (currentHour < minHour) return true;
+    if (currentHour === minHour) {
+      return minExclusive ? m <= minMinute : m < minMinute;
+    }
+    return false;
+  }
+
+  function firstValidMinuteFor(targetHour: string): string {
+    if (!minTime) return minute || "00";
+    if (mode === "datetime") {
+      const activeDay = day || (minDay && minDay >= today ? minDay : today);
+      if (minDay && activeDay !== minDay) {
+        return minute || "00";
+      }
+    }
+    if (targetHour < minHour) return "";
+    if (targetHour === minHour) {
+      if (minute && (minExclusive ? minute > minMinute : minute >= minMinute)) {
+        return minute;
+      }
+      const valid = minuteOptions.find((m) =>
+        minExclusive ? m > minMinute : m >= minMinute,
+      );
+      return valid ?? "";
+    }
+    return minute || "00";
+  }
+
+  // Keep the chosen hour and minute in the middle of their columns.
   useEffect(() => {
     if (!open) return;
     for (const list of timesRef.current?.querySelectorAll<HTMLElement>(".date-picker-column") ?? []) {
@@ -122,37 +221,65 @@ export function DateField({
       setOpen(false);
       rootRef.current?.querySelector<HTMLElement>(".task-select-trigger")?.focus();
     }
+    if (next && isBeforeMin(mode, next, min, minExclusive)) return;
     if (next === value) return;
-    picked.current = true;
     if (controlled === undefined) setOwn(next);
     onChange?.(next);
   }
 
   function pickDay(next: string) {
+    if (isDayDisabled(next)) return;
     if (mode === "date") return commit(next, true);
-    commit(`${next}T${time || "09:00"}`, Boolean(time));
+    let nextTime = time || "09:00";
+    if (minTime && next === minDay) {
+      const [h = "09", m = "00"] = nextTime.split(":");
+      if (h < minHour || (h === minHour && (minExclusive ? m <= minMinute : m < minMinute))) {
+        const nextHour = isHourDisabled(minHour) ? pad(Number(minHour) + 1) : minHour;
+        const validMinute = firstValidMinuteFor(nextHour);
+        nextTime = `${nextHour}:${validMinute || "00"}`;
+      }
+    }
+    commit(`${next}T${nextTime}`, Boolean(time));
   }
 
   function pickTime(next: string, close = true) {
-    if (mode === "time") return commit(next, close);
-    commit(`${day || today}T${next}`, close);
+    if (mode === "time") {
+      if (isBeforeMin(mode, next, min, minExclusive)) return;
+      return commit(next, close);
+    }
+    const candidateDay = day || (minDay && minDay >= today ? minDay : today);
+    const candidate = `${candidateDay}T${next}`;
+    if (isBeforeMin(mode, candidate, min, minExclusive)) return;
+    commit(candidate, close);
   }
 
   function typeTime(input: HTMLInputElement, close: boolean) {
     const next = parseTime(input.value);
-    if (next) pickTime(next, close);
-    else input.value = time;
+    if (!next) {
+      input.value = time;
+      return;
+    }
+    const candidate = mode === "time" ? next : `${day || today}T${next}`;
+    if (isBeforeMin(mode, candidate, min, minExclusive)) {
+      input.value = time;
+      return;
+    }
+    pickTime(next, close);
   }
 
   function toggle() {
-    if (!open) setMonth((day || today).slice(0, 7));
+    if (!open) {
+      const targetMonth = (day || (minDay && minDay > today ? minDay : today)).slice(0, 7);
+      setMonth(targetMonth);
+    }
     setOpen(!open);
   }
 
-  const shown = display(mode, value);
-  const [hour, minute] = time ? time.split(":") : ["", ""];
-  const minuteOptions = minute && !minutes.includes(minute) ? [...minutes, minute].sort() : minutes;
-  const Icon = mode === "time" ? Clock : CalendarDays;
+  const defaultHour = minHour && minHour > "09" ? minHour : "09";
+  const defaultMinute =
+    defaultHour === minHour && minMinute
+      ? firstValidMinuteFor(defaultHour)
+      : "00";
 
   return (
     <div className={`task-select-box date-field ${open ? "is-open" : ""} ${className}`} ref={rootRef}>
@@ -191,29 +318,43 @@ export function DateField({
               <div className="date-picker-header">
                 <strong>{format(`${month}-01`, { month: "long", year: "numeric" })}</strong>
                 <span>
-                  <button type="button" aria-label="Previous month" onClick={() => setMonth(shiftMonth(month, -1))}><ChevronLeft size={15}/></button>
+                  <button
+                    type="button"
+                    aria-label="Previous month"
+                    disabled={Boolean(minDay && shiftMonth(month, -1) < minDay.slice(0, 7))}
+                    className={minDay && shiftMonth(month, -1) < minDay.slice(0, 7) ? "is-disabled" : ""}
+                    onClick={() => setMonth(shiftMonth(month, -1))}
+                  >
+                    <ChevronLeft size={15}/>
+                  </button>
                   <button type="button" aria-label="Next month" onClick={() => setMonth(shiftMonth(month, 1))}><ChevronRight size={15}/></button>
                 </span>
               </div>
               <div className="date-picker-grid" role="grid">
                 {weekdays.map((weekday, index) => <span key={index} className="date-picker-weekday">{weekday}</span>)}
-                {monthDays(month).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className={[
-                      "date-picker-day",
-                      key.slice(0, 7) !== month && "is-outside",
-                      key === today && "is-today",
-                      key === day && "is-selected",
-                    ].filter(Boolean).join(" ")}
-                    aria-label={format(key, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-                    aria-pressed={key === day}
-                    onClick={() => pickDay(key)}
-                  >
-                    {Number(key.slice(8))}
-                  </button>
-                ))}
+                {monthDays(month).map((key) => {
+                  const disabled = isDayDisabled(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      disabled={disabled}
+                      className={[
+                        "date-picker-day",
+                        key.slice(0, 7) !== month && "is-outside",
+                        key === today && "is-today",
+                        key === day && "is-selected",
+                        disabled && "is-disabled",
+                      ].filter(Boolean).join(" ")}
+                      aria-label={format(key, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                      aria-pressed={key === day}
+                      aria-disabled={disabled || undefined}
+                      onClick={() => !disabled && pickDay(key)}
+                    >
+                      {Number(key.slice(8))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -239,38 +380,76 @@ export function DateField({
               />
               <div className="date-picker-columns">
                 <div className="date-picker-column" aria-label="Hour">
-                  {hours.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      data-default={option === "09" || undefined}
-                      className={option === hour ? "is-selected" : ""}
-                      aria-pressed={option === hour}
-                      onClick={() => pickTime(`${option}:${minute || "00"}`, false)}
-                    >
-                      {option}
-                    </button>
-                  ))}
+                  {hours.map((option) => {
+                    const disabled = isHourDisabled(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        disabled={disabled}
+                        data-default={option === defaultHour || undefined}
+                        className={[
+                          option === hour && "is-selected",
+                          disabled && "is-disabled",
+                        ].filter(Boolean).join(" ")}
+                        aria-pressed={option === hour}
+                        aria-disabled={disabled || undefined}
+                        onClick={() => {
+                          if (disabled) return;
+                          const nextMinute = firstValidMinuteFor(option);
+                          if (!nextMinute) return;
+                          pickTime(`${option}:${nextMinute}`, false);
+                        }}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="date-picker-column" aria-label="Minute">
-                  {minuteOptions.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      data-default={option === "00" || undefined}
-                      className={option === minute ? "is-selected" : ""}
-                      aria-pressed={option === minute}
-                      onClick={() => pickTime(`${hour || "09"}:${option}`, true)}
-                    >
-                      {option}
-                    </button>
-                  ))}
+                  {minuteOptions.map((option) => {
+                    const disabled = isMinuteDisabled(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        disabled={disabled}
+                        data-default={option === defaultMinute || undefined}
+                        className={[
+                          option === minute && "is-selected",
+                          disabled && "is-disabled",
+                        ].filter(Boolean).join(" ")}
+                        aria-pressed={option === minute}
+                        aria-disabled={disabled || undefined}
+                        onClick={() => {
+                          if (disabled) return;
+                          const targetHour = hour || (isHourDisabled(minHour) ? pad(Number(minHour) + 1) : minHour || "09");
+                          pickTime(`${targetHour}:${option}`, true);
+                        }}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           )}
           <div className="date-picker-footer">
-            {mode !== "time" && <button type="button" onClick={() => { setMonth(today.slice(0, 7)); pickDay(today); }}>Today</button>}
+            {mode !== "time" && (
+              <button
+                type="button"
+                disabled={isDayDisabled(today)}
+                className={isDayDisabled(today) ? "is-disabled" : ""}
+                onClick={() => {
+                  if (isDayDisabled(today)) return;
+                  setMonth(today.slice(0, 7));
+                  pickDay(today);
+                }}
+              >
+                Today
+              </button>
+            )}
             {clearable && value && <button type="button" onClick={() => commit("", true)}>Clear</button>}
           </div>
         </div>

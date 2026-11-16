@@ -6,7 +6,7 @@ const source = readFileSync(
   ),
   "utf8",
 );
-const lines = source.split("\n");
+const lines = source.replace(/\r/g, "").split("\n");
 const headings: { line: number; level: number; title: string }[] = [];
 let fenced = false;
 for (let line = 0; line < lines.length; line++) {

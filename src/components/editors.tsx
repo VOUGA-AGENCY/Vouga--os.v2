@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, MessageSquare, Plus, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, MessageSquare, Plus, X } from "lucide-react";
 import { useSingleFlight } from "./single-flight";
 import {
   projectStatuses,
@@ -8,10 +8,11 @@ import {
   taskSizeLabels,
   activeTaskStatuses,
   type Snapshot,
+  type Meeting,
 } from "@/domain/model";
 import { calendarOptions, calendarTarget } from "@/domain/calendars";
 import { canEditMeeting } from "@/domain/permissions";
-import { addDays, dateKey, localDateTime, shortDate } from "@/domain/time";
+import { addDays, dateKey, localDateTime, shortDate, toInstant } from "@/domain/time";
 import { useWorkspace, type Editor } from "./context";
 import { flushEdits, formFields, SaveStatus, useAutosave } from "./autosave";
 import { Dialog } from "./dialog";
@@ -27,10 +28,12 @@ const stageOptions = Object.entries(stages).map(([value, label]) => ({
 
 function SideEditor({
   title,
+  returnDay,
   onClose,
   children,
 }: {
   title: string;
+  returnDay?: string;
   onClose: () => void;
   children: React.ReactNode;
 }) {
@@ -55,7 +58,20 @@ function SideEditor({
         aria-label={title}
       >
         <header className="side-panel-header">
-          <span>{title}</span>
+          <div className="side-panel-header-title">
+            {returnDay && (
+              <button
+                type="button"
+                className="side-panel-back-button"
+                aria-label="Voltar ao dia"
+                onClick={onClose}
+              >
+                <ArrowLeft size={14} />
+                <span>Voltar ao dia</span>
+              </button>
+            )}
+            <span>{title}</span>
+          </div>
           <button aria-label="Close event" onClick={onClose}>
             <X size={17} />
           </button>
@@ -73,6 +89,7 @@ type FormProps = {
   onClose: () => void;
   label?: string;
   extra?: React.ReactNode;
+  validate?: (fields: Record<string, unknown>) => string | null | undefined;
 };
 function SaveForm({
   children,
@@ -81,6 +98,7 @@ function SaveForm({
   onClose,
   label = "Save",
   extra,
+  validate,
 }: FormProps) {
   const { command } = useWorkspace();
   const [error, setError] = useState("");
@@ -97,6 +115,7 @@ function SaveForm({
     if (!values.id) return;
     const fields = formFields(form);
     if (JSON.stringify(fields) === JSON.stringify(baseline.current)) return;
+    if (validate && validate(fields)) return;
     baseline.current = fields;
     autosave.patch({ ...values, ...fields });
   }
@@ -122,6 +141,7 @@ function SaveForm({
         ) {
           const fields = formFields(event.currentTarget);
           if (JSON.stringify(fields) !== JSON.stringify(baseline.current)) {
+            if (validate && validate(fields)) return;
             baseline.current = fields;
             autosave.stage({ ...values, ...fields });
           }
@@ -150,6 +170,15 @@ function SaveForm({
           if (form.has(`${key}Present`)) fields[key] = form.has(key);
         setBusy(true);
         setError("");
+        if (validate) {
+          const invalid = validate(fields);
+          if (invalid) {
+            setError(invalid);
+            submitting.current = false;
+            setBusy(false);
+            return;
+          }
+        }
         try {
           if (values.id) {
             changed(e.currentTarget);
@@ -281,6 +310,322 @@ function Members({
     </fieldset>
   );
 }
+function MeetingEditor({
+  item,
+  editor,
+  data,
+  onClose,
+}: {
+  item?: Meeting;
+  editor: Editor & { type: "meeting" };
+  data: Snapshot;
+  onClose: () => void;
+}) {
+  const workspace = useWorkspace();
+  const day = editor.date ?? dateKey(data.now);
+  const startTime = `${day}T${editor.time ?? "10:00"}`;
+  const [hours, minutes] = (editor.time ?? "10:00").split(":").map(Number);
+  const endMinutes = hours * 60 + minutes + (editor.duration ?? 30);
+  const endTime = `${addDays(day, Math.floor(endMinutes / 1440))}T${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
+
+  const initialStartsAt = item ? localDateTime(item.startsAt) : startTime;
+  const initialEndsAt = item ? localDateTime(item.endsAt) : endTime;
+
+  const [startsAt, setStartsAt] = useState(initialStartsAt);
+  const [endsAt, setEndsAt] = useState(initialEndsAt);
+  const [allDay, setAllDay] = useState(item?.allDay ?? false);
+
+  const selectedCalendars = item
+    ? data.meetings
+        .filter(
+          (event) =>
+            !event.cancelled &&
+            (event.id === item.id ||
+              (item.groupId && event.groupId === item.groupId)),
+        )
+        .map(calendarTarget)
+    : [
+        editor.organizationId
+          ? "contacto"
+          : data.me.role === "admin"
+            ? "office"
+            : `personal:${data.me.id}`,
+      ];
+
+  function handleStartsAtChange(nextStart: string) {
+    setStartsAt(nextStart);
+    if (!nextStart) return;
+
+    if (allDay) {
+      const startDay = nextStart.slice(0, 10);
+      const endDay = endsAt.slice(0, 10);
+      if (!endDay || endDay < startDay) {
+        setEndsAt(`${startDay}T${endsAt.slice(11) || "00:00"}`);
+      }
+      return;
+    }
+
+    const startInstant = toInstant(startsAt);
+    const endInstant = toInstant(endsAt);
+    const prevDuration =
+      startInstant && endInstant
+        ? Date.parse(endInstant) - Date.parse(startInstant)
+        : 30 * 60 * 1000;
+    const durationMs = prevDuration > 0 ? prevDuration : 30 * 60 * 1000;
+
+    const nextStartInstant = toInstant(nextStart);
+    if (nextStartInstant) {
+      const nextEndInstant = new Date(
+        Date.parse(nextStartInstant) + durationMs,
+      ).toISOString();
+      setEndsAt(localDateTime(nextEndInstant));
+    }
+  }
+
+  function handleEndsAtChange(nextEnd: string) {
+    if (!nextEnd) {
+      setEndsAt("");
+      return;
+    }
+    if (allDay) {
+      if (nextEnd.slice(0, 10) < startsAt.slice(0, 10)) return;
+      setEndsAt(nextEnd);
+      return;
+    }
+    const startInstant = toInstant(startsAt);
+    const nextEndInstant = toInstant(nextEnd);
+    if (startInstant && nextEndInstant && Date.parse(nextEndInstant) <= Date.parse(startInstant)) {
+      return;
+    }
+    setEndsAt(nextEnd);
+  }
+
+  function validate(fields: Record<string, unknown>): string | null {
+    const s = String(fields.startsAt ?? startsAt);
+    const e = String(fields.endsAt ?? endsAt);
+    const isAllDay = fields.allDay !== undefined ? Boolean(fields.allDay) : allDay;
+    const startInstant = toInstant(s);
+    const endInstant = toInstant(e);
+    if (!startInstant || !endInstant) return "Invalid date or time in Lisbon.";
+    if (isAllDay) {
+      if (dateKey(endInstant) < dateKey(startInstant)) {
+        return "The end must be after the start.";
+      }
+    } else {
+      if (Date.parse(endInstant) <= Date.parse(startInstant)) {
+        return "The end must be after the start.";
+      }
+    }
+    return null;
+  }
+
+  return (
+    <SideEditor
+      title={item ? "Event" : "New event"}
+      returnDay={editor.returnDay}
+      onClose={onClose}
+    >
+      <SaveForm
+        action="meeting.save"
+        values={item ? { id: item.id, version: item.version } : {}}
+        onClose={onClose}
+        label={item ? "Save event" : "Create event"}
+        validate={validate}
+      >
+        <input
+          className="composer-title"
+          name="title"
+          aria-label="Event title"
+          placeholder="Event title"
+          defaultValue={item?.title}
+          required
+          maxLength={160}
+          autoFocus
+        />
+        <textarea
+          className="composer-description"
+          name="body"
+          aria-label="Event description"
+          placeholder="Event description…"
+          defaultValue={item?.body}
+          rows={3}
+        />
+        <div className="event-date-fields">
+          <DateField
+            name="startsAt"
+            mode="datetime"
+            label="Starts"
+            value={startsAt}
+            onChange={handleStartsAtChange}
+            required
+          />
+          <DateField
+            name="endsAt"
+            mode="datetime"
+            label="Ends"
+            value={endsAt}
+            onChange={handleEndsAtChange}
+            min={startsAt}
+            minExclusive={!allDay}
+            required
+          />
+        </div>
+        <input type="hidden" name="kind" value="event" />
+        <input type="hidden" name="allDayPresent" value="1" />
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            name="allDay"
+            checked={allDay}
+            onChange={(e) => {
+              const nextAllDay = e.target.checked;
+              setAllDay(nextAllDay);
+              if (nextAllDay) {
+                const startDay = startsAt.slice(0, 10);
+                const endDay = endsAt.slice(0, 10);
+                if (endDay < startDay) {
+                  setEndsAt(`${startDay}T${endsAt.slice(11) || "00:00"}`);
+                }
+              } else {
+                const startInstant = toInstant(startsAt);
+                const endInstant = toInstant(endsAt);
+                if (
+                  !startInstant ||
+                  !endInstant ||
+                  Date.parse(endInstant) <= Date.parse(startInstant)
+                ) {
+                  if (startInstant) {
+                    const defaultEnd = new Date(
+                      Date.parse(startInstant) + 30 * 60 * 1000,
+                    ).toISOString();
+                    setEndsAt(localDateTime(defaultEnd));
+                  }
+                }
+              }
+            }}
+          />
+          All day
+        </label>
+        <fieldset>
+          <legend>Calendars</legend>
+          <input type="hidden" name="calendarTargetsPresent" value="1" />
+          <div className="calendar-selection">
+            {calendarOptions(data.me, data.members).map((option) => (
+              <label key={option.id}>
+                <input
+                  type="checkbox"
+                  name="calendarTargets"
+                  value={option.id}
+                  defaultChecked={selectedCalendars.includes(option.id)}
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <Members
+          data={data}
+          name="participantIds"
+          selected={item?.participantIds ?? [data.me.id]}
+        />
+        <label>
+          External participants
+          <input
+            name="externalParticipants"
+            defaultValue={item?.externalParticipants?.join(", ")}
+            placeholder="nome@empresa.pt, …"
+          />
+        </label>
+        {item?.googleEventUrl && (
+          <a
+            className="text-button"
+            href={item.googleEventUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Google Calendar
+          </a>
+        )}
+        {item && (
+          <p className="composer-hint">
+            Google sync · {item.syncStatus ?? "local"}
+          </p>
+        )}
+        {item?.syncStatus === "conflict" && (
+          <div className="composer-properties">
+            <span>
+              Review the event in Google and choose which version to keep.
+            </span>
+            {(["google", "os"] as const).map((keep) => (
+              <button
+                type="button"
+                key={keep}
+                onClick={async () => {
+                  try {
+                    const response = await fetch("/api/integrations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        action: "calendar.resolve",
+                        id: item.id,
+                        version: item.version,
+                        keep,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error);
+                    await workspace.refresh();
+                    onClose();
+                  } catch (error) {
+                    workspace.notify(
+                      error instanceof Error
+                        ? error.message
+                        : "Could not resolve.",
+                    );
+                  }
+                }}
+              >
+                Keep {keep === "google" ? "Google" : "OS"} version
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="composer-properties">
+          <Relations
+            data={data}
+            projectId={item?.projectId ?? editor.projectId}
+            organizationId={item?.organizationId ?? editor.organizationId}
+          />
+        </div>
+        {item && (
+          <button
+            type="button"
+            className="text-button danger"
+            onClick={async () => {
+              if (
+                !item.cancelled &&
+                !(await workspace.confirm(`Delete the event “${item.title}”?`, "Delete"))
+              )
+                return;
+              void flushEdits()
+                .then(() =>
+                  workspace.command("meeting.cancel", {
+                    id: item.id,
+                    version: item.version,
+                  }),
+                )
+                .then(onClose)
+                .catch((error) => workspace.notify(error.message));
+            }}
+          >
+            {item.cancelled ? "Restore event" : "Delete event"}
+          </button>
+        )}
+      </SaveForm>
+    </SideEditor>
+  );
+}
+
 export function RecordEditor({
   editor,
   onClose,
@@ -390,7 +735,11 @@ export function RecordEditor({
     const item = data.meetings.find((m) => m.id === id);
     if (item && !canEditMeeting(data.me, item))
       return (
-        <SideEditor title={item.title} onClose={onClose}>
+        <SideEditor
+          title={item.title}
+          returnDay={editor.returnDay}
+          onClose={onClose}
+        >
           <div className="dialog-body form-stack">
             <p>
               {localDateTime(item.startsAt).replace("T", " · ")} —{" "}
@@ -429,196 +778,13 @@ export function RecordEditor({
           </div>
         </SideEditor>
       );
-    const day = editor.date ?? dateKey(data.now);
-    const startTime = `${day}T${editor.time ?? "10:00"}`;
-    const [hours, minutes] = (editor.time ?? "10:00").split(":").map(Number);
-    const endMinutes = hours * 60 + minutes + (editor.duration ?? 30);
-    const endTime = `${addDays(day, Math.floor(endMinutes / 1440))}T${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-    const selectedCalendars = item
-      ? data.meetings
-          .filter(
-            (event) =>
-              !event.cancelled &&
-              (event.id === item.id ||
-                (item.groupId && event.groupId === item.groupId)),
-          )
-          .map(calendarTarget)
-      : [
-          editor.organizationId
-            ? "contacto"
-            : data.me.role === "admin"
-              ? "office"
-              : `personal:${data.me.id}`,
-        ];
     return (
-      <SideEditor title={item ? "Event" : "New event"} onClose={onClose}>
-        <SaveForm
-          action="meeting.save"
-          values={item ? { id, version: item.version } : {}}
-          onClose={onClose}
-          label={item ? "Save event" : "Create event"}
-        >
-          <input
-            className="composer-title"
-            name="title"
-            aria-label="Event title"
-            placeholder="Event title"
-            defaultValue={item?.title}
-            required
-            maxLength={160}
-            autoFocus
-          />
-          <textarea
-            className="composer-description"
-            name="body"
-            aria-label="Event description"
-            placeholder="Event description…"
-            defaultValue={item?.body}
-            rows={3}
-          />
-          <div className="event-date-fields">
-            <DateField
-              name="startsAt"
-              mode="datetime"
-              label="Starts"
-              defaultValue={item ? localDateTime(item.startsAt) : startTime}
-              required
-            />
-            <DateField
-              name="endsAt"
-              mode="datetime"
-              label="Ends"
-              defaultValue={item ? localDateTime(item.endsAt) : endTime}
-              required
-            />
-          </div>
-          <input type="hidden" name="kind" value="event" />
-          <input type="hidden" name="allDayPresent" value="1" />
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="allDay"
-              defaultChecked={item?.allDay}
-            />
-            All day
-          </label>
-          <fieldset>
-            <legend>Calendars</legend>
-            <input type="hidden" name="calendarTargetsPresent" value="1" />
-            <div className="calendar-selection">
-              {calendarOptions(data.me, data.members).map((option) => (
-                <label key={option.id}>
-                  <input
-                    type="checkbox"
-                    name="calendarTargets"
-                    value={option.id}
-                    defaultChecked={selectedCalendars.includes(option.id)}
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <Members
-            data={data}
-            name="participantIds"
-            selected={item?.participantIds ?? [data.me.id]}
-          />
-          <label>
-            External participants
-            <input
-              name="externalParticipants"
-              defaultValue={item?.externalParticipants?.join(", ")}
-              placeholder="nome@empresa.pt, …"
-            />
-          </label>
-          {item?.googleEventUrl && (
-            <a
-              className="text-button"
-              href={item.googleEventUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open Google Calendar
-            </a>
-          )}
-          {item && (
-            <p className="composer-hint">
-              Google sync · {item.syncStatus ?? "local"}
-            </p>
-          )}
-          {item?.syncStatus === "conflict" && (
-            <div className="composer-properties">
-              <span>
-                Review the event in Google and choose which version to keep.
-              </span>
-              {(["google", "os"] as const).map((keep) => (
-                <button
-                  type="button"
-                  key={keep}
-                  onClick={async () => {
-                    try {
-                      const response = await fetch("/api/integrations", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          action: "calendar.resolve",
-                          id: item.id,
-                          version: item.version,
-                          keep,
-                        }),
-                      });
-                      const result = await response.json();
-                      if (!response.ok) throw new Error(result.error);
-                      await workspace.refresh();
-                      onClose();
-                    } catch (error) {
-                      workspace.notify(
-                        error instanceof Error
-                          ? error.message
-                          : "Could not resolve.",
-                      );
-                    }
-                  }}
-                >
-                  Keep {keep === "google" ? "Google" : "OS"} version
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="composer-properties">
-            <Relations
-              data={data}
-              projectId={item?.projectId ?? editor.projectId}
-              organizationId={item?.organizationId ?? editor.organizationId}
-            />
-          </div>
-          {item && (
-            <button
-              type="button"
-              className="text-button danger"
-              onClick={async () => {
-                if (
-                  !item.cancelled &&
-                  !(await workspace.confirm(`Delete the event “${item.title}”?`, "Delete"))
-                )
-                  return;
-                void flushEdits()
-                  .then(() =>
-                    workspace.command("meeting.cancel", {
-                      id,
-                      version: item.version,
-                    }),
-                  )
-                  .then(onClose)
-                  .catch((error) => workspace.notify(error.message));
-              }}
-            >
-              {item.cancelled ? "Restore event" : "Delete event"}
-            </button>
-          )}
-        </SaveForm>
-      </SideEditor>
+      <MeetingEditor
+        item={item}
+        editor={editor as Editor & { type: "meeting" }}
+        data={data}
+        onClose={onClose}
+      />
     );
   }
   if (type === "organization")

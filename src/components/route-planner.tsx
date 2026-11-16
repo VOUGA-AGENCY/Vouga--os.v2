@@ -205,8 +205,8 @@ export function RoutePlanner({ map, lib, sectors, onClose, onSaveRoute, pickRef 
     <div className="route-grid">
       <label>Dia<DateField ariaLabel="Dia" value={form.date} onChange={(date) => { setPlan(null); setForm({ ...form, date }); }} clearable={false}/></label>
       <label>Visitas<input type="number" min={1} max={12} {...field("count")}/></label>
-      <label>Início<DateField mode="time" ariaLabel="Início" value={form.start} onChange={(start) => { setPlan(null); setForm({ ...form, start }); }} clearable={false}/></label>
-      <label>Regresso<DateField mode="time" ariaLabel="Regresso" value={form.end} onChange={(end) => { setPlan(null); setForm({ ...form, end }); }} clearable={false}/></label>
+      <label>Início<DateField mode="time" ariaLabel="Início" value={form.start} onChange={(start) => { setPlan(null); setForm({ ...form, start, ...(start > form.end ? { end: start } : {}) }); }} clearable={false}/></label>
+      <label>Regresso<DateField mode="time" ariaLabel="Regresso" value={form.end} min={form.start} onChange={(end) => { setPlan(null); setForm({ ...form, end }); }} clearable={false}/></label>
     </div>
     <details className="route-more">
       <summary>Mais opções · raio {form.radiusKm} km · {form.visitMinutes} min/visita</summary>

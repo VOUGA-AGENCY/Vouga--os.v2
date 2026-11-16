@@ -152,6 +152,9 @@ button:hover, a:hover { text-decoration: none; }
 .side-panel-backdrop { position:fixed; inset:0; z-index:90; background:rgb(5 6 9 / 30%); display:flex; justify-content:flex-end; }
 .side-panel { width:min(var(--side-panel-width), 100vw); height:100dvh; background:var(--color-panel); border-left:var(--border-width) solid var(--color-border-strong); display:flex; flex-direction:column; }
 .side-panel-header { flex:none; display:flex; align-items:center; justify-content:space-between; height:var(--space-8); padding-inline:var(--space-5); border-bottom:var(--border-width) solid var(--color-border); color:var(--color-muted); font-size:var(--text-xs); }
+.side-panel-header-title { display: flex; align-items: center; gap: var(--space-2); }
+.side-panel-back-button { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-2); border: var(--border-width) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-ink); font-size: var(--text-xs); font-weight: 500; cursor: pointer; transition: background var(--duration-fast), border-color var(--duration-fast); }
+.side-panel-back-button:hover { background: var(--color-surface-hover); border-color: var(--color-border-strong); color: var(--color-ink); }
 .side-panel-header button { color:var(--color-muted); padding:var(--space-2); }
 .side-panel-scroll { overflow:auto; padding:var(--space-5); }
 .side-panel-scroll .dialog-body { padding:0; }
@@ -1806,6 +1809,10 @@ html, body, .app-shell { background:var(--color-sidebar); }
 .date-picker-footer button { padding:var(--space-1) var(--space-3); border:0; border-radius:var(--radius-pill); background:transparent; color:var(--color-subtle); font-size:var(--text-xs); cursor:pointer; }
 .date-picker-footer button:hover { background:var(--color-surface-hover); color:var(--color-ink); }
 .date-picker button:focus-visible { outline:2px solid var(--color-focus, var(--color-border-strong)); outline-offset:1px; }
+.date-picker-day:disabled, .date-picker-day.is-disabled,
+.date-picker-column button:disabled, .date-picker-column button.is-disabled,
+.date-picker-footer button:disabled, .date-picker-footer button.is-disabled,
+.date-picker-header button:disabled, .date-picker-header button.is-disabled { opacity:.3; cursor:not-allowed; pointer-events:none; }
 .task-select-option:focus-visible { outline:none; background:var(--color-surface-hover); }
 /* Full-width variant where the form stacks labels above fields. */
 .company-details-form .date-field, .company-event-form .date-field, .route-check-dialog .date-field, .route-grid .date-field, .capture-body .task-select-box, .control-popover-content .date-field { display:flex; width:100%; }

@@ -644,6 +644,7 @@ export function Workspace({
           id={editor.id}
           projectId={editor.projectId}
           initialStatus={editor.taskStatus}
+          returnDay={editor.returnDay}
           onClose={() => {
             void flushEdits()
               .then(() => setEditor(null))
