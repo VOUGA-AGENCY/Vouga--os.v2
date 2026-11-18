@@ -14,6 +14,11 @@ const config: NextConfig = {
           { key: "Referrer-Policy", value: "same-origin" },
         ],
       },
+      {
+        source: "/api/projects/space",
+        has: [{ type: "query", key: "mode", value: "preview" }],
+        headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
+      },
     ];
   },
 };

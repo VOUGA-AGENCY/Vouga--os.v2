@@ -26,9 +26,35 @@ function projectFileUrl(project: string, doc?: string, mode?: string) {
 
 async function projectRequest<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, { cache: "no-store", ...init });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Could not open the project file.");
+  const result = await response.json().catch(() => null);
+  if (response.status === 413) throw new Error(result?.error || "The file exceeds the upload limit.");
+  if (!response.ok || result === null) {
+    throw new Error(result?.error || "Could not process the project file. Try again.");
+  }
   return result as T;
+}
+
+type PdfUpload = { url: string; id: string; expires: number; proof: string } | { url: null };
+
+async function importProjectFile(url: string, form: FormData) {
+  const file = form.get("file");
+  if (file instanceof File && /\.pdf$/i.test(file.name)) {
+    if (file.size > 10 * 1024 * 1024) throw new Error("Choose a PDF up to 10 MB.");
+    const title = form.get("title");
+    const post = (body: Record<string, unknown>): RequestInit => ({
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+    const prepared = await projectRequest<PdfUpload>(url, post({ action: "pdf.prepare", title, size: file.size }));
+    if (prepared.url !== null) {
+      const upload = await fetch(prepared.url, {
+        method: "PUT", headers: { "Content-Type": "application/pdf" }, body: file,
+      });
+      if (!upload.ok) throw new Error("Could not upload the PDF. Try again.");
+      const { id, expires, proof } = prepared;
+      return projectRequest<{ id: string }>(url, post({ action: "pdf.complete", title, id, expires, proof }));
+    }
+  }
+  return projectRequest<{ id: string }>(url, { method: "POST", body: form });
 }
 
 export function DocumentTree({ project }: { project: Project }) {
@@ -65,9 +91,10 @@ export function DocumentTree({ project }: { project: Project }) {
     setError("");
     try {
       const importing = mode === "new" && format === "file";
-      const { id } = await projectRequest<{ id: string }>(projectFileUrl(project.id), importing
-        ? { method: "POST", body: form }
-        : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+      const url = projectFileUrl(project.id);
+      const { id } = importing
+        ? await importProjectFile(url, form)
+        : await projectRequest<{ id: string }>(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
             action: "markdown", id: mode === "edit" ? doc?.id : undefined,
             version: doc?.version, title: form.get("title"), body: form.get("body"),
           }) });
@@ -112,7 +139,7 @@ export function DocumentTree({ project }: { project: Project }) {
                 <label>Title<input name="title" required maxLength={150} placeholder={format === "markdown" ? "notes.md" : "File title"} /></label>
               </>}
               {mode === "new" && format === "file"
-                ? <label>File<input type="file" name="file" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg,.webp,.gif" required /><small>PDF, DOCX, TXT or image · up to 4 MB</small></label>
+                ? <label>File<input type="file" name="file" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg,.webp,.gif" required /><small>PDF up to 10 MB · DOCX, TXT and images up to 4 MB</small></label>
                 : <label>Markdown<textarea name="body" rows={12} defaultValue={mode === "edit" ? doc?.body : ""} maxLength={60_000} /></label>}
               <footer><button type="submit" disabled={saving}>{saving ? "Saving…" : "Save file"}</button></footer>
             </form>

@@ -1,13 +1,24 @@
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { extractRawText } from "mammoth";
 import { identityFromStore, requireMember, tokenFrom } from "@/application/auth";
 import type { Member, ProjectDocument, Store } from "@/domain/model";
 import { canSeeProject } from "@/domain/permissions";
 import { AppError, record, text } from "@/domain/validation";
 import { errorResponse, jsonBody } from "@/foundation/http";
-import { attachmentStorage } from "@/persistence/attachment-storage";
+import { attachmentStorage, SupabaseAttachmentStorage } from "@/persistence/attachment-storage";
 import { repository } from "@/persistence/store";
 import { boundedBody } from "@/services/runtime";
+
+import { supabaseOptions } from "@/persistence/supabase/client";
+
+const standardLimit = 4 * 1024 * 1024;
+const pdfLimit = 10 * 1024 * 1024;
+
+function uploadProof(projectId: string, memberId: string, id: string, title: string, expires: number) {
+  return createHmac("sha256", supabaseOptions().secret)
+    .update(JSON.stringify(["project-pdf", projectId, memberId, id, title, expires]))
+    .digest();
+}
 
 const docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 const mimeTypes: Record<string, string> = {
@@ -73,10 +84,20 @@ export async function GET(request: Request) {
       const file = doc.file;
       if (mode === "preview" && file && !file.mimeType.startsWith("image/") && file.mimeType !== "application/pdf")
         throw new AppError("Unsupported inline format.", 400);
+      const storage = file ? attachmentStorage() : null;
+      if (file?.mimeType === "application/pdf" && storage instanceof SupabaseAttachmentStorage) {
+        return new Response(null, { status: 302, headers: {
+          ...privateHeaders,
+          Location: await storage.signedUrl(file.storageName, false, mode === "download" ? doc.title : undefined),
+        } });
+      }
       const bytes = file ? Buffer.from(await attachmentStorage().get(file.storageName)) : doc.revisions.at(-1)?.body ?? "";
       const name = doc.title.replace(/[^a-zA-Z0-9._ -]/g, "_") || "download";
       return new Response(bytes, { headers: {
         ...privateHeaders,
+        ...(mode === "preview" && file?.mimeType === "application/pdf"
+          ? { "X-Frame-Options": "SAMEORIGIN", "Content-Security-Policy": "frame-ancestors 'self'" }
+          : {}),
         "Content-Type": mode === "download" ? "application/octet-stream" : file?.mimeType ?? "text/plain; charset=utf-8",
         "Content-Disposition": `${mode === "download" ? "attachment" : "inline"}; filename="${name}"; filename*=UTF-8''${encodeURIComponent(doc.title).replace(/'/g, "%27")}`,
       } });
@@ -100,16 +121,22 @@ export async function POST(request: Request) {
     const revision = (body: string) => ({ body, at: now, authorId: me.id, authorName: me.name });
     if (request.headers.get("content-type")?.startsWith("multipart/form-data")) {
       projectFor(await repo.read(), me, projectId);
-      const multipart = Buffer.from(await boundedBody(request, 4 * 1024 * 1024 + 32_768));
-      const form = await new Response(multipart, {
+      const multipart = Buffer.from(await boundedBody(request, (process.env.VOUGA_STORAGE === "supabase" ? standardLimit : pdfLimit) + 32_768));
+      const form = await new Request(request.url, {
+        method: "POST",
         headers: { "Content-Type": request.headers.get("content-type")! },
-      }).formData();
+        body: multipart,
+      }).formData().catch(() => {
+        throw new AppError("Could not read the upload. Select the file and try again.");
+      });
       const file = form.get("file");
-      if (!(file instanceof File) || !file.size || file.size > 4 * 1024 * 1024)
+      if (!(file instanceof File) || !file.size)
         throw new AppError("Choose a file up to 4 MB.");
       const ext = file.name.split(".").at(-1)?.toLowerCase() ?? "";
       const mimeType = Object.hasOwn(mimeTypes, ext) ? mimeTypes[ext] : undefined;
       if (!mimeType) throw new AppError("Unsupported file format.");
+      const limit = mimeType === "application/pdf" ? pdfLimit : standardLimit;
+      if (file.size > limit) throw new AppError(`Choose a file up to ${limit / 1024 / 1024} MB.`, 413);
       const bytes = Buffer.from(await file.arrayBuffer());
       const title = text(form.get("title"), "Title", 150);
       let previewText: string | undefined;
@@ -128,6 +155,43 @@ export async function POST(request: Request) {
       return Response.json({ id });
     }
     const input = record(await jsonBody(request));
+    if (input.action === "pdf.prepare" || input.action === "pdf.complete") {
+      const project = projectFor(await repo.read(), me, projectId);
+      const storage = attachmentStorage();
+      if (!(storage instanceof SupabaseAttachmentStorage)) return Response.json({ url: null });
+      const rawTitle = text(input.title, "Title", 150);
+      const title = rawTitle.toLowerCase().endsWith(".pdf") ? rawTitle : `${rawTitle}.pdf`;
+      if (input.action === "pdf.prepare") {
+        if (!Number.isSafeInteger(input.size) || Number(input.size) <= 0 || Number(input.size) > pdfLimit)
+          throw new AppError("Choose a PDF up to 10 MB.", 413);
+        const expires = Date.now() + 30 * 60_000;
+        return Response.json({
+          id, expires, url: await storage.signedUrl(id, true),
+          proof: uploadProof(project.id, me.id, id, title, expires).toString("hex"),
+        }, { headers: privateHeaders });
+      }
+      const uploadId = text(input.id, "File identifier", 36);
+      const expires = Number(input.expires);
+      const proof = Buffer.from(typeof input.proof === "string" ? input.proof : "", "hex");
+      if (!Number.isSafeInteger(expires) || expires < Date.now() || proof.length !== 32 ||
+        !timingSafeEqual(proof, uploadProof(project.id, me.id, uploadId, title, expires)))
+        throw new AppError("Upload expired or invalid. Select the PDF again.", 400);
+      const bytes = await storage.get(uploadId, "application/pdf");
+      if (!bytes.length || bytes.length > pdfLimit || !Buffer.from(bytes.subarray(0, 1024)).includes("%PDF-")) {
+        await storage.remove(uploadId);
+        throw new AppError("Choose a valid PDF up to 10 MB.");
+      }
+      await repo.transact(data => {
+        const current = projectFor(data, currentMember(data, request), project.id);
+        const docs = current.documents ??= [];
+        if (!docs.some(doc => doc.id === uploadId)) docs.push({
+          id: uploadId, title,
+          file: { name: title, storageName: uploadId, mimeType: "application/pdf" },
+          revisions: [revision("")],
+        });
+      });
+      return Response.json({ id: uploadId });
+    }
     const result = await repo.transact(data => {
       const project = projectFor(data, currentMember(data, request), projectId);
       if (input.action !== "markdown") throw new AppError("Unknown action.");
