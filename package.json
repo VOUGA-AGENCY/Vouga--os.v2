@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "lucide-react": "0.575.0",
+    "mammoth": "1.12.2",
     "maplibre-gl": "5.24.0",
     "next": "16.2.10",
     "react": "19.2.7",

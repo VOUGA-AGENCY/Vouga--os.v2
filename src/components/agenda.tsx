@@ -35,7 +35,7 @@ const slotTime = (index: number) =>
   `${String(firstHour + Math.floor(index / 2)).padStart(2, "0")}:${index % 2 ? "30" : "00"}`;
 
 export function Agenda() {
-  const { data, edit } = useWorkspace();
+  const { data, edit, openProject } = useWorkspace();
   const today = dateKey(data.now);
   const [selected, setSelected] = useState(today);
   const [mobileDay, setMobileDay] = useState(today);
@@ -59,6 +59,27 @@ export function Agenda() {
   const options = calendarOptions(data.me, data.members);
   const [calendars, setCalendars] = useState<string[]>(() =>
     options.map((item) => item.id),
+  );
+  const projectDeadlines = useMemo(() => {
+    const index = new Map<string, { id: string; title: string; projectId: string; projectName: string }[]>();
+    if (!calendars.includes("office") && !calendars.includes("contacto")) return index;
+    for (const project of data.projects) {
+      if (project.status === "archived") continue;
+      for (const deadline of project.deadlines ?? []) {
+        if (deadline.kind === "start") continue;
+        const items = index.get(deadline.dueOn) ?? [];
+        items.push({ id: deadline.id, title: deadline.title, projectId: project.id, projectName: project.name });
+        index.set(deadline.dueOn, items);
+      }
+    }
+    return index;
+  }, [calendars, data.projects]);
+  const deadlinesOn = (day: string) => projectDeadlines.get(day) ?? [];
+  const deadlineCard = (deadline: ReturnType<typeof deadlinesOn>[number]) => (
+    <button key={deadline.id} className="calendar-project-deadline" title={`${deadline.projectName}: ${deadline.title}`}
+      onClick={() => openProject(deadline.projectId, deadline.id)}>
+      {deadline.title}
+    </button>
   );
   const selection = useRef<{ day: string; start: number; end: number } | null>(
     null,
@@ -296,18 +317,18 @@ export function Agenda() {
             }
           >
             {days.map((day) => (
+              <div className="calendar-month-cell" key={day}>
               <button
-                key={day}
-                aria-label={`Open agenda ${day}, ${meetingsOn(day).length} events, ${dueOn(day)} tasks due`}
-                className={`${day === mobileDay ? "mobile-selected" : ""} ${day === inspectedDay ? "is-selected" : ""} ${day === today ? "is-today" : ""} ${day.slice(0, 7) !== selected.slice(0, 7) ? "outside" : ""}`}
+                aria-label={`Open agenda ${day}, ${meetingsOn(day).length} events, ${dueOn(day)} tasks due, ${deadlinesOn(day).length} project deadlines`}
+                className={`calendar-month-day ${day === mobileDay ? "mobile-selected" : ""} ${day === inspectedDay ? "is-selected" : ""} ${day === today ? "is-today" : ""} ${day.slice(0, 7) !== selected.slice(0, 7) ? "outside" : ""}`}
                 onClick={() => {
                   inspectDay(day);
                 }}
               >
                 <strong>{Number(day.slice(-2))}</strong>
                 <span className="calendar-mobile-count" aria-hidden="true">
-                  {meetingsOn(day).length > 0
-                    ? `${meetingsOn(day).length}`
+                  {meetingsOn(day).length + deadlinesOn(day).length > 0
+                    ? `${meetingsOn(day).length + deadlinesOn(day).length}`
                     : dueOn(day) > 0
                       ? "·"
                       : ""}
@@ -335,6 +356,11 @@ export function Agenda() {
                   </small>
                 )}
               </button>
+              {deadlinesOn(day).length > 0 && <div className="calendar-month-deadlines">
+                {deadlineCard(deadlinesOn(day)[0])}
+                {deadlinesOn(day).length > 1 && <button className="calendar-extra-deadlines" onClick={() => inspectDay(day)}>+{deadlinesOn(day).length - 1}</button>}
+              </div>}
+              </div>
             ))}
           </div>
         </div>
@@ -369,6 +395,7 @@ export function Agenda() {
             <span>All day</span>
             {days.map((day) => (
               <div key={day}>
+                {deadlinesOn(day).map(deadlineCard)}
                 {meetingsOn(day)
                   .filter((event) => event.allDay)
                   .map((event) => (
@@ -523,7 +550,8 @@ export function Agenda() {
                 </span>
               </button>
             ))}
-          {!meetingsOn(mobileDay).length && (
+          {deadlinesOn(mobileDay).map(deadlineCard)}
+          {!meetingsOn(mobileDay).length && !deadlinesOn(mobileDay).length && (
             <p className="calendar-mobile-empty">No events scheduled.</p>
           )}
         </div>
@@ -617,7 +645,8 @@ export function Agenda() {
                     <span>{calendarLabel(meeting, data.members)}</span>
                   </button>
                 ))}
-              {!meetingsOn(inspectedDay).length && (
+              {deadlinesOn(inspectedDay).map(deadlineCard)}
+              {!meetingsOn(inspectedDay).length && !deadlinesOn(inspectedDay).length && (
                 <p className="focus-empty">No events scheduled.</p>
               )}
               {dueOn(inspectedDay) > 0 && (

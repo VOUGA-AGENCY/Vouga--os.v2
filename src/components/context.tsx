@@ -21,7 +21,7 @@ export interface WorkspaceContextValue {
   ) => Promise<Snapshot>;
   edit: (editor: Editor) => void;
   capture: (kind?: CaptureKind) => void;
-  openProject: (id: string) => void;
+  openProject: (id: string, deadlineId?: string) => void;
   notify: (message: string) => void;
   /** In-app confirmation for destructive actions; resolves false when cancelled. */
   confirm: (message: string, action?: string) => Promise<boolean>;

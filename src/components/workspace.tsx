@@ -43,6 +43,7 @@ const navigation = [
   { path: "", label: "Home", icon: House },
   { path: "tasks", label: "Tasks", icon: ListTodo },
   { path: "agenda", label: "Calendar", icon: CalendarDays },
+  { path: "trabalho", label: "Projects", icon: FolderOpen },
   { path: "contactos", label: "CRM", icon: Users },
   { path: "prospect", label: "Prospect", icon: ScanSearch },
 ];
@@ -85,6 +86,7 @@ export function Workspace({
   };
   const [toast, setToast] = useState("");
   const [project, setProject] = useState<string | null>(null);
+  const [projectDeadline, setProjectDeadline] = useState<string>();
   useEffect(() => {
     const navigate = (event: PopStateEvent) => {
       const path = window.location.pathname;
@@ -126,10 +128,16 @@ export function Workspace({
       })
       .catch((error) => setToast(error.message));
   }, []);
-  const openProject = useCallback((id: string) => {
+  const openProject = useCallback((id: string, deadlineId?: string) => {
     void flushEdits()
       .then(() => {
         setSearch(false);
+        if (lastPath.current !== "/trabalho") {
+          History.prototype.pushState.call(window.history, null, "", "/trabalho");
+          lastPath.current = "/trabalho";
+          setView("trabalho");
+        }
+        setProjectDeadline(deadlineId);
         setProject(id);
         setEditor(null);
       })
@@ -466,32 +474,14 @@ export function Workspace({
               />
             </Link>
             <nav aria-label="Main navigation" className="sidebar-nav">
-              {links.slice(0, 3)}
+              {links.slice(0, 4)}
             </nav>
             <section className="sidebar-sales" aria-labelledby="sales-navigation-title">
               <div className="sidebar-group-label" id="sales-navigation-title">Sales</div>
               <nav className="sidebar-nav" aria-label="Sales navigation">
-                {links.slice(3)}
+                {links.slice(4)}
               </nav>
             </section>
-            <div className="sidebar-projects">
-              <Link className="sidebar-group-label" href="/trabalho">
-                Projects <Plus size={13} />
-              </Link>
-              {data.projects
-                .filter((p) => p.status === "active" || p.status === "waiting")
-                .slice(0, 8)
-                .map((p) => (
-                  <button
-                    key={p.id}
-                    className={`sidebar-project ${project === p.id ? "active" : ""}`}
-                    onClick={() => openProject(p.id)}
-                  >
-                    <span className={`status-dot status-${p.status}`} />
-                    <span>{p.name}</span>
-                  </button>
-                ))}
-            </div>
             <button className="sidebar-capture" onClick={() => capture()}>
               <Plus size={17} />
               Ask or capture…<kbd>⌘ K</kbd>
@@ -581,7 +571,7 @@ export function Workspace({
             )}
             <main id="main" className="workspace-content" tabIndex={-1}>
               {project ? (
-                <ProjectDetail id={project} onClose={() => setProject(null)} />
+                <ProjectDetail key={project} id={project} deadlineId={projectDeadline} onClose={() => setProject(null)} />
               ) : view === "" ? (
                 <Today />
               ) : view === "settings" ? (
@@ -615,13 +605,6 @@ export function Workspace({
           </div>
           <nav className="bottom-navigation" aria-label="Mobile navigation">
             {links}
-            <Link
-              href="/trabalho"
-              className={`navigation-item ${view === "trabalho" || project ? "active" : ""}`}
-            >
-              <FolderOpen size={18} />
-              <span>Projects</span>
-            </Link>
           </nav>
         </div>
       )}

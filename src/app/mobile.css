@@ -319,10 +319,10 @@
   .calendar-month-days {
     gap: 2px;
   }
-  .calendar-month-days > button {
+  .calendar-month-cell > .calendar-month-day {
     padding: var(--space-1);
   }
-  .calendar-month-days > button > strong {
+  .calendar-month-cell > .calendar-month-day > strong {
     font-size: var(--text-sm);
   }
   .calendar-month-days span,
@@ -802,7 +802,7 @@
     grid-auto-rows: var(--space-10);
     gap: var(--space-1);
   }
-  .calendar-month-days > button {
+  .calendar-month-cell > .calendar-month-day {
     min-height: 0;
     padding: var(--space-1);
     justify-items: center;
@@ -811,15 +811,15 @@
     background: transparent;
     gap: 0;
   }
-  .calendar-month-days > button > strong {
+  .calendar-month-cell > .calendar-month-day > strong {
     width: var(--control-height-small);
     height: var(--control-height-small);
   }
-  .calendar-month-days > button > span,
-  .calendar-month-days > button > small {
+  .calendar-month-cell > .calendar-month-day > span,
+  .calendar-month-cell > .calendar-month-day > small {
     display: none;
   }
-  .calendar-month-days > button > .calendar-mobile-count {
+  .calendar-month-cell > .calendar-month-day > .calendar-mobile-count {
     display: block;
     min-height: var(--space-4);
     line-height: var(--space-4);
@@ -828,7 +828,7 @@
     color: var(--color-muted);
     font-size: var(--text-xs);
   }
-  .calendar-month-days > button.mobile-selected {
+  .calendar-month-cell > .calendar-month-day.mobile-selected {
     background: var(--color-surface-hover);
     border-color: var(--color-border-strong);
   }

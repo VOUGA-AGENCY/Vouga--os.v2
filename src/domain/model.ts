@@ -195,7 +195,24 @@ export interface InboxItem extends Entity {
   ownerId: string;
   resolved: boolean;
 }
+export type ProjectDeadline = {
+  kind?: "start";
+  id: string;
+  title: string;
+  dueOn: string;
+  ownerId: string;
+  status: "planned" | "doing" | "done";
+};
+export type ProjectDocument = {
+  id: string;
+  title: string;
+  file?: { name: string; storageName: string; mimeType: string; previewText?: string };
+  revisions: { body: string; authorId: string; authorName: string; at: string }[];
+};
+
 export interface Project extends Entity {
+  deadlines?: ProjectDeadline[];
+  documents?: ProjectDocument[];
   name: string;
   objective: string;
   nextStep: string;

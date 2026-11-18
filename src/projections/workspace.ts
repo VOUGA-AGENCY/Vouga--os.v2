@@ -42,7 +42,7 @@ export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
         email,
         ...(githubLogin ? { githubLogin } : {}),
       })),
-    projects,
+    projects: projects.map((project) => ({ ...project, documents: undefined })),
     tasks,
     taskComments: data.taskComments.filter((comment) =>
       taskIds.has(comment.taskId),

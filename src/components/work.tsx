@@ -3,12 +3,12 @@ import {
   ArrowLeft,
   ArrowUpRight,
   GitPullRequest,
+  Kanban,
   Plus,
   Search,
 } from "lucide-react";
 import { useState } from "react";
 import { projectStatuses } from "@/domain/model";
-import { relativeDate } from "@/domain/time";
 import { useWorkspace } from "./context";
 import { ActivityFeed } from "./activity";
 import { ProjectUpdateForm } from "./editors";
@@ -16,6 +16,7 @@ import { RepositorySettings } from "./settings";
 import { Dialog } from "./dialog";
 import { TaskSurface } from "./task-surface";
 import { PersonAvatar } from "./person-avatar";
+import { DocumentTree, ProjectTimeline } from "./project-space";
 
 export function Work() {
   const { data, edit, openProject } = useWorkspace();
@@ -28,11 +29,10 @@ export function Work() {
     )
     .sort((a, b) => a.name.localeCompare(b.name));
   return (
-    <div className="compact-page">
+    <div className="compact-page spaces-page">
       <header className="compact-heading">
         <div>
-          <h1>Projects</h1>
-          <span>Spaces for execution</span>
+          <h1>Spaces for execution</h1>
         </div>
         <button onClick={() => edit({ type: "project" })}>
           <Plus size={15} />
@@ -51,27 +51,13 @@ export function Work() {
         </label>
         <span>{projects.length} active</span>
       </div>
-      <div className="project-index">
-        {projects.map((project) => {
-          const tasks = data.tasks.filter(
-            (task) => task.projectId === project.id,
-          );
-          const complete = tasks.filter(
-            (task) => task.status === "done",
-          ).length;
-          return (
-            <button key={project.id} onClick={() => openProject(project.id)}>
-              <span className={`task-state task-state-${project.status}`} />
-              <strong>{project.name}</strong>
-              <span>{projectStatuses[project.status]}</span>
-              <span>
-                {complete} / {tasks.length} completed
-              </span>
-              <span>{relativeDate(project.dueOn)}</span>
-              <ArrowUpRight size={15} />
-            </button>
-          );
-        })}
+      <div className="space-folders">
+        {projects.map(project => (
+          <button key={project.id} className="space-folder" onClick={() => openProject(project.id)}>
+            <span className="space-folder-icon" aria-hidden="true" />
+            <span className="space-folder-name">{project.name}</span>
+          </button>
+        ))}
         {!projects.length && <p className="focus-empty">No active projects.</p>}
       </div>
     </div>
@@ -80,15 +66,17 @@ export function Work() {
 
 export function ProjectDetail({
   id,
+  deadlineId,
   onClose,
 }: {
   id: string;
+  deadlineId?: string;
   onClose: () => void;
 }) {
   const { data, edit, refresh, notify } = useWorkspace();
   const [syncing, setSyncing] = useState(false);
   const [updateComposerOpen, setUpdateComposerOpen] = useState(false);
-  const [tab, setTab] = useState<"board" | "list" | "activity">("board");
+  const [tab, setTab] = useState<"space" | "board" | "list" | "activity">("space");
   const project = data.projects.find((item) => item.id === id);
   if (!project) return null;
   const tasks = data.tasks.filter((task) => task.projectId === id);
@@ -101,40 +89,34 @@ export function ProjectDetail({
   );
   return (
     <div className="compact-page project-workspace">
-      <header className="project-heading">
-        <button onClick={onClose} aria-label="Back to projects">
-          <ArrowLeft size={16} />
-        </button>
-        <span className={`task-state task-state-${project.status}`} />
-        <h1>{project.name}</h1>
-        <span>{projectStatuses[project.status]}</span>
-        <PersonAvatar member={data.members.find((member) => member.id === project.ownerId)} />
-        <button
-          className="project-edit"
-          onClick={() => edit({ type: "project", id })}
-        >
-          Edit
-        </button>
-      </header>
-      <div className="project-progress">
-        <span>
-          {complete} / {tasks.length} tasks completed · {percent}%
-        </span>
-        <div>
-          <i style={{ width: `${percent}%` }} />
+      <button className="space-back" onClick={onClose}><ArrowLeft size={14} /> Projects</button>
+      <header className="space-project-header">
+        <div className="space-project-identity">
+          <h1>{project.name}</h1>
+          {project.objective && <p className="space-project-description">{project.objective}</p>}
+          <div className="space-project-meta">
+            <span>{projectStatuses[project.status]}</span>
+            {data.members.filter(member => member.id === project.ownerId || project.memberIds.includes(member.id))
+              .map(member => <PersonAvatar key={member.id} member={member} />)}
+            <button onClick={() => edit({ type: "project", id })}>Edit</button>
+          </div>
         </div>
-      </div>
-      <div className="project-tabs">
-        {(["board", "list", "activity"] as const).map((value) => (
-          <button
-            key={value}
-            className={tab === value ? "active" : ""}
-            onClick={() => setTab(value)}
-          >
-            {value[0].toUpperCase() + value.slice(1)}
-          </button>
-        ))}
-      </div>
+        <div className="space-project-work">
+          <div className="space-project-completion">
+            <strong>{percent}%</strong>
+            <small>{complete}/{tasks.length} tasks done</small>
+          </div>
+          {tab === "space" && <button onClick={() => setTab("board")}><Kanban size={16} /> Open Kanban</button>}
+        </div>
+      </header>
+      {tab === "space" && <>
+        <ProjectTimeline project={project} deadlineId={deadlineId} />
+        <DocumentTree project={project} />
+      </>}
+      {tab !== "space" && <nav className="space-project-nav" aria-label="Project views">
+        <button onClick={() => setTab("space")}>Project space</button>
+        {tab === "activity" && <button onClick={() => setTab("board")}><Kanban size={15} /> Kanban</button>}
+      </nav>}
       {tab === "activity" ? (
         <>
           <div className="compact-toolbar">
@@ -190,9 +172,12 @@ export function ProjectDetail({
             </Dialog>
           )}
         </>
-      ) : (
+      ) : tab !== "space" ? (
         <TaskSurface projectId={id} mode={tab} onModeChange={setTab} />
-      )}
+      ) : null}
+      {tab !== "activity" && <button className="space-activity-link" onClick={() => setTab("activity")}>Activity <ArrowUpRight size={13} /></button>}
+      <details className="space-repositories">
+        <summary>{project.repositoryUrl ? `GitHub · ${project.repositoryUrl.replace(/^https:\/\/github\.com\//, "").replace(/\/$/, "")}` : "GitHub"}</summary>
       <section className="project-context">
         {project.repositories?.map((repo) => (
           <a key={repo.id} href={repo.url} target="_blank" rel="noreferrer">
@@ -219,6 +204,7 @@ export function ProjectDetail({
           )}
         </section>
       )}
+      </details>
     </div>
   );
 }

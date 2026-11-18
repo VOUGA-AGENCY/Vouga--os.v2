@@ -1140,6 +1140,30 @@ function executeCore(
       touch(organization);
       return { message: "Conversation and next step saved." };
     }
+    case "project.deadline":
+    case "project.deadline.delete": {
+      const project = find(data.projects, v.projectId);
+      allow(canSeeProject(me, project));
+      const deadlines = project.deadlines ??= [];
+      const existing = deadlines.find(item => item.id === v.id);
+      if (v.id && !existing) throw new AppError("Deliverable not found.", 404);
+      if (action === "project.deadline.delete") {
+        if (!existing) throw new AppError("Deliverable not found.", 404);
+        project.deadlines = deadlines.filter(item => item.id !== existing.id);
+        return { message: "Deliverable removed." };
+      }
+      const dueOn = day(v.dueOn);
+      if (!dueOn) throw new AppError("Choose a deadline.");
+      const ownerId = member(v.ownerId);
+      if (ownerId !== project.ownerId && !project.memberIds.includes(ownerId))
+        throw new AppError("Choose a project member.");
+      const title = text(v.title, "Title", 150);
+      const status = choice(v.status, ["planned", "doing", "done"], "Status") as "planned" | "doing" | "done";
+      const deliverableId = existing?.id ?? randomUUID();
+      if (existing) Object.assign(existing, { title, dueOn, ownerId, status });
+      else deadlines.push({ id: deliverableId, title, dueOn, ownerId, status });
+      return { message: "Deliverable saved." };
+    }
     case "project.save": {
       const existing = v.id ? find(data.projects, v.id) : null;
       if (existing) {
