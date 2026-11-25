@@ -21,3 +21,9 @@ Atualizar os redirect URIs autorizados na Google Cloud e os endpoints públicos 
 Esta entrega prepara o código e as contas; não publica nem muda DNS. Passwords pessoais são escolhidas pelos próprios utilizadores no primeiro acesso. Não executar novamente o provisionamento em contas já ativas sem pedido explícito: isso invalida passwords e sessões.
 
 Perfis removidos não têm acesso ao OS. A migração remove contas OS/sessões/Telegram e reatribui trabalho ao Miguel, mantendo um identificador arquivado para autoria. Não modifica o Supabase Auth partilhado com o OS antigo.
+
+## Adicionar um Engineer
+
+Em Settings → Equipa → Adicionar Engineer, um administrador regista o nome, o email e a foto. A pessoa entra com esse email e com a palavra-passe temporária definida em `VOUGA_ENGINEER_TEMP_PASSWORD`. Configura esta variável apenas no servidor. A palavra-passe temporária expira em 24 horas e deve ser alterada no primeiro acesso. Depois disso, a pessoa continua a entrar com o mesmo email e com a palavra-passe que escolheu.
+
+Estas contas ficam nas coleções de membros e contas do Vouga OS. A foto usa o bucket privado existente. As contas anteriores continuam a usar o método de login original.

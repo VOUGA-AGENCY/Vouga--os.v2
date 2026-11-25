@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useWorkspace } from "./context";
+import { Dialog } from "./dialog";
 import { SelectBox } from "./task-surface";
 type Status = {
   connections: {
@@ -39,6 +40,66 @@ function AppearanceSettings() {
   }
   return <section className="appearance-settings"><h2>Appearance</h2><div className="integration-row"><div><strong>Theme</strong><small>Saved in this browser.</small></div><div className="theme-options" role="group" aria-label="Theme"><button aria-pressed={theme === "light"} onClick={() => choose("light")}>Light</button><button aria-pressed={theme === "dark"} onClick={() => choose("dark")}>Dark</button></div></div></section>;
 }
+function TeamSettings() {
+  const { refresh } = useWorkspace();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [created, setCreated] = useState<{ name: string; email: string }>();
+
+  async function createEngineer(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (saving) return;
+    const form = new FormData(event.currentTarget);
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch("/api/members", { method: "POST", body: form });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result) {
+        throw new Error(result?.error || (response.status === 413
+          ? "Escolhe uma foto até 2 MB."
+          : "Não foi possível criar o membro."));
+      }
+      setCreated(result);
+      setOpen(false);
+      await refresh();
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : "Não foi possível criar o membro.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const close = () => { if (!saving) setOpen(false); };
+  return (
+    <section>
+      <h2>Equipa</h2>
+      <div className="integration-row">
+        <button type="button" onClick={() => { setError(""); setOpen(true); }}>Adicionar Engineer</button>
+        {created && <span role="status">{created.name} · {created.email} · Conta criada</span>}
+      </div>
+      {open && (
+        <Dialog title="Adicionar Engineer" onClose={close}>
+          <form onSubmit={createEngineer}>
+            <div className="dialog-body form-stack">
+              <label>Nome<input name="name" autoComplete="off" maxLength={120} required /></label>
+              <label>Email<input name="email" type="email" autoComplete="off" maxLength={200} required /></label>
+              <label>Foto<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /><small>JPG, PNG ou WebP até 2 MB.</small></label>
+              <p className="muted">A palavra-passe temporária é válida durante 24 horas e tem de ser alterada no primeiro acesso.</p>
+              {error && <p role="alert">{error}</p>}
+            </div>
+            <footer className="dialog-footer">
+              <button type="button" className="button-secondary" onClick={close} disabled={saving}>Cancelar</button>
+              <button type="submit" className="button-primary" disabled={saving}>{saving ? "A criar…" : "Criar conta"}</button>
+            </footer>
+          </form>
+        </Dialog>
+      )}
+    </section>
+  );
+}
+
 function GithubIdentitySettings() {
   const { data, command, notify, busy } = useWorkspace();
   return <form className="integration-row github-identity" onSubmit={async (event) => {
@@ -127,6 +188,7 @@ export function IntegrationSettings() {
         <h1>Settings</h1>
       </header>
       <AppearanceSettings />
+      {data.me.role === "admin" && <TeamSettings />}
       {!status ? (
         <p>{error || "Loading…"}</p>
       ) : (

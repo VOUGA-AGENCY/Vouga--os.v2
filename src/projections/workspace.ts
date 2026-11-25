@@ -35,12 +35,13 @@ export function workspaceFor(data: Store, me: Member, now: string): Snapshot {
     members: data.members
       .filter(isActiveMember)
       .sort((a, b) => a.name.localeCompare(b.name, "pt"))
-      .map(({ id, name, role, email, githubLogin }) => ({
+      .map(({ id, name, role, email, githubLogin, avatarMimeType }) => ({
         id,
         name,
         role,
         email,
         ...(githubLogin ? { githubLogin } : {}),
+        ...(avatarMimeType ? { avatarMimeType } : {}),
       })),
     projects: projects.map((project) => ({ ...project, documents: undefined })),
     tasks,

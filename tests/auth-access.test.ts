@@ -59,6 +59,25 @@ describe("team access", () => {
       (await login("miguel", "a-new-private-password")).mustChangePassword,
     ).toBe(false);
   });
+  it("uses the registered email and rotated password for engineers created in Settings", async () => {
+    state.data.members.push({
+      id: "new-engineer", name: "New Engineer", email: "new@vouga-agency.pt", role: "engineer",
+    });
+    state.data.accounts.push({
+      memberId: "new-engineer", passwordHash: hashPassword("temporary-onboarding"),
+      workspaceEmailLogin: true, mustChangePassword: true,
+      temporaryExpiresAt: new Date(Date.now() + 86400000).toISOString(),
+    });
+    await expect(login("New Engineer", "temporary-onboarding")).rejects.toThrow("incorretos");
+    const first = await login("NEW@vouga-agency.pt", "temporary-onboarding");
+    expect(first.mustChangePassword).toBe(true);
+    expect(await authenticatedMember(first.token)).toBeNull();
+    await changePassword(first.token, "a-new-private-password");
+    await expect(login("new@vouga-agency.pt", "temporary-onboarding")).rejects.toThrow("incorretos");
+    const next = await login("new@vouga-agency.pt", "a-new-private-password");
+    expect(next.mustChangePassword).toBe(false);
+    expect((await authenticatedMember(next.token))?.id).toBe("new-engineer");
+  });
   it("persists failed attempts and rejects blocked, disabled and expired accounts", async () => {
     for (let i = 0; i < 5; i++)
       await expect(login("miguel", "incorrect")).rejects.toThrow();

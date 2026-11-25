@@ -69,7 +69,7 @@ const boardStatus = normalizeTaskStatus;
 export interface SelectOption {
   value: string;
   label: string;
-  avatar?: { id: string; name: string };
+  avatar?: React.ComponentProps<typeof PersonAvatar>["member"];
   dotClass?: string;
   badge?: string;
   icon?: React.ReactNode;
@@ -614,7 +614,7 @@ export function TaskSurface({
                 ...data.members.map((member) => ({
                   value: member.id,
                   label: member.name,
-                  avatar: { id: member.id, name: member.name },
+                  avatar: member,
                 })),
               ]}
             />

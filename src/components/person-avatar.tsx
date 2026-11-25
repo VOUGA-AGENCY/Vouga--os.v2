@@ -2,7 +2,7 @@
 import Image from "next/image";
 import type { Member } from "@/domain/model";
 
-type Person = Pick<Member, "id" | "name">;
+type Person = Pick<Member, "id" | "name" | "avatarMimeType">;
 
 const assetFor = (member: Person) =>
   ({ afonso: "roque" }[member.id] ?? member.id.toLowerCase());
@@ -20,7 +20,8 @@ export function PersonAvatar({
   return (
     <span className={`person-avatar person-avatar-${size}`} title={member.name}>
       <Image
-        src={`/${assetFor(member)}.png`}
+        src={member.avatarMimeType ? `/api/members?avatar=${encodeURIComponent(member.id)}` : `/${assetFor(member)}.png`}
+        unoptimized={!!member.avatarMimeType}
         alt={member.name}
         width={size === "medium" ? 32 : 22}
         height={size === "medium" ? 32 : 22}

@@ -222,7 +222,7 @@ export function SavedRoutes() {
             label="Responsável"
             value={route.ownerId}
             onChange={(ownerId) => { if (ownerId !== route.ownerId) void changeOwner(route, ownerId); }}
-            options={data.members.map((member) => ({ value: member.id, label: member.name, avatar: { id: member.id, name: member.name } }))}
+            options={data.members.map((member) => ({ value: member.id, label: member.name, avatar: member }))}
           />}
           {canManage(route) && <button type="button" className="route-card-delete" aria-label={`Apagar a rota ${route.name}`} title="Apagar rota" onClick={() => void remove(route)}><Trash2 size={13}/></button>}
         </div>

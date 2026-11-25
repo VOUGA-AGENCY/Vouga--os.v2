@@ -163,7 +163,7 @@ export function Capture({
                         options={data.members.map((m) => ({
                           value: m.id,
                           label: m.name,
-                          avatar: { id: m.id, name: m.name },
+                          avatar: m,
                         }))}
                       />
                     </label>

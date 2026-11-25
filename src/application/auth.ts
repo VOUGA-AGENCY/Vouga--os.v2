@@ -108,22 +108,38 @@ export async function requireMember(request: Request, store?: Store) {
 }
 export async function login(identifier: string, password: string) {
   const key = identifier.trim().toLowerCase();
-  const externalEmail = key.includes("@")
+  const usingEmail = key.includes("@");
+  const repo = repository();
+  const authRepo = repo.scoped?.(["members", "accounts", "sessions"]) ?? repo;
+  const findWorkspaceAccount = (data: Store) => {
+    const member = data.members.find((item) => item.email.toLowerCase() === key);
+    return data.accounts.find((account) =>
+      account.memberId === member?.id && account.workspaceEmailLogin);
+  };
+  const workspaceEmail = usingEmail && !!findWorkspaceAccount(await authRepo.read());
+  const externalEmail = usingEmail && !workspaceEmail
     ? await verifySupabasePassword(key, password)
     : null;
-  if (key.includes("@") && !externalEmail)
+  if (usingEmail && !workspaceEmail && !externalEmail)
     throw new AppError("Utilizador ou palavra-passe incorretos.", 401);
   const token = randomBytes(32).toString("hex");
-  const outcome = await repository().transact((data) => {
+  const outcome = await authRepo.transact((data) => {
+    const nativeAccount = usingEmail ? findWorkspaceAccount(data) : undefined;
     const localPart = externalEmail?.split("@", 1)[0];
-    const me = data.members.find(
-      (m) =>
-        m.email.toLowerCase() === (externalEmail || key) ||
-        m.name.toLowerCase() === (localPart || key) ||
-        m.id === localPart ||
-        (localPart === "roque" && m.id === "afonso"),
-    );
-    const account = data.accounts.find((a) => a.memberId === me?.id);
+    const legacyLogin = !workspaceEmail && !nativeAccount;
+    const me = nativeAccount
+      ? data.members.find((member) => member.id === nativeAccount.memberId)
+      : legacyLogin
+        ? data.members.find((member) =>
+            !data.accounts.some((account) => account.memberId === member.id && account.workspaceEmailLogin) &&
+            (member.email.toLowerCase() === (externalEmail || key) ||
+              member.name.toLowerCase() === (localPart || key) ||
+              member.id === localPart ||
+              (localPart === "roque" && member.id === "afonso")),
+          )
+        : undefined;
+    const account = nativeAccount ?? data.accounts.find((item) => item.memberId === me?.id);
+    const verifiedExternally = !nativeAccount && !!externalEmail;
     const now = Date.now();
     if (!me || !isActiveMember(me) || !account || account.disabled)
       return { error: "Utilizador ou palavra-passe incorretos.", status: 401 };
@@ -136,7 +152,7 @@ export async function login(identifier: string, password: string) {
       account.failedAttempts = 0;
       delete account.lockedUntil;
     }
-    if (!externalEmail && !verifyPassword(password, account.passwordHash)) {
+    if (!verifiedExternally && !verifyPassword(password, account.passwordHash)) {
       account.failedAttempts = (account.failedAttempts || 0) + 1;
       if (account.failedAttempts >= 5)
         account.lockedUntil = new Date(now + 15 * 60000).toISOString();
@@ -154,7 +170,7 @@ export async function login(identifier: string, password: string) {
       };
     account.failedAttempts = 0;
     delete account.lockedUntil;
-    if (externalEmail) {
+    if (verifiedExternally) {
       account.mustChangePassword = false;
       delete account.temporaryExpiresAt;
     }

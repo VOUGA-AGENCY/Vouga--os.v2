@@ -16,6 +16,7 @@ export interface Member {
   role: Role;
   archived?: boolean;
   githubLogin?: string;
+  avatarMimeType?: string;
   telegramChatId?: string;
   telegramUserId?: string;
 }
@@ -345,6 +346,7 @@ export interface Store extends WorkspaceData {
   accounts: {
     memberId: string;
     passwordHash: string;
+    workspaceEmailLogin?: boolean;
     mustChangePassword?: boolean;
     temporaryExpiresAt?: string;
     disabled?: boolean;
