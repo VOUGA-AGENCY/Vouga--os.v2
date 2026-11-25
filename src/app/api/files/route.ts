@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { attachmentStorage } from "@/persistence/attachment-storage";
+import { attachmentStorage, SupabaseAttachmentStorage } from "@/persistence/attachment-storage";
 import { requireMember } from "@/application/auth";
 import { canSeeTask } from "@/domain/permissions";
 import { AppError } from "@/domain/validation";
@@ -70,20 +70,36 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const me = await requireMember(request);
     const id = new URL(request.url).searchParams.get("id");
-    const data = await repository().read();
+    if (!id) throw new AppError("File not found.", 404);
+    const repo = repository();
+    const data = await (repo.scoped?.([
+      "members", "accounts", "sessions", "taskAttachments", "tasks", "projects",
+    ]) ?? repo).read();
+    const me = await requireMember(request, data);
     const attachment = data.taskAttachments.find((item) => item.id === id);
     const task = data.tasks.find((item) => item.id === attachment?.taskId);
     if (!attachment || !task || !canSeeTask(me, task, data))
       throw new AppError("File not found.", 404);
-    const bytes = await attachmentStorage().get(attachment.storageName);
-    const safeName = attachment.name.replace(/[\r\n"\\]/g, "_");
+
+    const storage = attachmentStorage();
+    const headers = { "Cache-Control": "private, no-store" };
+    const filename = Buffer.from(attachment.name).toString("utf8").replace(/[\u0000-\u001f\u007f/\\]/g, "_") || "attachment";
+    if (storage instanceof SupabaseAttachmentStorage) {
+      const location = await storage.signedUrl(attachment.storageName, false, filename);
+      return new Response(null, { status: 302, headers: { ...headers, Location: location } });
+    }
+
+    const bytes = await storage.get(attachment.storageName);
+    const fallback = filename.replace(/[^a-zA-Z0-9._ -]/g, "_");
+    const encoded = encodeURIComponent(filename).replace(/['()*]/g, (char) =>
+      `%${char.charCodeAt(0).toString(16).toUpperCase()}`,
+    );
     return new Response(Buffer.from(bytes), {
       headers: {
+        ...headers,
         "Content-Type": attachment.mimeType,
-        "Content-Disposition": `attachment; filename="${safeName}"`,
-        "Cache-Control": "private, no-store",
+        "Content-Disposition": `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`,
       },
     });
   } catch (error) {
