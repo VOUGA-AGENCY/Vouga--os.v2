@@ -1,6 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, BookOpen, ChevronRight, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  BookOpen,
+  CalendarDays,
+  ChevronRight,
+  Cpu,
+  Crosshair,
+  FlaskConical,
+  Layers3,
+  Network,
+  PenTool,
+  RefreshCw,
+  Server,
+  Signal,
+  Users,
+  Wallet,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
+import { Popover } from "./popover";
 import {
   deliveryTime,
   displayText,
@@ -12,6 +32,91 @@ import {
 } from "@/domain/intelligence";
 import { useWorkspace } from "./context";
 import { Dialog } from "./dialog";
+
+type Category = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  keys: Stream[];
+  opensCommercial?: boolean;
+};
+const commercial: Category[] = [
+  {
+    title: "Manage Leads",
+    description: "Qualificação e gestão de leads",
+    icon: Users,
+    keys: ["manage_leads"],
+  },
+  {
+    title: "General Leads",
+    description: "Novas empresas e contactos",
+    icon: Crosshair,
+    keys: ["general_leads"],
+  },
+  {
+    title: "Buying Signals",
+    description: "Sinais de intenção de compra",
+    icon: Signal,
+    keys: ["buying_signals"],
+  },
+  {
+    title: "Commercial Follow-up",
+    description: "Seguimento das oportunidades",
+    icon: Workflow,
+    keys: ["commercial_followup"],
+  },
+];
+const founders: Category[] = [
+  {
+    title: "Commercial Intelligence",
+    description: "Leads, buying signals & follow-ups",
+    icon: Crosshair,
+    opensCommercial: true,
+    keys: commercial.flatMap((c) => c.keys),
+  },
+  {
+    title: "Technology Radar",
+    description: "AI, tools & engineering",
+    icon: Cpu,
+    keys: ["ai_radar"],
+  },
+  {
+    title: "Innovation Lab",
+    description: "VCCM & product research",
+    icon: FlaskConical,
+    keys: ["vccm_lab"],
+  },
+  {
+    title: "Funding",
+    description: "Grants & opportunities",
+    icon: Wallet,
+    keys: ["funding_monitor"],
+  },
+  {
+    title: "People & Network",
+    description: "Talent & strategic contacts",
+    icon: Network,
+    keys: ["talent_radar", "strategic_networking"],
+  },
+  {
+    title: "Founder Content",
+    description: "LinkedIn & X",
+    icon: PenTool,
+    keys: ["founder_content"],
+  },
+  {
+    title: "Infrastructure",
+    description: "Supabase, Vercel & GitHub",
+    icon: Server,
+    keys: ["infra_watchdog"],
+  },
+  {
+    title: "Board Reports",
+    description: "Weekly strategy & operations",
+    icon: Layers3,
+    keys: ["board_report", "founder_briefing"],
+  },
+];
 
 async function request<T>(query: string, options?: RequestInit): Promise<T> {
   const res = await fetch("/api/intelligence" + query, {
@@ -106,6 +211,11 @@ export function Intelligence() {
     notify,
   } = useWorkspace();
   const access = intelligenceAccess(me);
+  const [view, setView] = useState<"founders" | "commercial">(
+    access === "founders" ? "founders" : "commercial",
+  );
+  const categories =
+    view === "founders" && access === "founders" ? founders : commercial;
   const [version, refresh] = useState(0),
     [key, setKey] = useState<Stream | null>(null),
     [date, setDate] = useState(""),
@@ -169,149 +279,229 @@ export function Intelligence() {
       setSyncing(false);
     }
   }
-  const keys = (Object.keys(streams) as Stream[]).filter(
-    (k) => access === "founders" || streams[k][0] === access,
-  );
+  const category = categories.find((c) => key && c.keys.includes(key));
+  function changeView(next: typeof view) {
+    setView(next);
+    select(null);
+  }
+  if (!access) return null;
   return (
-    <section className="compact-page intel-page">
-      <header className="compact-heading">
-        <h1>Intelligence</h1>
-        <button className="button-secondary" disabled={syncing} onClick={sync}>
-          <RefreshCw size={14} />
-          {syncing ? "A sincronizar…" : "Sincronizar"}
-        </button>
-      </header>
-      <div className="intel-filters">
-        <label>
-          Categoria{" "}
-          <select
-            value={key ?? ""}
-            onChange={(e) => select((e.target.value as Stream) || null)}
-          >
-            <option value="">Todas</option>
-            {keys.map((k) => (
-              <option key={k} value={k}>
-                {streams[k][1]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Data{" "}
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value);
-              setOffset(0);
-            }}
-          />
-        </label>
-      </div>
-      {key ? (
-        <section>
-          <h2>{streams[key][1]}</h2>
-          <p className="muted">Histórico de entregas</p>
-          {history?.error ? (
-            <p role="alert">{history.error}</p>
-          ) : !history?.data ? (
-            <p>A carregar…</p>
-          ) : !history.data.length ? (
-            <p className="muted">Sem entregas neste período.</p>
-          ) : (
-            history.data.slice(0, 30).map((r) => (
+    <section className="intel-page">
+      <div className="intel-shell">
+        <div className="intel-topbar">
+          <nav className="intel-views" aria-label="Vista de Intelligence">
+            {access === "founders" && (
               <button
-                className="intel-row"
-                key={r.id}
-                onClick={() => open(r.id)}
+                type="button"
+                aria-pressed={view === "founders"}
+                onClick={() => changeView("founders")}
               >
-                <span>
-                  <strong>{displayText(r.title)}</strong>
-                  <small>
-                    {deliveryTime(r.delivered_at)}
-                    {r.item_count !== null &&
-                      " · " + r.item_count + " resultados"}
-                  </small>
-                </span>
-                <span>
-                  {r.unread && "Por ler"} <ChevronRight size={14} />
-                </span>
-              </button>
-            ))
-          )}
-          <div className="intel-filters">
-            {offset > 0 && (
-              <button
-                className="button-secondary"
-                onClick={() => setOffset((v) => Math.max(0, v - 30))}
-              >
-                Anterior
+                Vista Founders
               </button>
             )}
-            {(history?.data?.length ?? 0) > 30 && (
-              <button
-                className="button-secondary"
-                onClick={() => setOffset((v) => v + 30)}
-              >
-                Seguinte
-              </button>
-            )}
+            <button
+              type="button"
+              aria-pressed={view === "commercial"}
+              onClick={() => changeView("commercial")}
+            >
+              Vista Comercial
+            </button>
+          </nav>
+          <div className="intel-actions">
+            <Popover
+              label="Filtrar por data"
+              active={!!date}
+              icon={<CalendarDays size={15} />}
+            >
+              <label>
+                Data{" "}
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                    setOffset(0);
+                  }}
+                />
+              </label>
+              {date && (
+                <button
+                  className="button-secondary"
+                  onClick={() => {
+                    setDate("");
+                    setOffset(0);
+                  }}
+                >
+                  Limpar data
+                </button>
+              )}
+            </Popover>
+            <button
+              type="button"
+              className="round-control"
+              aria-label={syncing ? "A sincronizar…" : "Sincronizar"}
+              title="Sincronizar"
+              disabled={syncing}
+              onClick={sync}
+            >
+              <RefreshCw size={15} />
+            </button>
           </div>
-        </section>
-      ) : latest?.error ? (
-        <p role="alert">{latest.error}</p>
-      ) : !latest?.data ? (
-        <p>A carregar…</p>
-      ) : (
-        (["commercial", "founders"] as const)
-          .filter((a) => access === "founders" || access === a)
-          .map((a) => (
-            <section key={a}>
-              <h2>
-                {a === "commercial"
-                  ? "Commercial Intelligence"
-                  : "Founders Intelligence"}
-              </h2>
-              {keys
-                .filter((k) => streams[k][0] === a)
-                .map((k) => {
-                  const r = latest.data?.[k];
-                  return (
-                    <div className="intel-row" key={k}>
+        </div>
+        <header className="intel-heading">
+          {category && (
+            <button className="intel-back" onClick={() => select(null)}>
+              <ArrowLeft size={14} /> Intelligence
+            </button>
+          )}
+          <h1>{category?.title ?? "Intelligence"}</h1>
+          <p>
+            {category?.description ??
+              "Automated research & operational insights"}
+          </p>
+          {date && (
+            <button
+              className="intel-date"
+              onClick={() => {
+                setDate("");
+                setOffset(0);
+              }}
+            >
+              Data: {date.split("-").reverse().join("/")} · Limpar
+            </button>
+          )}
+        </header>
+        {key && category ? (
+          <section aria-label="Histórico de entregas" className="intel-history">
+            {category.keys.length > 1 && (
+              <nav className="intel-streams" aria-label="Fluxos">
+                {category.keys.map((k) => (
+                  <button
+                    key={k}
+                    aria-pressed={key === k}
+                    onClick={() => select(k)}
+                  >
+                    {streams[k][1]}
+                  </button>
+                ))}
+              </nav>
+            )}
+            <h2>Histórico de entregas</h2>
+            {history?.error ? (
+              <p role="alert">{history.error}</p>
+            ) : !history?.data ? (
+              <p>A carregar…</p>
+            ) : !history.data.length ? (
+              <p className="muted">Sem entregas neste período.</p>
+            ) : (
+              history.data.slice(0, 30).map((r) => (
+                <button
+                  className="intel-row"
+                  key={r.id}
+                  onClick={() => open(r.id)}
+                >
+                  <span>
+                    <strong>{displayText(r.title)}</strong>
+                    <small>
+                      {deliveryTime(r.delivered_at)}
+                      {r.item_count !== null &&
+                        " · " + r.item_count + " resultados"}
+                    </small>
+                  </span>
+                  <span>
+                    {r.unread && "Por ler"} <ChevronRight size={14} />
+                  </span>
+                </button>
+              ))
+            )}
+            <div className="intel-filters">
+              {offset > 0 && (
+                <button
+                  className="button-secondary"
+                  onClick={() => setOffset((v) => Math.max(0, v - 30))}
+                >
+                  Anterior
+                </button>
+              )}
+              {(history?.data?.length ?? 0) > 30 && (
+                <button
+                  className="button-secondary"
+                  onClick={() => setOffset((v) => v + 30)}
+                >
+                  Seguinte
+                </button>
+              )}
+            </div>
+          </section>
+        ) : (
+          <>
+            <div className="intel-grid">
+              {categories.map((c) => {
+                const Icon = c.icon;
+                const reports = c.keys.flatMap((k) =>
+                  latest?.data?.[k] ? [latest.data[k]!] : [],
+                );
+                const unread = reports.reduce(
+                  (count, r) => count + r.unread_count,
+                  0,
+                );
+                const recent = reports.sort(
+                  (a, b) =>
+                    Date.parse(b.delivered_at) - Date.parse(a.delivered_at),
+                )[0];
+                return (
+                  <article className="intel-card" key={c.title}>
+                    <button
+                      type="button"
+                      className="intel-card-main"
+                      onClick={() => {
+                        if (c.opensCommercial) changeView("commercial");
+                        else select(c.keys[0]);
+                      }}
+                    >
+                      <span className="intel-card-top">
+                        <Icon aria-hidden size={19} strokeWidth={1.5} />
+                        {unread > 0 && <small>{unread} por ler</small>}
+                        <ChevronRight
+                          className="intel-enter"
+                          aria-hidden
+                          size={15}
+                        />
+                      </span>
+                      <strong>{c.title}</strong>
+                      <span className="intel-card-copy">{c.description}</span>
+                    </button>
+                    {recent && (
                       <button
-                        className="intel-stream"
-                        onClick={() => select(k)}
+                        type="button"
+                        className="intel-recent"
+                        title={
+                          "Última entrega: " +
+                          displayText(recent.title) +
+                          " · Atualizado em " +
+                          deliveryTime(recent.last_updated)
+                        }
+                        onClick={() => open(recent.id)}
                       >
-                        <strong>
-                          {streams[k][1]} <ChevronRight size={13} />
-                        </strong>
-                        <small>
-                          {r
-                            ? "Atualizado em " + deliveryTime(r.last_updated)
-                            : "Sem entregas"}
-                        </small>
+                        <span>{displayText(recent.title)}</span>
+                        <time dateTime={recent.delivered_at}>
+                          {deliveryTime(recent.delivered_at)}
+                        </time>
+                        <ArrowUpRight size={13} />
                       </button>
-                      {r && (
-                        <button
-                          className="intel-latest"
-                          onClick={() => open(r.id)}
-                        >
-                          <span>{displayText(r.title)}</span>
-                          <small>
-                            {deliveryTime(r.delivered_at)}
-                            {r.item_count !== null &&
-                              " · " + r.item_count + " resultados"}
-                            {r.unread_count > 0 &&
-                              " · " + r.unread_count + " por ler"}
-                          </small>
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-            </section>
-          ))
-      )}
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+            {latest?.error && (
+              <p role="alert" className="intel-feedback">
+                {latest.error}
+              </p>
+            )}
+          </>
+        )}
+      </div>
       {id && (
         <Dialog
           wide
