@@ -69,7 +69,7 @@ export async function beginGoogleOAuth(
     redirect_uri: callback(ctx),
     response_type: "code",
     scope:
-      "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendars.readonly",
+      "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendars.readonly https://www.googleapis.com/auth/drive.readonly",
     access_type: "offline",
     prompt: "consent",
     state,
@@ -197,8 +197,8 @@ export async function completeGoogleOAuth(
     throw error;
   }
 }
-async function accessToken(ctx: ServiceContext, key: CalendarKey) {
-  const connection = (await ctx.repo.read()).externalConnections.find(
+export async function accessToken(ctx: ServiceContext, key: CalendarKey) {
+  const connection = (await (ctx.repo.scoped?.(["externalConnections"]) ?? ctx.repo).read()).externalConnections.find(
     (item) => item.id === `google:${key}`,
   );
   if (!connection?.credentials)

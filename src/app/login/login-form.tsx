@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 export function LoginForm({
   destination = "/",
 }: {
-  destination?: "/" | "/painel";
+  destination?: string;
 }) {
   const [entering, setEntering] = useState(false);
   const [error, setError] = useState("");

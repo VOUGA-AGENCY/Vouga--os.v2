@@ -61,19 +61,25 @@ Configurar uma API key de uma conta no plano Free. Defaults `openai/gpt-oss-120b
 
 O Agent só vê catálogo e dados permitidos ao utilizador. Tool names e argumentos têm allowlist; as mutações passam pelo mesmo executeCommand da aplicação. Nenhuma tool permite SQL, shell ou acesso genérico ao Store. Confirmações persistentes para cancelamentos, edição de eventos e convites externos; versão e permissões verificadas de novo ao confirmar. Pedidos têm recibos para impedir execução repetida do mesmo request. IDs não autorizados são recusados. Ambiguidade depende também do modelo; testar comandos reais com a equipa antes de uso autónomo abrangente.
 
-Texto web e Telegram passam por runAgent. Áudio web/Telegram passa pelo mesmo transcribe e depois runAgent. Áudio não é guardado no disco. Limite web 24 MB; Telegram 20 MB e 10 minutos. Sem chave Groq, o Agent informa indisponibilidade e permite guardar texto na Inbox; não simula respostas de IA.
+O Agent e a transcrição permanecem na aplicação web. O bot trata a ligação de conta e as notificações determinísticas. Sem chave Groq, o Agent informa indisponibilidade e permite guardar texto na Inbox; não simula respostas de IA.
 
 ### Telegram
+
+Em produção, o token existente ativa o envio por defeito. Uma definição explícita de `TELEGRAM_ENABLED=false` suspende-o. Usar `true` para reativar. Em local e Preview o envio requer ativação explícita.
 
 Novos registos criados no OS (web, Capture ou tools do Agent) enfileiram `telegram.created` na mesma transação do registo: task → responsável; evento → participantes internos com acesso; projeto → responsável e membros; nota → autor e destinatários explícitos; organização/lembrete → responsável. Inclui criações para o próprio utilizador. Mensagens são templates fixos, sem LLM nem tokens. Só se enfileiram para contas com Telegram já ligado; não há envio retroativo de importações ou de dados existentes. Edições não repetem o aviso de criação. Os eventos de dia inteiro recebem este aviso de criação, mas não os lembretes temporizados abaixo.
 
 O worker/cron existente entrega os avisos, normalmente no próximo ciclo, sem bloquear o pedido de gravação. Revalida acesso, participação e conta ativa no envio. Chave única por entidade/grupo e destinatário; `sendOnce` evita duplicados mesmo com repetição do job. Falhas ambíguas ficam em `notificationDeliveries` como `uncertain`, sem reenvio automático. Isto exige a versão atual também no backend público que executa o cron; não requer nova migração SQL.
 
-Criar bot no BotFather, configurar token e webhook secret no servidor. Connect webhook em Settings requer HTTPS público. Cada pessoa autenticada gera um deep link de uso único com expiração de 10 minutos. /start sem token válido não associa contas. Apenas chats privados de IDs previamente ligados podem chamar o Agent; grupos e utilizadores desconhecidos são ignorados.
+Criar bot no BotFather, configurar token e webhook secret no servidor. Connect webhook em Settings requer HTTPS público. Cada pessoa autenticada gera um deep link de uso único com expiração de 10 minutos. /start sem token válido não associa contas. O bot ignora texto livre, áudio, grupos e callbacks antigos.
 
 08:00 Europe/Lisbon (segunda a sexta): resumo diário por utilizador ativo com Telegram ligado, mesmo sem trabalho planeado. Apenas reuniões do próprio dia e tasks atribuídas à pessoa, não concluídas e com dueOn desse dia, respeitando visibilidade. Sem rotas, atrasos, PRs ou IA. Saudação com nome e uma das 50 frases de dia ocupado ou 19 de dia vazio, escolhida aleatoriamente. Janela de recuperação até às 09:00 (exclusive), com chave daily por utilizador/data para não duplicar; textos extensos são divididos com recibos por parte. Falha num destinatário não impede os restantes. Os resumos pedidos manualmente ao Agent continuam disponíveis. Uma hora antes: um lembrete por evento/participante, janela entre 55 e 60 minutos antes. Cancelamentos são excluídos; mudança de hora muda a chave do lembrete. O scheduler usa timezone IANA, incluindo horário de verão.
 
 sendMessage não oferece chave de idempotência. O serviço reserva a entrega antes da chamada. Falha de rede com resultado incerto não é reenviada automaticamente; fica visível em Settings. Isto privilegia não duplicar, mas não promete entrega garantida durante falhas. Webhooks têm deduplicação separada de mensagens de saída.
+
+## Intelligence
+
+Consultar [ativação, permissões e recuperação](INTELLIGENCE.md).
 
 ## Por ligar / validar com contas reais
 

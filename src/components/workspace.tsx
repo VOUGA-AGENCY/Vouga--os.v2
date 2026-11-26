@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
+  BookOpen,
   CalendarDays,
   Check,
   Settings,
@@ -17,6 +18,7 @@ import {
   ScanSearch,
   X,
 } from "lucide-react";
+import { intelligenceAccess } from "@/domain/intelligence";
 import { applySnapshotPatch } from "@/projections/changes";
 import type { CaptureKind, Snapshot } from "@/domain/model";
 import { WorkspaceContext, type Editor } from "./context";
@@ -37,6 +39,7 @@ const CompanyPanel = dynamic(() => import("./contacts").then(module => module.Co
 const Work = dynamic(() => import("./work").then(module => module.Work));
 const ProjectDetail = dynamic(() => import("./work").then(module => module.ProjectDetail));
 const IntegrationSettings = dynamic(() => import("./settings").then(module => module.IntegrationSettings));
+const Intelligence = dynamic(() => import("./intelligence").then(module => module.Intelligence), {ssr:false});
 const Prospect = dynamic(() => import("./prospect").then(module => module.Prospect));
 
 const navigation = [
@@ -46,6 +49,7 @@ const navigation = [
   { path: "trabalho", label: "Projects", icon: FolderOpen },
   { path: "contactos", label: "CRM", icon: Users },
   { path: "prospect", label: "Prospect", icon: ScanSearch },
+  { path:"intelligence", label:"Intelligence", icon: BookOpen },
 ];
 export function Workspace({
   initial,
@@ -90,7 +94,7 @@ export function Workspace({
   useEffect(() => {
     const navigate = (event: PopStateEvent) => {
       const path = window.location.pathname;
-      if (!["/", "/tasks", "/agenda", "/contactos", "/prospect", "/trabalho", "/settings"].includes(path)) return;
+      if (!["/", "/tasks", "/agenda", "/contactos", "/prospect", "/intelligence", "/trabalho", "/settings"].includes(path)) return;
       event.stopImmediatePropagation();
       void flushEdits()
         .then(() => {
@@ -315,7 +319,7 @@ export function Workspace({
     const id = setTimeout(() => setToast(""), 5000);
     return () => clearTimeout(id);
   }, [toast]);
-  const links = navigation.map(({ path, label, icon: Icon }) => (
+  const links = navigation.filter(item=>item.path!=="intelligence" || intelligenceAccess(data.me)).map(({ path, label, icon: Icon }) => (
     <Link
       key={path}
       href={`/${path}`}
@@ -440,6 +444,7 @@ export function Workspace({
                 "agenda",
                 "contactos",
                 "prospect",
+                "intelligence",
                 "trabalho",
                 "settings",
               ].includes(next)
@@ -590,6 +595,8 @@ export function Workspace({
                 <Agenda />
               ) : view === "trabalho" ? (
                 <Work />
+              ) : view === "intelligence" ? (
+                <Intelligence />
               ) : view === "prospect" ? (
                 <Prospect />
               ) : view === "contactos" ? (

@@ -4,9 +4,10 @@ import { LoginForm } from "./login-form";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; report?: string }>;
 }) {
-  const compact = (await searchParams).next === "painel";
+  const { next, report } = await searchParams;
+  const compact = next === "painel";
   return (
     <DarkGradientBg className="login-pattern">
       <main className={`login-layout ${compact ? "login-compact" : ""}`}>
@@ -22,7 +23,18 @@ export default async function LoginPage({
                 className="login-logo"
               />
             </div>
-            <LoginForm destination={compact ? "/painel" : "/"} />
+            <LoginForm
+              destination={
+                compact
+                  ? "/painel"
+                  : next === "intelligence"
+                    ? "/intelligence" +
+                      (report && /^[\w-]{1,200}$/.test(report)
+                        ? "?report=" + report
+                        : "")
+                    : "/"
+              }
+            />
           </div>
         </section>
         <footer className="login-footer">

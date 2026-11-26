@@ -1,3 +1,4 @@
+import { telegramEnabled } from "@/services/features";
 import { resolveGoogleConflict } from "@/services/calendar-service";
 import { requireMember } from "@/application/auth";
 import { runtime, api, required } from "@/services/runtime";
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
           ctx.env.GITHUB_INSTALLATION_ID &&
           ctx.env.GITHUB_WEBHOOK_SECRET
         ),
-        telegram: !!ctx.env.TELEGRAM_BOT_TOKEN,
+        telegram: telegramEnabled(ctx.env) && !!ctx.env.TELEGRAM_BOT_TOKEN,
         groq: !!ctx.env.GROQ_API_KEY,
         publicEndpoint: !!ctx.env.VOUGA_PUBLIC_URL,
         agentModel: ctx.env.GROQ_AGENT_MODEL || "openai/gpt-oss-120b",

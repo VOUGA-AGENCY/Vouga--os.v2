@@ -546,7 +546,7 @@ describe("webhook ingress verification", () => {
       mocked.mockRestore();
     }
   });
-  it("does not queue an unknown Telegram user even with a legitimate bot webhook", async () => {
+  it("ignores conversational Telegram updates from both unknown and linked users", async () => {
     const runtimeModule = await import("@/services/runtime");
     const mocked = vi.spyOn(runtimeModule, "runtime").mockReturnValue(ctx);
     try {
@@ -573,7 +573,7 @@ describe("webhook ingress verification", () => {
       data.members[0].telegramChatId = "999";
       data.members[0].telegramUserId = "999";
       expect((await POST(request())).status).toBe(200);
-      expect(data.integrationJobs).toHaveLength(1);
+      expect(data.integrationJobs).toHaveLength(0);
     } finally {
       mocked.mockRestore();
     }

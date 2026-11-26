@@ -7,6 +7,7 @@ import "./mobile.css";
 import "./loading.css";
 import "./prospect.css";
 import "./project-space.css";
+import "./intelligence.css";
 export const metadata: Metadata = {
   title: "Vouga OS",
   description: "The essentials of Vouga, in one place.",

@@ -23,24 +23,10 @@ export async function POST(request: Request) {
       callbackMessage = record(callback.message ?? {}),
       chat = record(message.chat ?? callbackMessage.chat ?? {}),
       from = record(message.from ?? callback.from ?? {});
-    const data = await ctx.repo.read();
-    const code =
-      typeof message.text === "string"
-        ? message.text.match(/^\/start ([a-f0-9]{48})$/)?.[1]
-        : undefined;
-    const allowed =
-      data.members.some(
-        (member) =>
-          member.telegramChatId === String(chat.id) &&
-          member.telegramUserId === String(from.id),
-      ) ||
-      !!(
-        code &&
-        data.telegramLinks.some(
-          (link) => link.hash === hash(code) && link.expiresAt > ctx.now(),
-        )
-      );
-    if (chat.type === "private" && chat.id === from.id && allowed)
+    const code = typeof message.text === "string" && message.text.match(/^\/start ([a-f0-9]{48})$/)?.[1];
+    if (!code || chat.type !== "private" || chat.id !== from.id) return Response.json({ ok: true });
+    const links = ctx.repo.scoped?.(["telegramLinks"]) ?? ctx.repo;
+    if ((await links.read()).telegramLinks.some(link => link.hash === hash(code) && link.expiresAt > ctx.now()))
       await ctx.repo.transact((data) =>
         enqueue(
           data,

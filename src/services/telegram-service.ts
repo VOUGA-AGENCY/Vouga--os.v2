@@ -13,11 +13,11 @@ import {
   hash,
   required,
   publicOrigin,
-  boundedBody,
+
   type ServiceContext,
 } from "./runtime";
-import { runAgent, decideAction } from "./agent-service";
-import { transcribe } from "./transcription-service";
+
+
 interface TelegramUpdate {
   update_id: number;
   message?: {
@@ -93,7 +93,7 @@ export async function telegramLink(ctx: ServiceContext, me: Member) {
   });
   return `https://t.me/${bot.username}?start=${code}`;
 }
-async function send(
+export async function sendTelegramMessage(
   ctx: ServiceContext,
   chatId: string,
   text: string,
@@ -153,92 +153,7 @@ export async function applyTelegramUpdate(
     );
     return;
   }
-  const me = (await ctx.repo.read()).members.find(
-    (member) =>
-      member.telegramChatId === String(chat.id) &&
-      member.telegramUserId === String(userId) &&
-      isActiveMember(member),
-  );
-  if (!me) return;
-  if (callback?.data) {
-    const match = callback.data.match(/^(confirm|cancel):([a-f0-9-]{36})$/);
-    if (!match) return;
-    const result = await decideAction(
-      ctx,
-      me,
-      match[2],
-      match[1] === "confirm",
-      "telegram",
-    );
-    await telegram(ctx, "answerCallbackQuery", {
-      callback_query_id: callback.id,
-      text: result.message,
-    });
-    await sendOnce(
-      ctx,
-      `telegram-response:${update.update_id}`,
-      String(chat.id),
-      result.message,
-    );
-    return;
-  }
-  let input = message?.text;
-  if (message?.voice) {
-    if (
-      message.voice.duration > 600 ||
-      (message.voice.file_size ?? 0) > 20 * 1024 * 1024
-    )
-      throw new AppError("Voice note superior a 10 minutos ou 20 MB.", 413);
-    const file = await telegram<{ file_path: string }>(ctx, "getFile", {
-      file_id: message.voice.file_id,
-    });
-    if (
-      !/^[\w/-]+\.[\w]+$/.test(file.file_path) ||
-      file.file_path.includes("..")
-    )
-      throw new AppError("Invalid Telegram file.");
-    const response = await ctx.fetch(
-      `https://api.telegram.org/file/bot${required(ctx.env, "TELEGRAM_BOT_TOKEN")}/${file.file_path}`,
-      { signal: AbortSignal.timeout(25000) },
-    );
-    if (!response.ok) throw new AppError("Could not retrieve the audio.", 502);
-    const bytes = await boundedBody(
-      new Request("https://local.invalid", {
-        method: "POST",
-        body: response.body,
-        duplex: "half",
-      } as RequestInit),
-      20 * 1024 * 1024,
-    );
-    input = await transcribe(
-      ctx,
-      new Blob([new Uint8Array(bytes)], { type: "audio/ogg" }),
-    );
-  }
-  if (!input) return;
-  const result = await runAgent(
-    ctx,
-    me,
-    input,
-    `telegram:${update.update_id}`,
-    {},
-    "telegram",
-  );
-  const buttons = result.pendingIds.map((id) => [
-    { text: "Confirm", callback_data: `confirm:${id}` },
-    { text: "Cancel", callback_data: `cancel:${id}` },
-  ]);
-  if (ctx.env.VOUGA_PUBLIC_URL)
-    buttons.push([
-      { text: "Open Vouga OS", url: publicOrigin(ctx.env) },
-    ] as never);
-  await sendOnce(
-    ctx,
-    `telegram-response:${update.update_id}`,
-    String(chat.id),
-    result.text,
-    buttons,
-  );
+  // Inbound Telegram is used only for explicit, short-lived account linking.
 }
 // Telegram has no idempotency key for sendMessage. Reserve before network I/O;
 // uncertain sends are NOT automatically retried, preventing duplicate reminders.
@@ -251,7 +166,8 @@ export async function sendOnce(
   memberId = "",
 ) {
   if (!telegramEnabled(ctx.env)) return;
-  const claimed = await ctx.repo.transact((data) => {
+  const receipts = ctx.repo.scoped?.(["notificationDeliveries"]) ?? ctx.repo;
+  const claimed = await receipts.transact((data) => {
     if (data.notificationDeliveries.some((item) => item.key === key))
       return false;
     data.notificationDeliveries.push({
@@ -264,8 +180,8 @@ export async function sendOnce(
   });
   if (!claimed) return;
   try {
-    await send(ctx, chatId, text, buttons);
-    await ctx.repo.transact((data) => {
+    await sendTelegramMessage(ctx, chatId, text, buttons);
+    await receipts.transact((data) => {
       const delivery = data.notificationDeliveries.find(
         (item) => item.key === key,
       )!;
@@ -273,7 +189,7 @@ export async function sendOnce(
       delivery.sentAt = ctx.now();
     });
   } catch (error) {
-    await ctx.repo.transact((data) => {
+    await receipts.transact((data) => {
       data.notificationDeliveries.find((item) => item.key === key)!.state =
         "uncertain";
     });
@@ -327,7 +243,10 @@ export function meetingReminders(data: Store, now: string) {
 export async function deliverReminders(ctx: ServiceContext) {
   if (!telegramEnabled(ctx.env) || !ctx.env.TELEGRAM_BOT_TOKEN) return;
   const failures: string[] = [];
-  for (const job of meetingReminders(await ctx.repo.read(), ctx.now())) {
+  const now=ctx.now();
+  const morning = localDateTime(now).slice(11,13)==="08" && isWeekday(dateKey(now));
+  const source = ctx.repo.scoped?.(morning ? ["members","tasks","projects","meetings"] : ["members","meetings"]) ?? ctx.repo;
+  for (const job of meetingReminders(await source.read(), now)) {
     try { await sendOnce(ctx, job.key, job.chatId, job.text, undefined, job.memberId); }
     catch { failures.push(`${job.memberId}:${job.key.startsWith("daily:") ? "daily" : "hour"}`); }
   }
