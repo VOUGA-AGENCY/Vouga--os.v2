@@ -1,10 +1,11 @@
 import { runtime, api, seal } from "../src/services/runtime";
+import { googleCallbackUri } from "../src/services/calendar-service";
 import { listRepositories } from "../src/services/github-service";
 const ctx=runtime();
 const results: Record<string,unknown>={};
 try {
  seal({test:true},ctx.env);
- const redirect=new URL(ctx.env.GOOGLE_REDIRECT_URI || "http://127.0.0.1:3100/api/integrations/google/callback");
+ const redirect=new URL(googleCallbackUri(ctx.env));
  results.google={configuration:!!(ctx.env.GOOGLE_CLIENT_ID&&ctx.env.GOOGLE_CLIENT_SECRET),redirectPathValid:redirect.pathname==="/api/integrations/google/callback",authorization:"Ainda requer login de Office e Contacto."};
 } catch {results.google={error:"Verificar chave de encriptação/configuração."};}
 for (const provider of ["github","groq","telegram"] as const) {

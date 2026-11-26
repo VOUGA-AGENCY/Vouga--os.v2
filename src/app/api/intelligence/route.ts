@@ -1,6 +1,6 @@
 import { requireMember } from "@/application/auth";
 import { accessToken } from "@/services/calendar-service";
-import { exportReport } from "@/services/intelligence-drive";
+import { exportReport, sheetPreview } from "@/services/intelligence-drive";
 import {
   folders,
   InvalidReport,
@@ -63,8 +63,26 @@ export async function GET(request: Request) {
         (key === "office" && access !== "founders")
       )
         throw new AppError("Relatório indisponível.", 404);
-      if (params.get("layout") === "pdf") {
+      const layout = params.get("layout");
+      if (layout === "pdf" || layout === "sheet") {
         try {
+          if (layout === "sheet") {
+            const index = Number(params.get("tab") ?? 0);
+            if (!Number.isSafeInteger(index) || index < 0)
+              throw new AppError("Separador inválido.");
+            return json(
+              await sheetPreview(
+                ctx,
+                await accessToken(ctx, key),
+                {
+                  folderId: row.folder_id,
+                  id: row.id,
+                  modified: row.source_modified_at,
+                },
+                index,
+              ),
+            );
+          }
           const bytes = await exportReport(
             ctx,
             await accessToken(ctx, key),

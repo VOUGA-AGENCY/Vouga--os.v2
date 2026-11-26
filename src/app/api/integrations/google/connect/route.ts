@@ -12,7 +12,7 @@ export async function POST(request: Request) {
         ["office", "contacto"] as const,
         "Calendar",
       );
-    return Response.json({ url: await beginGoogleOAuth(runtime(), me, key) });
+    return Response.json({ url: await beginGoogleOAuth(runtime(), me, key, request.headers.get("origin")!) });
   } catch (error) {
     return errorResponse(error);
   }

@@ -6,7 +6,12 @@ import {
   intelligenceAccess,
   notificationText,
 } from "@/domain/intelligence";
-import { driveReader, docMime, sheetMime } from "@/services/intelligence-drive";
+import {
+  driveReader,
+  docMime,
+  sheetMime,
+  sheetPreview,
+} from "@/services/intelligence-drive";
 import {
   deliverIntelligence,
   syncFolder,
@@ -282,13 +287,11 @@ describe("Telegram notification delivery", () => {
     [403, "failed"],
     [502, "uncertain"],
   ])("records HTTP %s independently of import", async (status, state) => {
-    const send = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ ok: true, result: { message_id: 1 } }), {
-          status: Number(status),
-        }),
-      );
+    const send = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true, result: { message_id: 1 } }), {
+        status: Number(status),
+      }),
+    );
     let claimed = false;
     const rpc = vi.fn(async (_name, p) => {
       if (p.operation === "claim" && !claimed) {
@@ -323,5 +326,58 @@ describe("Telegram notification delivery", () => {
     expect(
       notificationText({ ...header, summary: "Relatório pronto." }),
     ).toContain("Resultados: 7");
+  });
+});
+
+describe("Intelligence sheet preview", () => {
+  const source = {
+    folderId: folders.contacto.id,
+    id: file.id,
+    modified: file.modifiedTime,
+  };
+  const meta = { ...file, mimeType: sheetMime };
+  const tabs = {
+    sheets: [
+      { properties: { index: 0, title: "Leads" } },
+      { properties: { index: 1, title: "D'ouro" } },
+    ],
+  };
+  function sheetFetch(values: string[][], finalMeta: { parents: string[] } = meta) {
+    return vi
+      .fn()
+      .mockResolvedValueOnce(Response.json(meta))
+      .mockResolvedValueOnce(Response.json(tabs))
+      .mockResolvedValueOnce(Response.json({ values }))
+      .mockResolvedValueOnce(Response.json(finalMeta));
+  }
+  it("hides the contract in A1 and keeps the displayed currency and all tabs", async () => {
+    const f = sheetFetch([
+      [JSON.stringify(header)],
+      ["Empresa", "Valor"],
+      ["ACME", "1 200,50 €"],
+    ]);
+    expect(await sheetPreview(context(f), "test", source, 0)).toEqual({
+      tabs: ["Leads", "D'ouro"],
+      rows: [
+        ["Empresa", "Valor"],
+        ["ACME", "1 200,50 €"],
+      ],
+    });
+    expect(f.mock.calls[2][0]).toContain("valueRenderOption=FORMATTED_VALUE");
+  });
+  it("preserves A1 on other tabs, including names with quotes", async () => {
+    const f = sheetFetch([["Empresa"], ["Porto"]]);
+    expect((await sheetPreview(context(f), "test", source, 1)).rows[0]).toEqual(
+      ["Empresa"],
+    );
+    expect(decodeURIComponent(f.mock.calls[2][0])).toContain(
+      "/values/'D''ouro'?",
+    );
+  });
+  it("rejects a sheet moved during the read", async () => {
+    const f = sheetFetch([["x"]], { ...meta, parents: [folders.office.id] });
+    await expect(sheetPreview(context(f), "test", source, 0)).rejects.toThrow(
+      "mudou",
+    );
   });
 });

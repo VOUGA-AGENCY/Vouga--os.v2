@@ -10,7 +10,7 @@ export const SESSION_COOKIE = "vouga_local_session";
 export const SESSION_AGE = 60 * 60 * 24 * 7;
 const digest = (token: string) =>
   createHash("sha256").update(token).digest("hex");
-export function appOrigin(env = process.env) {
+export function appOrigin(env: Record<string, string | undefined> = process.env) {
   if (env.VOUGA_LOCAL_MODE === "1") return null;
   const origin = new URL(env.VOUGA_APP_ORIGIN || "https://invalid.invalid");
   if (

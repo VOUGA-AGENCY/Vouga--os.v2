@@ -28,6 +28,7 @@ function fixture() {
     fetch: fetchMock,
     now: () => new Date().toISOString(),
     env: {
+      VOUGA_LOCAL_MODE: "1",
       INTEGRATION_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString("base64"),
       GOOGLE_CLIENT_ID: "test",
       GOOGLE_CLIENT_SECRET: "test",
@@ -41,6 +42,22 @@ function fixture() {
   };
 }
 describe("Google OAuth completion", () => {
+  it.each([
+    ["0", "https://os.vouga-agency.pt", "https://os.vouga-agency.pt"],
+    ["1", "http://127.0.0.1:3001", "http://127.0.0.1:3001"],
+  ])("keeps consent and exchange on the OS origin in mode %s", async (mode, browserOrigin, expected) => {
+    const { ctx, me, fetchMock } = fixture();
+    Object.assign(ctx.env, {
+      VOUGA_LOCAL_MODE: mode,
+      VOUGA_APP_ORIGIN: "https://os.vouga-agency.pt",
+      GOOGLE_REDIRECT_URI: "http://127.0.0.1:3100/api/integrations/google/callback",
+    });
+    const url = new URL(await beginGoogleOAuth(ctx, me, "office", browserOrigin));
+    const redirect = expected + "/api/integrations/google/callback";
+    expect(url.searchParams.get("redirect_uri")).toBe(redirect);
+    await completeGoogleOAuth(ctx, me, url.searchParams.get("state")!, "code", browserOrigin);
+    expect(fetchMock.mock.calls[0][1].body.get("redirect_uri")).toBe(redirect);
+  });
   it("replays a completed callback without reusing the Google code or adding another sync", async () => {
     const { data, ctx, fetchMock, me } = fixture();
     const state = new URL(

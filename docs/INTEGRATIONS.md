@@ -39,7 +39,7 @@ O passo de publicação deve ser aprovado apenas depois de rever os recursos, or
 
 ### Google
 
-Criar um projeto Google Cloud do Workspace, ativar Calendar API e OAuth Internal. Usar Web Client. Para teste local, redirect URI exata: `http://127.0.0.1:3100/api/integrations/google/callback`. O callback é configurado por `GOOGLE_REDIRECT_URI`, separadamente do endpoint público de webhooks; um túnel não muda o callback local. Para um futuro deployment, o callback tem de coincidir com a origem pública e com a autenticação desse deployment.
+Criar um projeto Google Cloud do Workspace, ativar Calendar API e OAuth Internal. Usar Web Client. Para teste local, redirect URI exata: `http://127.0.0.1:3100/api/integrations/google/callback`. Em produção o callback usa a origem HTTPS de login `VOUGA_APP_ORIGIN`. Em local utiliza a mesma origem e porta do navegador. No Google Cloud, autorizar a URI completa de cada ambiente utilizado, incluindo a porta em local.
 
 Scopes: `calendar.events` para eventos e `calendar.calendars.readonly` para verificar o calendário primário da conta autorizada. Ligar Office e Contacto separadamente. O backend verifica a conta primária; não confia apenas em `login_hint` ou `hd`. Guarda refresh token com AES-256-GCM. State aleatório, de uso único, ligado ao admin e com expiração/PKCE. O callback apresenta “Concluir ligação”: o POST same-origin permite manter o cookie Strict existente.
 

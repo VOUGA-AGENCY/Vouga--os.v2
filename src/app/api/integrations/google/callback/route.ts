@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       me,
       String(form.get("state") || ""),
       String(form.get("code") || ""),
+      request.headers.get("origin")!,
     );
     return Response.redirect(new URL("/settings", request.headers.get("origin")!), 303);
   } catch (error) {

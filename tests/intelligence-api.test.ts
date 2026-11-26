@@ -79,7 +79,7 @@ describe("Intelligence entry points", () => {
     );
     expect((await GET(req("?id=hidden"))).status).toBe(404);
   });
-  it("dispatches exactly seven local slots on winter, summer and both clock-change dates", () => {
+  it("dispatches the scheduled local slots on winter, summer and both clock-change dates", () => {
     const sql = readFileSync(
       "supabase/operations/enable-intelligence-cron.sql",
       "utf8",
@@ -91,13 +91,18 @@ describe("Intelligence entry points", () => {
         return Array.from({ length: (hi ?? lo) - lo + 1 }, (_, i) => lo + i);
       });
     const [mins, hours] = cron.split(" ").map(field);
-    const slots = [...sql.matchAll(/'(\d\d:\d\d)'/g)].map((m) => m[1]);
+    const slots = [...sql.matchAll(/\('(\d\d:\d\d)',(\d),(\d)\)/g)];
     for (const day of [
       "2026-02-10",
+      "2026-02-09",
+      "2026-02-12",
+      "2026-02-13",
+      "2026-02-14",
       "2026-03-29",
       "2026-08-12",
       "2026-10-25",
     ]) {
+      const weekday = new Date(day).getUTCDay() || 7;
       const dispatch = hours
         .flatMap((hour) =>
           mins.map((min) =>
@@ -111,16 +116,17 @@ describe("Intelligence entry points", () => {
             ).slice(11),
           ),
         )
-        .filter((t) => slots.includes(t));
-      expect(dispatch).toEqual([
-        "07:45",
-        "08:45",
-        "09:45",
-        "10:45",
-        "12:00",
-        "17:30",
-        "20:00",
-      ]);
+        .filter((t) =>
+          slots.some(
+            ([, time, lo, hi]) =>
+              t === time && weekday >= Number(lo) && weekday <= Number(hi),
+          ),
+        );
+      const expected = ["07:10", "07:40", "08:10", "09:10"];
+      if (weekday <= 5) expected.push("08:25", "08:40", "16:40");
+      if (weekday === 1 || weekday === 7) expected.push("10:10");
+      if (weekday === 5) expected.push("17:10");
+      expect(dispatch).toEqual(expected.sort());
     }
   });
 });

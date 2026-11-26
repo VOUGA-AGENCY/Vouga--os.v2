@@ -17,6 +17,7 @@ import {
   connectionError,
   type ServiceContext,
 } from "./runtime";
+import { appOrigin } from "@/application/auth";
 import { enqueue, recordActivity } from "./activity-service";
 const root = "https://www.googleapis.com/calendar/v3/calendars/";
 type GoogleEvent = {
@@ -34,22 +35,25 @@ type GoogleEvent = {
   extendedProperties?: { private?: Record<string, string> };
 };
 const calendarId = (key: CalendarKey) => operationalCalendars[key].email;
-function callback(ctx: ServiceContext) {
-  return (
-    ctx.env.GOOGLE_REDIRECT_URI ||
-    "http://127.0.0.1:3100/api/integrations/google/callback"
-  );
+export function googleCallbackUri(env: ServiceContext["env"], localOrigin?: string) {
+  const origin = appOrigin(env);
+  if (origin) return origin + "/api/integrations/google/callback";
+  // HTTP routes supply the same origin already checked by requireMember.
+  if (localOrigin) return localOrigin + "/api/integrations/google/callback";
+  return env.GOOGLE_REDIRECT_URI || "http://127.0.0.1:3100/api/integrations/google/callback";
 }
 
 export async function beginGoogleOAuth(
   ctx: ServiceContext,
   me: Member,
   key: CalendarKey,
+  localOrigin?: string,
 ) {
   if (me.role !== "admin" || !operationalCalendars[key])
     throw new AppError("Unauthorized.", 403);
   required(ctx.env, "INTEGRATION_ENCRYPTION_KEY");
   required(ctx.env, "GOOGLE_CLIENT_SECRET");
+  const redirectUri = googleCallbackUri(ctx.env, localOrigin);
   const state = randomBytes(32).toString("hex"),
     verifier = randomBytes(32).toString("base64url");
   await ctx.repo.transact((data) => {
@@ -66,7 +70,7 @@ export async function beginGoogleOAuth(
   });
   const params = new URLSearchParams({
     client_id: required(ctx.env, "GOOGLE_CLIENT_ID"),
-    redirect_uri: callback(ctx),
+    redirect_uri: redirectUri,
     response_type: "code",
     scope:
       "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendars.readonly https://www.googleapis.com/auth/drive.readonly",
@@ -85,6 +89,7 @@ export async function completeGoogleOAuth(
   me: Member,
   state: string,
   code: string,
+  localOrigin?: string,
 ) {
   if (!/^[a-f0-9]{64}$/.test(state) || !code || code.length > 4096)
     throw new AppError("Invalid OAuth response.", 400);
@@ -127,7 +132,7 @@ export async function completeGoogleOAuth(
           code,
           client_id: required(ctx.env, "GOOGLE_CLIENT_ID"),
           client_secret: required(ctx.env, "GOOGLE_CLIENT_SECRET"),
-          redirect_uri: callback(ctx),
+          redirect_uri: googleCallbackUri(ctx.env, localOrigin),
           grant_type: "authorization_code",
           code_verifier: pending.verifier,
         }),

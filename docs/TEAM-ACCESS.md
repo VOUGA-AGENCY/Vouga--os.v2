@@ -12,7 +12,6 @@ Cinco tentativas erradas bloqueiam a conta durante 15 minutos. O contador vive n
 - VOUGA_STORAGE=supabase
 - VOUGA_APP_ORIGIN=https://os.vouga-agency.pt
 - VOUGA_PUBLIC_URL=https://os.vouga-agency.pt
-- GOOGLE_REDIRECT_URI=https://os.vouga-agency.pt/api/integrations/google/callback
 
 Usar a mesma base Supabase e manter INTEGRATION_ENCRYPTION_KEY, necessária para abrir os refresh tokens existentes. Configurar os outros secrets apenas no alojamento. Não colocar dados .local nem .env no repo. VOUGA_APP_ORIGIN determina a origem permitida e cookies Secure; não se aceitam origens arbitrárias nem X-Forwarded-Host para autorizar pedidos.
 

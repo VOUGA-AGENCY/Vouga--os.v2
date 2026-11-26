@@ -162,22 +162,19 @@ function useReportData<T>(query: string | null, version: number) {
     : undefined;
 }
 type Latest = ReportRow & { unread_count: number; last_updated: string };
-function OriginalLayout({ id }: { id: string }) {
-  const [open, setOpen] = useState(false),
-    [url, setUrl] = useState(""),
+function OriginalLayout({ report }: { report: ReportDetail }) {
+  const [url, setUrl] = useState(""),
     [error, setError] = useState("");
   useEffect(() => {
-    if (!open) return;
     const abort = new AbortController();
     let resource = "";
-    fetch("/api/intelligence?id=" + encodeURIComponent(id) + "&layout=pdf", {
-      signal: abort.signal,
-    })
+    fetch(
+      "/api/intelligence?id=" + encodeURIComponent(report.id) + "&layout=pdf",
+      { signal: abort.signal },
+    )
       .then(async (r) => {
         if (!r.ok)
-          throw new Error(
-            (await r.json()).error || "Falha ao abrir o documento.",
-          );
+          throw new Error((await r.json()).error || "Formatação indisponível.");
         const blob = await r.blob();
         if (abort.signal.aborted) return;
         resource = URL.createObjectURL(blob);
@@ -190,19 +187,144 @@ function OriginalLayout({ id }: { id: string }) {
       abort.abort();
       if (resource) URL.revokeObjectURL(resource);
     };
-  }, [id, open]);
-  return open ? (
-    error ? (
-      <p role="alert">{error}</p>
-    ) : url ? (
-      <iframe className="intel-preview" title="Documento original" src={url} />
-    ) : (
-      <p>A carregar o documento…</p>
-    )
-  ) : (
-    <button className="button-secondary" onClick={() => setOpen(true)}>
-      Ver documento com formatação
-    </button>
+  }, [report.id]);
+  if (error)
+    return (
+      <>
+        <p role="alert">{error}</p>
+        <div className="intel-content">{displayText(report.content)}</div>
+      </>
+    );
+  if (!url) return <p role="status">A abrir o documento…</p>;
+  return (
+    <object
+      className="intel-preview"
+      aria-label={report.title}
+      data={url + "#view=FitH&navpanes=0"}
+      type="application/pdf"
+    >
+      <a href={url} download={report.title + ".pdf"}>
+        Descarregar PDF
+      </a>
+      <div className="intel-content">{displayText(report.content)}</div>
+    </object>
+  );
+}
+
+const sheetPageSize = 75;
+function SheetLayout({ report }: { report: ReportDetail }) {
+  const [tab, setTab] = useState(0),
+    [page, setPage] = useState(0);
+  const result = useReportData<{ tabs: string[]; rows: string[][] }>(
+    "?" +
+      new URLSearchParams({ id: report.id, layout: "sheet", tab: String(tab) }),
+    0,
+  );
+  if (result?.error)
+    return (
+      <>
+        <p role="alert">{result.error}</p>
+        <div className="intel-content">{displayText(report.content)}</div>
+      </>
+    );
+  if (!result?.data) return <p role="status">A abrir a folha…</p>;
+  const { tabs, rows } = result.data;
+  const width = rows.reduce((max, row) => Math.max(max, row.length), 0);
+  const header = rows[0] ?? [];
+  const pages = Math.ceil((rows.length - 1) / sheetPageSize);
+  return (
+    <section className="intel-sheet" aria-label="Folha de cálculo">
+      {tabs.length > 1 && (
+        <nav className="intel-streams" aria-label="Separadores da folha">
+          {tabs.map((name, index) => (
+            <button
+              type="button"
+              key={name}
+              aria-pressed={index === tab}
+              onClick={() => {
+                setTab(index);
+                setPage(0);
+              }}
+            >
+              {name}
+            </button>
+          ))}
+        </nav>
+      )}
+      {width > 0 ? (
+        <div
+          className="intel-sheet-scroll"
+          role="region"
+          tabIndex={0}
+          aria-label={tabs[tab]}
+        >
+          <table aria-label={tabs[tab]}>
+            <thead>
+              <tr>
+                {Array.from({ length: width }, (_, i) => (
+                  <th scope="col" key={i}>
+                    {header[i] || <span className="muted">Coluna {i + 1}</span>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows
+                .slice(1 + page * sheetPageSize, 1 + (page + 1) * sheetPageSize)
+                .map((row, j) => (
+                  <tr key={j}>
+                    {Array.from({ length: width }, (_, i) => (
+                      <td key={i}>{row[i]}</td>
+                    ))}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p>Separador vazio.</p>
+      )}
+      {pages > 1 && (
+        <div className="intel-sheet-pages">
+          <button disabled={page === 0} onClick={() => setPage(page - 1)}>
+            Anterior
+          </button>
+          <span>
+            {page + 1} / {pages}
+          </span>
+          <button
+            disabled={page + 1 >= pages}
+            onClick={() => setPage(page + 1)}
+          >
+            Seguinte
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+function ReportPreview({ report }: { report: ReportDetail }) {
+  const [original, setOriginal] = useState(false);
+  const sheet = report.drive_file_url.startsWith(
+    "https://docs.google.com/spreadsheets/",
+  );
+  if (!sheet) return <OriginalLayout report={report} />;
+  return (
+    <>
+      <nav className="intel-streams" aria-label="Apresentação da folha">
+        <button aria-pressed={!original} onClick={() => setOriginal(false)}>
+          Tabela
+        </button>
+        <button aria-pressed={original} onClick={() => setOriginal(true)}>
+          Original
+        </button>
+      </nav>
+      {original ? (
+        <OriginalLayout report={report} />
+      ) : (
+        <SheetLayout report={report} />
+      )}
+    </>
   );
 }
 export function Intelligence() {
@@ -505,6 +627,7 @@ export function Intelligence() {
       {id && (
         <Dialog
           wide
+          className="intel-reader"
           title={detail?.data ? streams[detail.data.task_key][1] : "Relatório"}
           onClose={() => {
             open(null);
@@ -521,10 +644,7 @@ export function Intelligence() {
                 <h2>{displayText(detail.data.title)}</h2>
                 <small>{deliveryTime(detail.data.delivered_at)}</small>
                 <p>{displayText(detail.data.summary)}</p>
-                <div className="intel-content">
-                  {displayText(detail.data.content)}
-                </div>
-                <OriginalLayout key={detail.data.id} id={detail.data.id} />
+                <ReportPreview key={detail.data.id} report={detail.data} />
                 <a
                   href={detail.data.drive_file_url}
                   target="_blank"

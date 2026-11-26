@@ -247,7 +247,76 @@ function blockText(blocks: DocBlock[]): string {
     .join("");
 }
 
-// PDF export is on demand, for charts, images and original page layout.
+type PreviewSource = { folderId: string; id: string; modified: string };
+async function verifySource(
+  ctx: ServiceContext,
+  token: string,
+  source: PreviewSource,
+) {
+  const meta = await api<FileMeta>(
+    ctx,
+    "google",
+    drive +
+      "/files/" +
+      encodeURIComponent(source.id) +
+      "?fields=" +
+      fields +
+      "&supportsAllDrives=true",
+    { headers: { Authorization: "Bearer " + token } },
+  );
+  if (
+    meta.trashed ||
+    !meta.parents?.includes(source.folderId) ||
+    Date.parse(meta.modifiedTime) !== Date.parse(source.modified)
+  ) {
+    throw new InvalidReport(
+      "O documento mudou. Sincroniza antes de consultar a versão original.",
+    );
+  }
+  return meta;
+}
+
+export async function sheetPreview(
+  ctx: ServiceContext,
+  token: string,
+  source: PreviewSource,
+  index: number,
+) {
+  const meta = await verifySource(ctx, token, source);
+  if (meta.mimeType !== sheetMime)
+    throw new InvalidReport("Este relatório não é uma folha de cálculo.");
+  const url =
+    "https://sheets.googleapis.com/v4/spreadsheets/" +
+    encodeURIComponent(source.id);
+  const headers = { Authorization: "Bearer " + token };
+  const book = await api<{
+    sheets: { properties: { index: number; title: string } }[];
+  }>(ctx, "google", url + "?fields=sheets(properties(index,title))", {
+    headers,
+  });
+  const tabs = book.sheets
+    .sort((a, b) => a.properties.index - b.properties.index)
+    .map((s) => s.properties.title);
+  if (index >= tabs.length) throw new InvalidReport("Separador indisponível.");
+  const range = "'" + tabs[index].replaceAll("'", "''") + "'";
+  const data = await api<{ values?: string[][] }>(
+    ctx,
+    "google",
+    url +
+      "/values/" +
+      encodeURIComponent(range) +
+      "?valueRenderOption=FORMATTED_VALUE",
+    { headers },
+  );
+  const rows = data.values ?? [];
+  if (index === 0 && rows[0]) {
+    rows[0][0] = "";
+    if (rows[0].every((cell) => !cell)) rows.shift();
+  }
+  await verifySource(ctx, token, source);
+  return { tabs, rows };
+}
+
 export async function exportReport(
   ctx: ServiceContext,
   token: string,
@@ -255,31 +324,16 @@ export async function exportReport(
   id: string,
   modified: string,
 ) {
-  const url = drive + "/files/" + encodeURIComponent(id),
-    headers = { Authorization: "Bearer " + token };
-  async function verifySource() {
-    const meta = await api<FileMeta>(
-      ctx,
-      "google",
-      url + "?fields=" + fields + "&supportsAllDrives=true",
-      { headers },
-    );
-    if (
-      meta.trashed ||
-      !meta.parents?.includes(folderId) ||
-      Date.parse(meta.modifiedTime) !== Date.parse(modified)
-    )
-      throw new InvalidReport(
-        "O documento mudou. Sincroniza antes de consultar a versão original.",
-      );
-  }
-  await verifySource();
+  const source = { folderId, id, modified };
+  const url = drive + "/files/" + encodeURIComponent(id);
+  const headers = { Authorization: "Bearer " + token };
+  await verifySource(ctx, token, source);
   const response = await ctx.fetch(url + "/export?mimeType=application%2Fpdf", {
     headers,
     signal: AbortSignal.timeout(25000),
   });
   if (!response.ok) throw new ProviderError("google", response.status);
   const bytes = await response.arrayBuffer();
-  await verifySource();
+  await verifySource(ctx, token, source);
   return bytes;
 }
